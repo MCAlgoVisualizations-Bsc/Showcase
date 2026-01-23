@@ -7,10 +7,9 @@ import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
 import net.minestom.server.instance.*;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.coordinate.Pos;
-import net.minestom.server.utils.mojang.MojangUtils;
 
 public class Main {
-    public static void main(String[] args) {
+    static void main(String[] args) {
         // Initialization
         MinecraftServer minecraftServer = MinecraftServer.init();
 
