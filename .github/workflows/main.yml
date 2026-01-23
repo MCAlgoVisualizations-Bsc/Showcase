@@ -14,12 +14,13 @@ jobs:
       - name: Execute remote commands via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_KEY }}
-          script: |
-            cd ~/Architecture/Minecraft-server
-            git pull origin main
-            chmod +x gradlew
-            ./gradlew shadowJar
-            sudo systemctl restart minecraft
+                host: ${{ secrets.SSH_HOST }}
+                username: ${{ secrets.SSH_USERNAME }}
+                key: ${{ secrets.SSH_KEY }}
+                passphrase: ${{ secrets.SSH_PASSPHRASE }} 
+                script: |
+                  cd ~/Architecture/Minecraft-server
+                  git pull origin main
+                  chmod +x gradlew
+                  ./gradlew shadowJar
+                  sudo systemctl restart minecraft
