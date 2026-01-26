@@ -20,7 +20,8 @@ jobs:
                 passphrase: ${{ secrets.SSH_PASSPHRASE }} 
                 script: |
                   cd ~/Architecture/Minecraft-server
-                  git pull origin main
+                  git fetch origin main
+                  git reset --hard origin/main
                   chmod +x gradlew
                   ./gradlew shadowJar
                   sudo systemctl restart minecraft
