@@ -30,14 +30,14 @@ jobs:
             echo "HOST_PORT=25566" >> $GITHUB_ENV
           fi
 
-      # 2.Convert Username to Lowercase
+      # 2. FIX: Convert Username to Lowercase
       - name: Lowercase Repo Owner
         run: |
-          echo "REPO_OWNER=${OWNER,,}" >>${GITHUB_ENV}
+          echo "REPO_OWNER=${OWNER,,}" >> $GITHUB_ENV
         env:
           OWNER: '${{ github.repository_owner }}'
 
-      # 3. Build & Push (Using the new REPO_OWNER variable)
+      # 3. Build & Push
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -50,10 +50,10 @@ jobs:
         with:
           context: .
           push: true
-          # Note: We use env.REPO_OWNER instead of github.repository_owner
+          # Uses the lowercase variable + hardcoded 'thesis-server' name
           tags: ghcr.io/${{ env.REPO_OWNER }}/thesis-server:latest
 
-      # 4. Deploy to your Single DigitalOcean Server
+      # 4. Deploy to DigitalOcean
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -61,23 +61,20 @@ jobs:
           username: root
           key: ${{ secrets.SSH_KEY }}
           script: |
-            # Login to GitHub Registry
-            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
-            # Pull the new image (Using lowercase variable)
-            # We have to hardcode the lowercase name here or pass it as an env var. 
-            # Since shell script on remote server doesn't know 'env.REPO_OWNER', 
-            # we inject it directly into the script string below:
-            
+            # Inject the lowercase name into the server script
             IMAGE_NAME="ghcr.io/${{ env.REPO_OWNER }}/thesis-server:latest"
 
+            # Login
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+            # Pull
             docker pull $IMAGE_NAME
 
-            # Stop the specific container
+            # Stop/Remove existing container
             docker stop ${{ env.CONTAINER_NAME }} || true
             docker rm ${{ env.CONTAINER_NAME }} || true
 
-            # Run the new container
+            # Run new container
             docker run -d \
               --name ${{ env.CONTAINER_NAME }} \
               -p ${{ env.HOST_PORT }}:25565 \
