@@ -1,27 +1,73 @@
-name: Deploy to DigitalOcean
+name: Deploy Multi-Container Server
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+      - dev
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Execute remote commands via SSH
+      # 1. CONFIGURATION: Set Ports and Names based on Branch
+      - name: Set Environment Variables
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "Target: PRODUCTION"
+            echo "CONTAINER_NAME=minecraft-prod" >> $GITHUB_ENV
+            echo "HOST_PORT=25565" >> $GITHUB_ENV
+          else
+            echo "Target: DEVELOPMENT"
+            echo "CONTAINER_NAME=minecraft-dev" >> $GITHUB_ENV
+            echo "HOST_PORT=25566" >> $GITHUB_ENV
+          fi
+
+      # 2. Build & Push the Docker Image to GitHub Packages
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/thesis-server:latest
+
+      # 3. Deploy to your Single DigitalOcean Server
+      - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
-                host: ${{ secrets.SSH_HOST }}
-                username: ${{ secrets.SSH_USERNAME }}
-                key: ${{ secrets.SSH_KEY }}
-                passphrase: ${{ secrets.SSH_PASSPHRASE }} 
-                script: |
-                  cd ~/Architecture/Minecraft-server
-                  git fetch origin main
-                  git reset --hard origin/main
-                  chmod +x gradlew
-                  ./gradlew shadowJar
-                  sudo systemctl restart minecraft
+          host: ${{ secrets.SSH_HOST }}  # Your ONE server IP
+          username: root
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            # Login to GitHub Registry on the server
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+            # Pull the new image
+            docker pull ghcr.io/${{ github.repository_owner }}/thesis-server:latest
+
+            # Stop the specific container (Prod or Dev) if it's running
+            docker stop ${{ env.CONTAINER_NAME }} || true
+            docker rm ${{ env.CONTAINER_NAME }} || true
+
+            # Run the new container
+            # We map External Port (25565 or 25566) -> Internal Port (25565)
+            docker run -d \
+              --name ${{ env.CONTAINER_NAME }} \
+              -p ${{ env.HOST_PORT }}:25565 \
+              -v /root/${{ env.CONTAINER_NAME }}-data:/app \
+              --restart unless-stopped \
+              ghcr.io/${{ github.repository_owner }}/thesis-server:latest
