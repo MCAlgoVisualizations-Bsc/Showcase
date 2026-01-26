@@ -1,0 +1,16 @@
+services:
+  mc-prod:
+    build: .
+    ports:
+      - "25565:25565" # Production (Standard Port)
+    restart: unless-stopped
+    volumes:
+      - ./data/prod:/app/world # Persists the world data
+
+  mc-dev:
+    build: .
+    ports:
+      - "25566:25565" # Development (Connect via IP:25566)
+    restart: unless-stopped
+    volumes:
+      - ./data/dev:/app/world
