@@ -1,6 +1,6 @@
 # 1. Build Stage: Use Gradle with Java 25
 # If gradle:jdk25 fails, we use a specific verified version
-FROM gradle:8.12-jdk25 AS build
+FROM gradle:8.12-jdk21 AS build
 WORKDIR /app
 COPY . .
 RUN gradle shadowJar --no-daemon
