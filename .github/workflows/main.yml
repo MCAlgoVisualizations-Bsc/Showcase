@@ -30,7 +30,14 @@ jobs:
             echo "HOST_PORT=25566" >> $GITHUB_ENV
           fi
 
-      # 2. Build & Push the Docker Image to GitHub Packages
+      # 2.Convert Username to Lowercase
+      - name: Lowercase Repo Owner
+        run: |
+          echo "REPO_OWNER=${OWNER,,}" >>${GITHUB_ENV}
+        env:
+          OWNER: '${{ github.repository_owner }}'
+
+      # 3. Build & Push (Using the new REPO_OWNER variable)
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -43,31 +50,37 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/thesis-server:latest
+          # Note: We use env.REPO_OWNER instead of github.repository_owner
+          tags: ghcr.io/${{ env.REPO_OWNER }}/thesis-server:latest
 
-      # 3. Deploy to your Single DigitalOcean Server
+      # 4. Deploy to your Single DigitalOcean Server
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.SSH_HOST }}  # Your ONE server IP
+          host: ${{ secrets.SSH_HOST }}
           username: root
           key: ${{ secrets.SSH_KEY }}
           script: |
-            # Login to GitHub Registry on the server
+            # Login to GitHub Registry
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-            # Pull the new image
-            docker pull ghcr.io/${{ github.repository_owner }}/thesis-server:latest
+            # Pull the new image (Using lowercase variable)
+            # We have to hardcode the lowercase name here or pass it as an env var. 
+            # Since shell script on remote server doesn't know 'env.REPO_OWNER', 
+            # we inject it directly into the script string below:
+            
+            IMAGE_NAME="ghcr.io/${{ env.REPO_OWNER }}/thesis-server:latest"
 
-            # Stop the specific container (Prod or Dev) if it's running
+            docker pull $IMAGE_NAME
+
+            # Stop the specific container
             docker stop ${{ env.CONTAINER_NAME }} || true
             docker rm ${{ env.CONTAINER_NAME }} || true
 
             # Run the new container
-            # We map External Port (25565 or 25566) -> Internal Port (25565)
             docker run -d \
               --name ${{ env.CONTAINER_NAME }} \
               -p ${{ env.HOST_PORT }}:25565 \
               -v /root/${{ env.CONTAINER_NAME }}-data:/app \
               --restart unless-stopped \
-              ghcr.io/${{ github.repository_owner }}/thesis-server:latest
+              $IMAGE_NAME
