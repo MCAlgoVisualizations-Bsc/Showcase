@@ -1,18 +1,32 @@
-# 1. Build Stage: Use Gradle with Java 25
-# If gradle:jdk25 fails, we use a specific verified version
-FROM gradle:8.12-jdk21 AS build
+# 1. Build Stage
+# Using an image that provides JDK 25
+FROM openjdk:25-jdk-slim AS build
 WORKDIR /app
-COPY . .
-RUN gradle shadowJar --no-daemon
 
-# 2. Run Stage: Use Eclipse Temurin (Reliable Java 25 support)
-FROM eclipse-temurin:25-jre
+# Copy the Gradle wrapper files from your repo
+COPY gradlew .
+COPY gradle/ gradle/
+COPY build.gradle.kts .
+COPY settings.gradle.kts .
+
+# Copy your source code
+COPY src/ src/
+
+# Ensure the wrapper is executable and run the build
+RUN chmod +x ./gradlew
+RUN ./gradlew shadowJar --no-daemon
+
+# 2. Run Stage
+FROM openjdk:25-jdk-slim
 WORKDIR /app
-# Copy the built jar from the previous stage
+
+# Copy the built jar from the build stage
 COPY --from=build /app/build/libs/*-all.jar server.jar
 
-# Expose the internal port (always 25565 inside the box)
+# Minestom usually doesn't need an eula.txt, but good to have if you add plugins
+RUN echo "eula=true" > eula.txt
+
 EXPOSE 25565
 
-# Start command
-CMD ["java", "-jar", "server.jar"]
+# Start with enough memory for a Minestom instance
+CMD ["java", "-Xmx2G", "-jar", "server.jar"]
