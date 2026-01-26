@@ -1,6 +1,6 @@
 # 1. Build Stage
 # Using an image that provides JDK 25
-FROM openjdk:25-jdk-slim AS build
+FROM openjdk:25 AS build
 WORKDIR /app
 
 # Copy the Gradle wrapper files from your repo
