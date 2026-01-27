@@ -31,9 +31,6 @@ dependencies {
     // Your Server Dependencies
     implementation("net.minestom:minestom:2026.01.08-1.21.11")
     implementation("ch.qos.logback:logback-classic:1.4.14")
-    implementation("io.github.revxrsal:lamp.common:4.0.0-rc.14")
-    implementation("io.github.revxrsal:lamp.minestom:4.0.0-rc.14")
-
 }
 
 
