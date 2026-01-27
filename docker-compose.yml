@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  minecraft-prod:
+    build:
+      context: ./Minecraft-server
+      dockerfile: Dockerfile
+    container_name: minecraft-prod
+    ports:
+      - "25565:25565"
+    volumes:
+      - prod-data:/app/world
+    restart: unless-stopped
+    mem_limit: 2g
+
+  minecraft-dev:
+    build:
+      context: ./Minecraft-server
+      dockerfile: Dockerfile
+    container_name: minecraft-dev
+    ports:
+      - "25566:25565"
+    volumes:
+      - dev-data:/app/world
+    restart: unless-stopped
+    mem_limit: 2g
+
+volumes:
+  prod-data:
+  dev-data:
