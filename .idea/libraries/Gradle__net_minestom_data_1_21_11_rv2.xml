@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Gradle: net.minestom:data:1.21.11-rv2" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="net.minestom" artifactId="data" version="1.21.11-rv2" baseVersion="1.21.11-rv2" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.minestom/data/1.21.11-rv2/7dc887c3abba477536a53f782eaeb7f0dff9ab10/data-1.21.11-rv2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
