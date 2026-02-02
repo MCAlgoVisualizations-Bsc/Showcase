@@ -1,4 +1,4 @@
-package org.example.configs;
+package configs;
 
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.instance.InstanceContainer;

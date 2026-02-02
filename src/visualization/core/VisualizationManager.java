@@ -1,4 +1,4 @@
-package org.example.visualization.core;
+package visualization.core;
 
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;

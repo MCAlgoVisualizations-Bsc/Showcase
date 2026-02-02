@@ -10,6 +10,14 @@ java {
     }
 }
 
+sourceSets {
+    main {
+        java {
+            srcDirs("src")
+        }
+    }
+}
+
 
 group = "org.example"
 version = "1.0-SNAPSHOT"
@@ -42,7 +50,7 @@ tasks {
 
     shadowJar {
         manifest {
-            attributes["Main-Class"] = "org.example.Main"
+            attributes["Main-Class"] = "Main"
         }
     }
 }

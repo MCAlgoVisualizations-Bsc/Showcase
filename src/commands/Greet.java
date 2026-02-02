@@ -1,4 +1,4 @@
-package org.example.commands;
+package commands;
 
 import net.minestom.server.command.builder.Command;
 import net.minestom.server.entity.Player;
