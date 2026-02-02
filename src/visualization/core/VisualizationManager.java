@@ -3,7 +3,7 @@ package visualization.core;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.InstanceContainer;
-import org.example.visualization.sorting.InsertionSortVisualization;
+import visualization.sorting.InsertionSortVisualization;
 
 import java.util.HashMap;
 import java.util.Map;
