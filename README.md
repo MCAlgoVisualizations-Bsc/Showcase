@@ -1,6 +1,6 @@
-# Thesis Minecraft Server (Minestom)
+# Algorithm Visualization Bsc Minecraft Server (Minestom)
 
-This is a custom Minecraft server built using the **Minestom** framework. It runs on a high-performance multi-container setup via Docker and DigitalOcean.
+This is a custom Minecraft server built using the **Minestom** framework. It's purpose is to display various visualizations of different algorithms. It runs on a multi-container setup via Docker and DigitalOcean.
 
 ---
 
