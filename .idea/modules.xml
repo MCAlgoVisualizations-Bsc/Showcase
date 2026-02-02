@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Minecraft-server.iml" filepath="$PROJECT_DIR$/.idea/modules/Minecraft-server.iml" group="Minecraft-server" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Minecraft-server_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Minecraft-server_main.iml" group="Minecraft-server" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Minecraft-server_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Minecraft-server_test.iml" group="Minecraft-server" />
+    </modules>
+  </component>
+</project>

@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Gradle: org.jctools:jctools-core:4.0.5" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="org.jctools" artifactId="jctools-core" version="4.0.5" baseVersion="4.0.5" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jctools/jctools-core/4.0.5/9ab38ca19877236986db4894ef1400a7ca23db80/jctools-core-4.0.5.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
