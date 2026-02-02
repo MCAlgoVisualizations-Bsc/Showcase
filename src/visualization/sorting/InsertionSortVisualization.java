@@ -11,7 +11,7 @@ import net.minestom.server.entity.metadata.other.ArmorStandMeta;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
-import org.example.visualization.core.AbstractVisualization;
+import visualization.core.AbstractVisualization;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -10,14 +10,14 @@ import net.minestom.server.event.player.PlayerSpawnEvent;
 import net.minestom.server.event.player.PlayerUseItemEvent;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.item.Material;
-import org.example.commands.Gamemode;
-import org.example.commands.Greet;
-import org.example.commands.Spawn;
-import org.example.commands.Teleport;
-import org.example.configs.WorldConfig;
-import org.example.items.VisualizationItems;
-import org.example.visualization.core.Visualization;
-import org.example.visualization.core.VisualizationManager;
+import commands.Gamemode;
+import commands.Greet;
+import commands.Spawn;
+import commands.Teleport;
+import configs.WorldConfig;
+import items.VisualizationItems;
+import visualization.core.Visualization;
+import visualization.core.VisualizationManager;
 
 public final class Main {
     public static void main(String[] args) {
