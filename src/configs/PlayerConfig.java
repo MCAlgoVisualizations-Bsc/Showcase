@@ -1,4 +1,4 @@
-package org.example.configs;
+package configs;
 
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.GameMode;

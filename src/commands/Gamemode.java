@@ -1,4 +1,4 @@
-package org.example.commands;
+package commands;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
