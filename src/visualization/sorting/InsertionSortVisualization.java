@@ -85,6 +85,10 @@ public class InsertionSortVisualization extends AbstractVisualization<Integer> {
             return;
         }
 
+        for (DisplayValue<Integer> v : values) {
+            v.setHighlighted(false);
+        }
+
         if (currentIndex >= values.size()) {
             algorithmComplete = true;
             renderState(values);
@@ -94,6 +98,11 @@ public class InsertionSortVisualization extends AbstractVisualization<Integer> {
 
         if (compareIndex == -1) {
             compareIndex = currentIndex;
+        }
+
+        if (compareIndex > 0) {
+            values.get(compareIndex).setHighlighted(true);
+            values.get(compareIndex - 1).setHighlighted(true);
         }
 
         // Logic check: are we actually moving?
