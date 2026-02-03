@@ -25,6 +25,10 @@ public final class Main {
 
         InstanceContainer instance = WorldConfig.createMainInstance();
 
+        // Sets the game time
+        instance.setTimeRate(0);  // Stops time
+        instance.setTime(6000);   // Sets time to noon
+
         registerListeners(instance);
         registerCommands(MinecraftServer.getCommandManager());
 

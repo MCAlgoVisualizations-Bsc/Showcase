@@ -2,6 +2,7 @@ package visualization.core;
 
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.timer.Task;
@@ -14,7 +15,7 @@ import java.util.List;
  * Abstract base class for all visualizations.
  * Provides common functionality like scheduling, history management, and state tracking.
  */
-public abstract class AbstractVisualization implements Visualization {
+public abstract class AbstractVisualization<T extends Comparable<T>> implements Visualization {
     protected final String name;
     protected final Pos origin;
     protected final InstanceContainer instance;
@@ -22,7 +23,8 @@ public abstract class AbstractVisualization implements Visualization {
     protected int ticksPerStep = 20; // 1 second default
     protected boolean running = false;
     protected Task runningTask = null;
-    protected List<int[]> history = new ArrayList<>();
+    protected List<DisplayValue<T>> values = new ArrayList<>();
+    protected List<List<DisplayValue<T>>> history = new ArrayList<>();
     protected int historyIndex = -1;
 
     public AbstractVisualization(String name, Pos origin, InstanceContainer instance) {
@@ -76,6 +78,15 @@ public abstract class AbstractVisualization implements Visualization {
         return name;
     }
 
+    @Override
+    public void cleanup() {
+        stop();
+        for (DisplayValue entity : values) {
+            entity.remove();
+        }
+        values.clear();
+    }
+
     /**
      * Execute one step of the algorithm.
      * Called automatically when running or manually via stepForward().
@@ -85,11 +96,27 @@ public abstract class AbstractVisualization implements Visualization {
     /**
      * Save the current state to history.
      */
-    protected abstract void saveState();
+    protected void saveState() {
+        // Clear future history if we stepped back and then started forward again
+        while (history.size() > historyIndex + 1) {
+            history.remove(history.size() - 1);
+        }
+
+        // Save a snapshot of the current values (not the DisplayValue objects themselves)
+        List<DisplayValue<T>> snapshot = new ArrayList<>();
+        for (DisplayValue<T> dv : values) {
+            // We only care about the integer value for history
+            // The entities stay the same
+            snapshot.add(dv);
+        }
+
+        history.add(new ArrayList<>(values));
+        historyIndex = history.size() - 1;
+    }
 
     /**
      * Render the given state visually in the world.
      * @param state The array state to render
      */
-    protected abstract void renderState(int[] state);
+    protected abstract void renderState(List<DisplayValue<Integer>> state);
 }
