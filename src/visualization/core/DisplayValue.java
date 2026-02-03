@@ -28,15 +28,15 @@ public class DisplayValue<T extends Comparable<T>> implements Comparable<Display
         // This controls how long the animation lasts (in ticks)
         blockMeta.setPosRotInterpolationDuration(5);
         // This tells the client to start the animation NOW (0 ticks from receiving)
-        blockMeta.setTransformationInterpolationStartDelta(40);
+        blockMeta.setTransformationInterpolationStartDelta(0);
+        blockMeta.setScale(new Vec(2.0, 2.0, 2));
 
         // Setup Text
         text = new Entity(EntityType.TEXT_DISPLAY);
         TextDisplayMeta textMeta = (TextDisplayMeta) text.getEntityMeta();
         textMeta.setText(Component.text(value.toString(), NamedTextColor.GOLD));
         textMeta.setBillboardRenderConstraints(AbstractDisplayMeta.BillboardConstraints.CENTER);
-        textMeta.setBackgroundColor(new Color(255, 255,  255).asRGB());
-        textMeta.setScale(new Vec(1.5, 1.5, 1.5));
+        textMeta.setScale(new Vec(4));
         textMeta.setHasNoGravity(true);
         textMeta.setPosRotInterpolationDuration(5);
         textMeta.setTransformationInterpolationStartDelta(0);
@@ -65,7 +65,7 @@ public class DisplayValue<T extends Comparable<T>> implements Comparable<Display
 
     public void teleport(Pos pos) {
         entity.teleport(pos);
-        text.teleport(pos.add(.5, 1.2, .5));
+        text.teleport(pos.add(1, 2.4, 1));
     }
 
     public void setHighlighted(boolean highlighted) {
