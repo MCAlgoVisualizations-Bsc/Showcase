@@ -1,5 +1,6 @@
 package visualization.sorting;
 
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.coordinate.Pos;
@@ -10,6 +11,7 @@ import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
+import net.minestom.server.sound.SoundEvent;
 import visualization.core.AbstractVisualization;
 import visualization.core.DisplayValue;
 
@@ -101,6 +103,8 @@ public class InsertionSortVisualization extends AbstractVisualization<Integer> {
             DisplayValue<Integer> temp = values.get(compareIndex);
             values.set(compareIndex, values.get(compareIndex - 1));
             values.set(compareIndex - 1, temp);
+
+            instance.playSound(Sound.sound(SoundEvent.BLOCK_NOTE_BLOCK_BANJO, Sound.Source.RECORD, 1.0f, 1.2f), origin);
 
             compareIndex--;
             // Only save state and increment history when a change actually happens
