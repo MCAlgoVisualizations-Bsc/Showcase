@@ -27,6 +27,12 @@ public abstract class AbstractVisualization<T extends Comparable<T>> implements 
     protected List<List<DisplayValue<T>>> history = new ArrayList<>();
     protected int historyIndex = -1;
 
+    // Visual spacing constants
+    private static final double SPACING = 2.0;           // Horizontal space between elements
+    private static final double BASE_HEIGHT = 1.0;       // Base Y offset (above ground)
+    private static final double HEIGHT_MULTIPLIER = 0.5; // How much height per value unit
+
+
     public AbstractVisualization(String name, Pos origin, InstanceContainer instance) {
         this.name = name;
         this.origin = origin;
@@ -118,5 +124,21 @@ public abstract class AbstractVisualization<T extends Comparable<T>> implements 
      * Render the given state visually in the world.
      * @param state The array state to render
      */
-    protected abstract void renderState(List<DisplayValue<Integer>> state);
+    protected void renderState(List<DisplayValue<Integer>> state) {
+        // DO NOT call cleanup() here!
+        // Cleanup should only be used when destroying the whole visualization.
+
+        for (int i = 0; i < state.size(); i++) {
+            var displayVal = state.get(i);
+
+            double x = origin.x() + (i * SPACING);
+            double y = origin.y() + BASE_HEIGHT + (displayVal.getValue() * HEIGHT_MULTIPLIER);
+            double z = origin.z();
+
+            // Use teleport or edit position
+            displayVal.teleport(new Pos(x, y, z));
+
+            // updateMetadata(entity, i);
+        }
+    }
 }

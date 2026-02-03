@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 /**
  * Visualization of the Insertion Sort algorithm using armor stands.
  * Each armor stand represents an element in the array, with height indicating value.
- *
+ * <p>
  * Color coding:
  * - GREEN: Sorted portion of the array
  * - RED: Currently being compared/moved
@@ -37,11 +37,6 @@ public class InsertionSortVisualization extends AbstractVisualization<Integer> {
     private int currentIndex = 1;      // The element we're currently inserting
     private int compareIndex = -1;     // Current position during insertion
     private boolean algorithmComplete = false;
-
-    // Visual spacing constants
-    private static final double SPACING = 2.0;           // Horizontal space between elements
-    private static final double BASE_HEIGHT = 1.0;       // Base Y offset (above ground)
-    private static final double HEIGHT_MULTIPLIER = 0.5; // How much height per value unit
 
     public InsertionSortVisualization(Pos origin, InstanceContainer instance, int arraySize) {
         super("Insertion Sort", origin, instance);
@@ -63,7 +58,11 @@ public class InsertionSortVisualization extends AbstractVisualization<Integer> {
         // Generate random values between 1 and 10
         for (int i = 0; i < arraySize; i++) {
             var v = random.nextInt(1, 11);
-            values.add(new DisplayValue<>(v, getBlockForValue(v)));
+            values.add(new DisplayValue<>(
+                    instance,
+                    v,
+                    getBlockForValue(v)
+            ));
         }
 
         saveState(); // Save initial state
@@ -117,32 +116,6 @@ public class InsertionSortVisualization extends AbstractVisualization<Integer> {
         }
 
         renderState(values);
-    }
-
-
-    @Override
-    protected void renderState(List<DisplayValue<Integer>> state) {
-        // DO NOT call cleanup() here!
-        // Cleanup should only be used when destroying the whole visualization.
-
-        for (int i = 0; i < state.size(); i++) {
-            var displayVal = state.get(i);
-            Entity entity = displayVal.getEntity();
-
-            // Ensure entity is spawned if it isn't already
-            if (entity.getInstance() == null) {
-                entity.setInstance(instance, origin);
-            }
-
-            double x = origin.x() + (i * SPACING);
-            double y = origin.y() + BASE_HEIGHT + (displayVal.getValue() * HEIGHT_MULTIPLIER);
-            double z = origin.z();
-
-            // Use teleport or edit position
-            entity.teleport(new Pos(x, y, z));
-
-            // updateMetadata(entity, i);
-        }
     }
 
     @Override
