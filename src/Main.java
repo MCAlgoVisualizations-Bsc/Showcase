@@ -25,6 +25,10 @@ public final class Main {
 
         InstanceContainer instance = WorldConfig.createMainInstance();
 
+        // Sets the game time
+        instance.setTimeRate(0);  // Stops time
+        instance.setTime(6000);   // Sets time to noon
+
         registerListeners(instance);
         registerCommands(MinecraftServer.getCommandManager());
 
@@ -46,7 +50,10 @@ public final class Main {
             if (!event.isFirstSpawn()) return; // Only on first spawn
             
             Player player = event.getPlayer();
-            
+
+            // Give fly access to player
+            player.setAllowFlying(true);
+
             // Give control items to the player
             player.getInventory().setItemStack(0, VisualizationItems.randomizeItem());
             player.getInventory().setItemStack(1, VisualizationItems.startItem());
