@@ -24,6 +24,8 @@ dependencies {
 
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation(libs.guava)
+
+    compileOnly("net.minestom:minestom:2026.01.08-1.21.11")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.

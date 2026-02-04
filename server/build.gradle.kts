@@ -2,7 +2,9 @@ plugins {
     id("java")
 }
 
-group = "org.example"
+
+
+group = "io.github.mcalgovisualizations"
 version = "unspecified"
 
 repositories {

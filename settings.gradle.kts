@@ -13,4 +13,4 @@ plugins {
 rootProject.name = "Visualising Data Structures"
 include("lib")
 
-include("app")
+include("server")
