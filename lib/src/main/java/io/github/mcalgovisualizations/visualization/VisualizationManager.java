@@ -19,7 +19,6 @@ public class VisualizationManager {
     private static final Map<UUID, Visualization> playerVisualizations = new HashMap<>();
     private static final Map<String, Pos> areaLocations = new HashMap<>();
     private static final Map<String, Class<? extends Visualization>> visualizations = new HashMap<>();
-    private static final Logger log = LoggerFactory.getLogger(VisualizationManager.class);
 
     static {
         // Define area locations for different visualization types
@@ -52,13 +51,14 @@ public class VisualizationManager {
             try {
                 // 1. You must tell Java the CLASS TYPES of the parameters first
                 vis = visualizations.get(type.toLowerCase())
-                        .getDeclaredConstructor(Pos.class, InstanceContainer.class, int.class)
-                        .newInstance(origin, instance, 8); // 2. Then pass the actual values
+                        .getDeclaredConstructor(Pos.class, InstanceContainer.class)
+                        .newInstance(origin, instance); // 2. Then pass the actual values
 
                 playerVisualizations.put(player.getUuid(), vis);
             } catch (NoSuchMethodException e) {
-                System.out.println("Error: The class for " + type + " does not have a (Pos, InstanceContainer, int) constructor.");
+                System.out.println("Error: The class for " + type + " does not have a (Pos, InstanceContainer) constructor.");
             } catch (Exception e) {
+                System.out.println("test");
                 e.printStackTrace();
             }
             // TODO: fix this

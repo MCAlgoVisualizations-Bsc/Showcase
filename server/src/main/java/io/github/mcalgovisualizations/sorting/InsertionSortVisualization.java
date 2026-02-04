@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
  * - WHITE: Unsorted portion
  */
 public class InsertionSortVisualization extends AbstractVisualization<Integer> {
-    private final int arraySize;
     private final Random random = new Random();
 
     // Algorithm state
@@ -38,35 +37,20 @@ public class InsertionSortVisualization extends AbstractVisualization<Integer> {
     private int compareIndex = -1;     // Current position during insertion
     private boolean algorithmComplete = false;
 
-    public InsertionSortVisualization(Pos origin, InstanceContainer instance, int arraySize) {
-        super("Insertion Sort", origin, instance);
-        this.arraySize = arraySize;
-        randomize();
-    }
-
-    @Override
-    public void randomize() {
-        stop();
-        algorithmComplete = false;
-        currentIndex = 1;
-        compareIndex = -1;
-        history.clear();
-        historyIndex = -1;
-        for (var v : values) v.remove();
-        values.clear();
-
+    public InsertionSortVisualization(Pos origin, InstanceContainer instance) {
+        List<DisplayValue<Integer>> values = new ArrayList<>();
         // Generate random values between 1 and 10
-        for (int i = 0; i < arraySize; i++) {
-            var v = random.nextInt(1, 11);
+        for (int i = 0; i < 10; i++) {
+            Random r = new Random();
+            var v = r.nextInt(1, 11);
             values.add(new DisplayValue<>(
                     instance,
                     v,
                     getBlockForValue(v)
             ));
         }
-
-        saveState(); // Save initial state
-        renderState(values);
+        super("Insertion Sort", values, origin, instance);
+        randomize();
     }
 
     @Override
@@ -91,7 +75,6 @@ public class InsertionSortVisualization extends AbstractVisualization<Integer> {
 
         if (currentIndex >= values.size()) {
             algorithmComplete = true;
-            renderState(values);
             stop();
             return;
         }
@@ -108,9 +91,7 @@ public class InsertionSortVisualization extends AbstractVisualization<Integer> {
         // Logic check: are we actually moving?
         if (compareIndex > 0 && values.get(compareIndex - 1).compareTo(values.get(compareIndex)) > 0) {
             // Perform Swap
-            DisplayValue<Integer> temp = values.get(compareIndex);
-            values.set(compareIndex, values.get(compareIndex - 1));
-            values.set(compareIndex - 1, temp);
+            swap(compareIndex, compareIndex - 1);
 
             instance.playSound(Sound.sound(SoundEvent.BLOCK_NOTE_BLOCK_BANJO, Sound.Source.RECORD, 1.0f, 1.2f), origin);
 
@@ -123,8 +104,6 @@ public class InsertionSortVisualization extends AbstractVisualization<Integer> {
             compareIndex = -1;
             // Execute the next step immediately or wait for next tick
         }
-
-        renderState(values);
     }
 
     @Override
@@ -144,28 +123,6 @@ public class InsertionSortVisualization extends AbstractVisualization<Integer> {
             // Reset algorithm state - we'd need to recalculate,
             // but for visualization purposes just re-render
             algorithmComplete = false;
-            renderState(values);
         }
-    }
-
-
-    /**
-     * Get a colored wool block based on the value.
-     * Higher values get "warmer" colors.
-     */
-    private Block getBlockForValue(int value) {
-        return switch (value) {
-            case 1 -> Block.WHITE_WOOL;
-            case 2 -> Block.LIGHT_GRAY_WOOL;
-            case 3 -> Block.YELLOW_WOOL;
-            case 4 -> Block.ORANGE_WOOL;
-            case 5 -> Block.PINK_WOOL;
-            case 6 -> Block.MAGENTA_WOOL;
-            case 7 -> Block.PURPLE_WOOL;
-            case 8 -> Block.BLUE_WOOL;
-            case 9 -> Block.CYAN_WOOL;
-            case 10 -> Block.RED_WOOL;
-            default -> Block.BLACK_WOOL;
-        };
     }
 }
