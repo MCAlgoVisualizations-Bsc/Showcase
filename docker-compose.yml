@@ -1,7 +1,7 @@
 services:
   minecraft-prod:
     build:
-      context: ./Minecraft-server
+      context: .
       dockerfile: Dockerfile
     container_name: minecraft-prod
     ports:
@@ -13,7 +13,7 @@ services:
 
   minecraft-dev:
     build:
-      context: ./Minecraft-server
+      context: .
       dockerfile: Dockerfile
     container_name: minecraft-dev
     ports:
