@@ -5,10 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b9670329-4324-41be-a13e-d3d534db6fe6" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/server/src/main/java/io/github/mcalgovisualizations/gui/AlgorithmSelectorGUI.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/java/io/github/mcalgovisualizations/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/io/github/mcalgovisualizations/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/java/io/github/mcalgovisualizations/items/VisualizationItems.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/io/github/mcalgovisualizations/items/VisualizationItems.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/main/java/io/github/mcalgovisualizations/visualization/VisualizationManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/main/java/io/github/mcalgovisualizations/visualization/VisualizationManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/java/io/github/mcalgovisualizations/gui/AlgorithmSelectorGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/io/github/mcalgovisualizations/gui/AlgorithmSelectorGUI.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

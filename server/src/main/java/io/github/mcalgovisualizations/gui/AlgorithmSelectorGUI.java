@@ -46,7 +46,7 @@ public class AlgorithmSelectorGUI {
     public static void openSelector(Player player, InstanceContainer instance) {
         Inventory inventory = new Inventory(InventoryType.CHEST_3_ROW, Component.text("Select Algorithm", NamedTextColor.DARK_PURPLE));
 
-        int slot = 10; // Start at a nice centered position
+        int slot = 10; // Start at centered position
         for (Map.Entry<String, AlgorithmInfo> entry : ALGORITHMS.entrySet()) {
             AlgorithmInfo info = entry.getValue();
 

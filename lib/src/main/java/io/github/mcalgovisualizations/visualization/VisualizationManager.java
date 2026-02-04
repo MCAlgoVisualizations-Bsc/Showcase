@@ -23,7 +23,6 @@ public class VisualizationManager {
 
     static {
         // Define area locations for different visualization types
-        // Sorting is close to spawn so players can see it immediately
         areaLocations.put("sorting", new Pos(5, 42, 5));
         areaLocations.put("pathfinding", new Pos(-100, 42, 0));
         areaLocations.put("trees", new Pos(0, 42, 100));
