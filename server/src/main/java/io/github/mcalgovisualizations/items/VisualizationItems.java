@@ -93,4 +93,22 @@ public final class VisualizationItems {
                         .decoration(TextDecoration.ITALIC, false))
                 .build();
     }
+
+    /**
+     * Creates the algorithm selector item (Nether Star).
+     * When used, opens a GUI to select which algorithm to visualize.
+     */
+    public static ItemStack algorithmSelectorItem() {
+        return ItemStack.builder(Material.NETHER_STAR)
+                .customName(Component.text("Algorithm Selector", NamedTextColor.LIGHT_PURPLE)
+                        .decoration(TextDecoration.ITALIC, false)
+                        .decoration(TextDecoration.BOLD, true))
+                .lore(
+                        Component.text("Right-click to open the", NamedTextColor.GRAY)
+                                .decoration(TextDecoration.ITALIC, false),
+                        Component.text("algorithm selection menu", NamedTextColor.GRAY)
+                                .decoration(TextDecoration.ITALIC, false)
+                )
+                .build();
+    }
 }

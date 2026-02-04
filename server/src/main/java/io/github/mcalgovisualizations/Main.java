@@ -4,6 +4,7 @@ import io.github.mcalgovisualizations.commands.Gamemode;
 import io.github.mcalgovisualizations.commands.Greet;
 import io.github.mcalgovisualizations.commands.Spawn;
 import io.github.mcalgovisualizations.commands.Teleport;
+import io.github.mcalgovisualizations.gui.AlgorithmSelectorGUI;
 import io.github.mcalgovisualizations.items.VisualizationItems;
 import io.github.mcalgovisualizations.sorting.InsertionSortVisualization;
 import io.github.mcalgovisualizations.visualization.Visualization;
@@ -61,37 +62,37 @@ public final class Main {
             // Give fly access to player
             player.setAllowFlying(true);
 
-            // Give control items to the player
-            player.getInventory().setItemStack(0, VisualizationItems.randomizeItem());
-            player.getInventory().setItemStack(1, VisualizationItems.startItem());
-            player.getInventory().setItemStack(2, VisualizationItems.stopItem());
-            player.getInventory().setItemStack(3, VisualizationItems.stepForwardItem());
-            player.getInventory().setItemStack(4, VisualizationItems.stepBackItem());
+            // Give only the algorithm selector and spawn item by default
+            player.getInventory().setItemStack(4, VisualizationItems.algorithmSelectorItem());
             player.getInventory().setItemStack(8, VisualizationItems.spawnItem());
 
-            // Assign sorting visualization near the player
-            VisualizationManager.assignVisualization(player, "insertionsort", instance);
-
             // Send welcome message
-            player.sendMessage(Component.text("Welcome! Use the items in your hotbar to control the Insertion Sort visualization.", NamedTextColor.GREEN));
-            player.sendMessage(Component.text("Look around - the armor stands with wool blocks represent the array values!", NamedTextColor.YELLOW));
+            player.sendMessage(Component.text("Welcome to Algorithm Visualizations!", NamedTextColor.GREEN));
+            player.sendMessage(Component.text("Right-click the Nether Star to select an algorithm to visualize!", NamedTextColor.YELLOW));
         });
 
         // Handle item right-clicks for visualization control
         globalEventHandler.addListener(PlayerUseItemEvent.class, event -> {
             Player player = event.getPlayer();
             Material material = event.getItemStack().material();
-            Visualization vis = VisualizationManager.getVisualization(player);
 
-            // Handle compass (return to hub) even without a visualization
+            // Handle algorithm selector (Nether Star) - available to everyone
+            if (material == Material.NETHER_STAR) {
+                AlgorithmSelectorGUI.openSelector(player, instance);
+                return;
+            }
+
+            // Handle compass (return to hub) - available to everyone
             if (material == Material.COMPASS) {
                 player.teleport(new Pos(0, 42, 0));
                 player.sendMessage(Component.text("Returned to hub!", NamedTextColor.LIGHT_PURPLE));
                 return;
             }
 
+            // All other items require an active visualization
+            Visualization vis = VisualizationManager.getVisualization(player);
             if (vis == null) {
-                player.sendMessage(Component.text("No visualization assigned!", NamedTextColor.RED));
+                player.sendMessage(Component.text("No visualization assigned! Use the Algorithm Selector first.", NamedTextColor.RED));
                 return;
             }
 
