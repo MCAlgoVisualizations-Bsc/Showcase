@@ -5,8 +5,9 @@ import io.github.mcalgovisualizations.commands.Greet;
 import io.github.mcalgovisualizations.commands.Spawn;
 import io.github.mcalgovisualizations.commands.Teleport;
 import io.github.mcalgovisualizations.items.VisualizationItems;
+import io.github.mcalgovisualizations.sorting.InsertionSortVisualization;
 import io.github.mcalgovisualizations.visualization.Visualization;
-import io.github.mcalgovisualizations.sorting.VisualizationManager;
+import io.github.mcalgovisualizations.visualization.VisualizationManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.MinecraftServer;
@@ -32,6 +33,8 @@ public final class Main {
         // Sets the game time
         instance.setTimeRate(0);  // Stops time
         instance.setTime(6000);   // Sets time to noon
+
+        VisualizationManager.addVisualization("insertionsort", InsertionSortVisualization.class);
 
         registerListeners(instance);
         registerCommands(MinecraftServer.getCommandManager());
@@ -67,7 +70,7 @@ public final class Main {
             player.getInventory().setItemStack(8, VisualizationItems.spawnItem());
 
             // Assign sorting visualization near the player
-            VisualizationManager.assignVisualization(player, "sorting", instance);
+            VisualizationManager.assignVisualization(player, "insertionsort", instance);
 
             // Send welcome message
             player.sendMessage(Component.text("Welcome! Use the items in your hotbar to control the Insertion Sort visualization.", NamedTextColor.GREEN));

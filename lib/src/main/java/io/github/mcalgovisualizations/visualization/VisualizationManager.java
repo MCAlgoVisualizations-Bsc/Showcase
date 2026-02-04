@@ -1,9 +1,11 @@
-package io.github.mcalgovisualizations.sorting;
+package io.github.mcalgovisualizations.visualization;
 
 
-import io.github.mcalgovisualizations.visualization.Visualization;import net.minestom.server.coordinate.Pos;
+import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.InstanceContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +18,8 @@ import java.util.UUID;
 public class VisualizationManager {
     private static final Map<UUID, Visualization> playerVisualizations = new HashMap<>();
     private static final Map<String, Pos> areaLocations = new HashMap<>();
+    private static final Map<String, Class<? extends Visualization>> visualizations = new HashMap<>();
+    private static final Logger log = LoggerFactory.getLogger(VisualizationManager.class);
 
     static {
         // Define area locations for different visualization types
@@ -43,7 +47,36 @@ public class VisualizationManager {
         int playerOffset = playerVisualizations.size() * 20; // 20 blocks apart
         Pos origin = baseOrigin.add(0, 0, playerOffset);
 
-        Visualization vis = switch (type.toLowerCase()) {
+        if (visualizations.containsKey(type.toLowerCase())) {
+            Visualization vis = null;
+            try {
+                // 1. You must tell Java the CLASS TYPES of the parameters first
+                vis = visualizations.get(type.toLowerCase())
+                        .getDeclaredConstructor(Pos.class, InstanceContainer.class, int.class)
+                        .newInstance(origin, instance, 8); // 2. Then pass the actual values
+
+                playerVisualizations.put(player.getUuid(), vis);
+            } catch (NoSuchMethodException e) {
+                System.out.println("Error: The class for " + type + " does not have a (Pos, InstanceContainer, int) constructor.");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            // TODO: fix this
+            /*
+            catch (InvocationTargetException e) {
+                throw new RuntimeException(e);
+            } catch (InstantiationException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+            */
+            playerVisualizations.put(player.getUuid(), vis);
+        }
+        /*
+        Visualization vis = switch () {
             case "sorting", "insertionsort" -> new InsertionSortVisualization(origin, instance, 8);
             // Future visualizations:
             // case "bubblesort" -> new BubbleSortVisualization(origin, instance, 8);
@@ -52,10 +85,11 @@ public class VisualizationManager {
             // case "tree", "bst" -> new BinarySearchTreeVisualization(origin, instance);
             default -> null;
         };
+        */
+    }
 
-        if (vis != null) {
-            playerVisualizations.put(player.getUuid(), vis);
-        }
+    public static void addVisualization(String name, Class<? extends Visualization> vis) {
+        visualizations.put(name.toLowerCase(), vis);
     }
 
     /**

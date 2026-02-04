@@ -5,24 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b9670329-4324-41be-a13e-d3d534db6fe6" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/lib/src/main/java/io/github/mcalgovisualizations/visualization/AbstractVisualization.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/src/main/java/io/github/mcalgovisualizations/visualization/DisplayValue.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/src/main/java/io/github/mcalgovisualizations/visualization/Visualization.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/src/main/java/io/github/mcalgovisualizations/visualization/VisualizationManager.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/src/main/java/io/github/mcalgovisualizations/Main.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/src/main/java/io/github/mcalgovisualizations/commands/Gamemode.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/src/main/java/io/github/mcalgovisualizations/commands/Greet.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/src/main/java/io/github/mcalgovisualizations/commands/Spawn.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/src/main/java/io/github/mcalgovisualizations/commands/Teleport.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/src/main/java/io/github/mcalgovisualizations/config/PlayerConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/src/main/java/io/github/mcalgovisualizations/config/WorldConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/src/main/java/io/github/mcalgovisualizations/items/VisualizationItems.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/server/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/org/example/Main.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/main/java/io/github/mcalgovisualizations/Library.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/settings.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/settings.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/java/io/github/mcalgovisualizations/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/io/github/mcalgovisualizations/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/java/io/github/mcalgovisualizations/sorting/VisualizationManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/main/java/io/github/mcalgovisualizations/visualization/VisualizationManager.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,10 +31,10 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GradleScriptDefinitionsStorage" workingDir="$PROJECT_DIR$" gradleHome="$USER_HOME$/.gradle/wrapper/dists/gradle-9.3.1-bin/23ovyewtku6u96viwx3xl3oks/gradle-9.3.1" javaHome="/nix/store/gi1zpnpwayp2qc1k6l4zvk10d934wy3s-openjdk-25.0.1+8/lib/openjdk" gradleVersion="9.3.1" />
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 8
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 8
+}</component>
   <component name="ProjectId" id="39CUdmOepYjgwSC41AN5oal6mnc" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -58,6 +44,7 @@
   "keyToString": {
     "Gradle.Architecture [:app:io.github.mcalgovisualizations.Main.main()].executor": "Run",
     "Gradle.Architecture [:app:org.example.Main.main()].executor": "Run",
+    "Gradle.Architecture [:server:io.github.mcalgovisualizations.Main.main()].executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
