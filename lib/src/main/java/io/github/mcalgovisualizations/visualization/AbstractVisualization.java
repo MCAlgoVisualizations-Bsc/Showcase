@@ -121,7 +121,8 @@ public abstract class AbstractVisualization<T extends Comparable<T>> implements 
      * Higher values get "warmer" colors.
      */
     protected static Block getBlockForValue(int value) {
-        return switch (value) {
+        return switch (value % 10) {
+            case 0 -> Block.RED_WOOL;
             case 1 -> Block.WHITE_WOOL;
             case 2 -> Block.LIGHT_GRAY_WOOL;
             case 3 -> Block.YELLOW_WOOL;
@@ -131,7 +132,6 @@ public abstract class AbstractVisualization<T extends Comparable<T>> implements 
             case 7 -> Block.PURPLE_WOOL;
             case 8 -> Block.BLUE_WOOL;
             case 9 -> Block.CYAN_WOOL;
-            case 10 -> Block.RED_WOOL;
             default -> Block.BLACK_WOOL;
         };
     }
