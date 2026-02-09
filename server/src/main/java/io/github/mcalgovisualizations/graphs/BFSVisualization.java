@@ -1,8 +1,8 @@
 package io.github.mcalgovisualizations.graphs;
 
-import graphs.Graph;
-import graphs.GraphLayout;
-import graphs.MatrixLayout;
+import io.github.mcalgovisualizations.visualization.graphs.Graph;
+import io.github.mcalgovisualizations.visualization.graphs.GraphLayout;
+import io.github.mcalgovisualizations.visualization.graphs.MatrixLayout;
 import io.github.mcalgovisualizations.visualization.AbstractVisualization;
 import io.github.mcalgovisualizations.visualization.DisplayValue;
 import net.minestom.server.coordinate.Pos;
@@ -13,12 +13,7 @@ import net.minestom.server.entity.metadata.display.BlockDisplayMeta;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.block.Block;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Visualizes Breadth-First Search on a randomly generated graph.
@@ -67,8 +62,8 @@ public class BFSVisualization extends AbstractVisualization<Integer> {
 
     private int startVertexId = 0;
 
-    public BFSVisualization(Pos origin, InstanceContainer instance) {
-        super("bfs", new ArrayList<>(), origin, instance);
+    public BFSVisualization(UUID uuid, Pos origin, InstanceContainer instance) {
+        super("bfs", uuid, new ArrayList<>(), origin, instance);
         randomize();
     }
 
@@ -157,7 +152,7 @@ public class BFSVisualization extends AbstractVisualization<Integer> {
     }
 
     @Override
-    public void stepBack() {
+    public void stepBack(UUID uuid) {
         if (algoHistoryIndex <= 0) return;
 
         algoHistoryIndex--;

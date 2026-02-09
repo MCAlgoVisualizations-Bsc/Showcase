@@ -1,7 +1,6 @@
-package graphs;
+package io.github.mcalgovisualizations.visualization.graphs;
 
 import net.minestom.server.coordinate.Pos;
-import net.minestom.server.coordinate.Vec;
 
 public final class CircleLayout implements GraphLayout {
 

@@ -1,4 +1,4 @@
-package graphs;
+package io.github.mcalgovisualizations.visualization.graphs;
 
 import net.minestom.server.coordinate.Pos;
 

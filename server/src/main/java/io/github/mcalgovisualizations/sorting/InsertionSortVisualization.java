@@ -15,6 +15,8 @@ import sorting.FloatingLinearLayout;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Visualization of the Insertion Sort algorithm using armor stands.
@@ -27,7 +29,7 @@ public class InsertionSortVisualization extends AbstractVisualization<Integer> {
     private int currentIndex = 1;      // The element we're currently inserting
     private int compareIndex = -1;     // Current position during insertion
 
-    public InsertionSortVisualization(Pos origin, InstanceContainer instance) {
+    public InsertionSortVisualization(UUID uuid, Pos origin, InstanceContainer instance) {
         List<DisplayValue<Integer>> values = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             Random r = new Random();
@@ -39,7 +41,7 @@ public class InsertionSortVisualization extends AbstractVisualization<Integer> {
             ));
         }
 
-        super("Insertion Sort", values, origin, instance);
+        super("Insertion Sort", uuid, values, origin, instance);
 
         setLayout(new FloatingLinearLayout());
 

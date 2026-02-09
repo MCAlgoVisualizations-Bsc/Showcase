@@ -8,7 +8,6 @@ import io.github.mcalgovisualizations.graphs.BFSVisualization;
 import io.github.mcalgovisualizations.gui.AlgorithmSelectorGUI;
 import io.github.mcalgovisualizations.items.VisualizationItems;
 import io.github.mcalgovisualizations.sorting.InsertionSortVisualization;
-import io.github.mcalgovisualizations.visualization.Visualization;
 import io.github.mcalgovisualizations.visualization.VisualizationManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -91,28 +90,20 @@ public final class Main {
                 return;
             }
 
-            // All other items require an active visualization
-            Visualization vis = VisualizationManager.getVisualization(player);
-            if (vis == null) {
-                player.sendMessage(Component.text("No visualization assigned! Use the Algorithm Selector first.", NamedTextColor.RED));
-                return;
-            }
-
             if (material == Material.ENDER_PEARL) {
                 event.setCancelled(true); // Prevent teleportation
-                vis.randomize();
+                VisualizationManager.randomize(player);
                 player.sendMessage(Component.text("Values randomized!", NamedTextColor.AQUA));
             } else if (material == Material.LIME_DYE) {
-                vis.start(player);
+                VisualizationManager.start(player);
                 player.sendMessage(Component.text("Visualization started!", NamedTextColor.GREEN));
             } else if (material == Material.RED_DYE) {
-                vis.stop();
+                VisualizationManager.stop(player);
                 player.sendMessage(Component.text("Visualization stopped!", NamedTextColor.RED));
             } else if (material == Material.ARROW) {
-                vis.stepForward();
-                player.sendMessage(Component.text("Stepped forward", NamedTextColor.YELLOW));
+                VisualizationManager.stepForward(player);
             } else if (material == Material.SPECTRAL_ARROW) {
-                vis.stepBack();
+                VisualizationManager.stepBack(player);
                 player.sendMessage(Component.text("Stepped back", NamedTextColor.GOLD));
             }
         });

@@ -1,11 +1,11 @@
 package io.github.mcalgovisualizations.visualization;
 
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.InstanceContainer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -51,8 +51,8 @@ public class VisualizationManager {
             try {
                 // 1. You must tell Java the CLASS TYPES of the parameters first
                 vis = visualizations.get(type.toLowerCase())
-                        .getDeclaredConstructor(Pos.class, InstanceContainer.class)
-                        .newInstance(origin, instance); // 2. Then pass the actual values
+                        .getDeclaredConstructor(UUID.class, Pos.class, InstanceContainer.class)
+                        .newInstance(player.getUuid(), origin, instance); // 2. Then pass the actual values
 
                 playerVisualizations.put(player.getUuid(), vis);
             } catch (NoSuchMethodException e) {
@@ -61,45 +61,13 @@ public class VisualizationManager {
                 System.out.println("test");
                 e.printStackTrace();
             }
-            // TODO: fix this
-            /*
-            catch (InvocationTargetException e) {
-                throw new RuntimeException(e);
-            } catch (InstantiationException e) {
-                throw new RuntimeException(e);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            } catch (NoSuchMethodException e) {
-                throw new RuntimeException(e);
-            }
-            */
             playerVisualizations.put(player.getUuid(), vis);
+            SnapshotManager.getInstance().assignVisualization(player.getUuid(), vis);
         }
-        /*
-        Visualization vis = switch () {
-            case "sorting", "insertionsort" -> new InsertionSortVisualization(origin, instance, 8);
-            // Future visualizations:
-            // case "bubblesort" -> new BubbleSortVisualization(origin, instance, 8);
-            // case "pathfinding", "astar" -> new AStarVisualization(origin, instance);
-            // case "bfs" -> new BFSVisualization(origin, instance);
-            // case "tree", "bst" -> new BinarySearchTreeVisualization(origin, instance);
-            default -> null;
-        };
-        */
     }
 
     public static void addVisualization(String name, Class<? extends Visualization> vis) {
         visualizations.put(name.toLowerCase(), vis);
-    }
-
-    /**
-     * Get the current visualization for a player.
-     *
-     * @param player The player
-     * @return The visualization, or null if none assigned
-     */
-    public static Visualization getVisualization(Player player) {
-        return playerVisualizations.get(player.getUuid());
     }
 
     /**
@@ -108,6 +76,7 @@ public class VisualizationManager {
      * @param player The player
      */
     public static void removeVisualization(Player player) {
+        SnapshotManager.getInstance().remove(player.getUuid());
         Visualization vis = playerVisualizations.remove(player.getUuid());
         if (vis != null) {
             vis.cleanup();
@@ -122,5 +91,56 @@ public class VisualizationManager {
      */
     public static Pos getAreaLocation(String area) {
         return areaLocations.get(area.toLowerCase());
+    }
+
+    public static void randomize(Player player) {
+        var vis = playerVisualizations.get(player.getUuid());
+        if (vis == null) {
+            player.sendMessage(Component.text("No visualization assigned! Use the Algorithm Selector first.", NamedTextColor.RED));
+            return;
+        }
+        vis.randomize();
+    }
+
+    public static void start(Player player) {
+        var vis = playerVisualizations.get(player.getUuid());
+        if (vis == null) {
+            player.sendMessage(Component.text("No visualization assigned! Use the Algorithm Selector first.", NamedTextColor.RED));
+            return;
+        }
+        vis.start(player);
+    }
+
+    public static void stop(Player player) {
+        var vis = playerVisualizations.get(player.getUuid());
+        if (vis == null) {
+            player.sendMessage(Component.text("No visualization assigned! Use the Algorithm Selector first.", NamedTextColor.RED));
+            return;
+        }
+        vis.stop();
+    }
+
+    public static void stepForward(Player player) {
+        var vis = playerVisualizations.get(player.getUuid());
+        if (vis == null) {
+            player.sendMessage(Component.text("No visualization assigned! Use the Algorithm Selector first.", NamedTextColor.RED));
+            return;
+        }
+        vis.stepForward();
+        player.sendMessage(Component.text("Stepped forward", NamedTextColor.YELLOW));
+    }
+
+    public static void stepBack(Player player) {
+        var visOld = playerVisualizations.get(player.getUuid());
+        if (visOld == null) {
+            player.sendMessage(Component.text("No visualization assigned! Use the Algorithm Selector first.", NamedTextColor.RED));
+            return;
+        }
+        visOld.cleanup();
+
+        var visNew = SnapshotManager.getInstance().loadLatestSnapshot(player.getUuid());
+        playerVisualizations.put(player.getUuid(), visNew);
+        visNew.Render();
+
     }
 }

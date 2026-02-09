@@ -13,10 +13,7 @@ import sorting.IntListModel;
 import sorting.SortingLayout;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Abstract base class for all visualizations.
@@ -44,11 +41,15 @@ public abstract class AbstractVisualization<T extends Comparable<T>> implements 
     private static final double BASE_HEIGHT = 1.0;       // Base Y offset (above ground)
     private static final double HEIGHT_MULTIPLIER = 0.5; // How much height per value unit
 
+    protected final UUID uuid;
+
+    public AbstractVisualization(String name, UUID uuid, List<DisplayValue<T>> values, Pos origin, InstanceContainer instance) {
     public AbstractVisualization(String name, List<DisplayValue<T>> values, Pos origin, InstanceContainer instance) {
         this.name = name;
         this.origin = origin;
         this.instance = instance;
         this.values = values;
+        this.uuid = uuid;
     }
 
     /** Configure a layout strategy for positioning values. If null, the default linear spacing layout is used. */
@@ -62,7 +63,10 @@ public abstract class AbstractVisualization<T extends Comparable<T>> implements 
         running = true;
 
         runningTask = MinecraftServer.getSchedulerManager()
-                .buildTask(this::stepForward)
+                .buildTask(() -> {
+                    stepForward();
+                    SnapshotManager.getInstance().saveSnapshot(player.getUuid());
+                })
                 .repeat(Duration.ofMillis(ticksPerStep * 50L))
                 .schedule();
     }
@@ -77,7 +81,7 @@ public abstract class AbstractVisualization<T extends Comparable<T>> implements 
     }
 
     @Override
-    public void setSpeed(int ticksPerStep) {
+    public void setSpeed(Player player, int ticksPerStep) {
         this.ticksPerStep = Math.max(1, ticksPerStep);
         // If running, restart with new speed
         if (running) {
@@ -85,7 +89,10 @@ public abstract class AbstractVisualization<T extends Comparable<T>> implements 
                 runningTask.cancel();
             }
             runningTask = MinecraftServer.getSchedulerManager()
-                    .buildTask(this::stepForward)
+                    .buildTask(() -> {
+                        stepForward();
+                        SnapshotManager.getInstance().saveSnapshot(player.getUuid());
+                    })
                     .repeat(Duration.ofMillis(this.ticksPerStep * 50L))
                     .schedule();
         }
@@ -153,13 +160,7 @@ public abstract class AbstractVisualization<T extends Comparable<T>> implements 
      * Save the current state to history.
      */
     protected void saveState() {
-        // Clear future history if we stepped back and then started forward again
-        while (history.size() > historyIndex + 1) {
-            history.remove(history.size() - 1);
-        }
-
-        history.add(new ArrayList<>(values));
-        historyIndex = history.size() - 1;
+        SnapshotManager.getInstance().saveSnapshot(uuid);
     }
 
     /**
@@ -221,13 +222,9 @@ public abstract class AbstractVisualization<T extends Comparable<T>> implements 
     }
 
     @Override
-    public void stepBack() {
-        if (historyIndex > 0) {
-            historyIndex--;
-            this.values = new ArrayList<>(history.get(historyIndex));
-            algorithmComplete = false;
-            renderState();
-        }
+    public void stepBack(UUID uuid) {
+        var vis = SnapshotManager.getInstance().loadLatestSnapshot(uuid);
+
     }
 
     public void swap(int idx1, int idx2) {
@@ -237,5 +234,10 @@ public abstract class AbstractVisualization<T extends Comparable<T>> implements 
                 .buildTask(this::renderState)
                 .delay(Duration.ofMillis(200))
                 .schedule();
+    }
+
+    @Override
+    public void Render() {
+        renderState();
     }
 }
