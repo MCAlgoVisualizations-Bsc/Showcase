@@ -9,6 +9,9 @@ import net.minestom.server.instance.block.Block;
 import net.minestom.server.sound.SoundEvent;
 import net.minestom.server.timer.Task;
 
+import sorting.IntListModel;
+import sorting.SortingLayout;
+
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,7 +29,6 @@ public abstract class AbstractVisualization<T extends Comparable<T>> implements 
     protected boolean algorithmComplete = false;
     private final Random random = new Random();
 
-
     protected int ticksPerStep = 20; // 1 second default
     protected boolean running = false;
     protected Task runningTask = null;
@@ -34,17 +36,24 @@ public abstract class AbstractVisualization<T extends Comparable<T>> implements 
     protected final List<List<DisplayValue<T>>> history = new ArrayList<>();
     protected int historyIndex = -1;
 
+    /** Optional layout strategy for positioning elements (primarily for sorting visualizations). */
+    protected SortingLayout layout = null;
+
     // Visual spacing constants
     private static final double SPACING = 2.0;           // Horizontal space between elements
     private static final double BASE_HEIGHT = 1.0;       // Base Y offset (above ground)
     private static final double HEIGHT_MULTIPLIER = 0.5; // How much height per value unit
 
-
-    public AbstractVisualization(String name,List<DisplayValue<T>> values, Pos origin, InstanceContainer instance) {
+    public AbstractVisualization(String name, List<DisplayValue<T>> values, Pos origin, InstanceContainer instance) {
         this.name = name;
         this.origin = origin;
         this.instance = instance;
         this.values = values;
+    }
+
+    /** Configure a layout strategy for positioning values. If null, the default linear spacing layout is used. */
+    public void setLayout(SortingLayout layout) {
+        this.layout = layout;
     }
 
     @Override
@@ -101,14 +110,12 @@ public abstract class AbstractVisualization<T extends Comparable<T>> implements 
         values.clear();
     }
 
-
     public void randomize() {
         stop();
         algorithmComplete = false;
 
         history.clear();
         historyIndex = -1;
-        // for (var v : values) v.remove();
 
         Collections.shuffle(values);
 
@@ -151,14 +158,6 @@ public abstract class AbstractVisualization<T extends Comparable<T>> implements 
             history.remove(history.size() - 1);
         }
 
-        // Save a snapshot of the current values (not the DisplayValue objects themselves)
-        List<DisplayValue<T>> snapshot = new ArrayList<>();
-        for (DisplayValue<T> dv : values) {
-            // We only care about the integer value for history
-            // The entities stay the same
-            snapshot.add(dv);
-        }
-
         history.add(new ArrayList<>(values));
         historyIndex = history.size() - 1;
     }
@@ -166,30 +165,44 @@ public abstract class AbstractVisualization<T extends Comparable<T>> implements 
     /**
      * Render the given state visually in the world.
      */
-    private void renderState() {
-        // DO NOT call cleanup() here!
-        // Cleanup should only be used when destroying the whole visualization.
+    protected void renderState() {
+        // If a custom layout is configured (and values are Integer), defer positioning to it.
+        if (layout != null && !values.isEmpty() && values.get(0).getValue() instanceof Integer) {
+            int n = values.size();
+            int[] arr = new int[n];
+            for (int i = 0; i < n; i++) {
+                arr[i] = (Integer) values.get(i).getValue();
+            }
 
+            Pos[] positions = layout.compute(new IntListModel(arr), origin);
+            int limit = Math.min(positions.length, n);
+
+            for (int i = 0; i < limit; i++) {
+                var displayVal = values.get(i);
+                Pos p = positions[i];
+                if (p == null) continue;
+
+                MinecraftServer.getSchedulerManager()
+                        .buildTask(() -> displayVal.teleport(p))
+                        .delay(Duration.ofMillis(100))
+                        .schedule();
+            }
+            return;
+        }
+
+        // Default fallback layout (original behavior)
         for (int i = 0; i < values.size(); i++) {
             var displayVal = values.get(i);
 
             double x = origin.x() + (i * SPACING);
-            // TODO: maybe add the height difference back
             // double y = origin.y() + BASE_HEIGHT + (displayVal.getValue() * HEIGHT_MULTIPLIER);
             double y = origin.y() + BASE_HEIGHT;
             double z = origin.z();
 
-            // Use teleport or edit position
             MinecraftServer.getSchedulerManager()
-                    .buildTask(
-                        () -> {
-                            displayVal.teleport(new Pos(x, y, z));
-                        }
-                    )
+                    .buildTask(() -> displayVal.teleport(new Pos(x, y, z)))
                     .delay(Duration.ofMillis(100))
                     .schedule();
-
-            // updateMetadata(entity, i);
         }
     }
 
@@ -212,9 +225,6 @@ public abstract class AbstractVisualization<T extends Comparable<T>> implements 
         if (historyIndex > 0) {
             historyIndex--;
             this.values = new ArrayList<>(history.get(historyIndex));
-
-            // Reset algorithm state - we'd need to recalculate,
-            // but for visualization purposes just re-render
             algorithmComplete = false;
             renderState();
         }

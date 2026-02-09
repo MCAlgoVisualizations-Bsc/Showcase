@@ -18,7 +18,7 @@ public final class Graph {
     public Graph(int[][] adj) {
         if (adj == null) throw new IllegalArgumentException("adj cannot be null");
         this.size = adj.length;
-        this.adj = adj;
+        this.adj = Arrays.copyOf(adj, adj.length);
     }
 
     /**
