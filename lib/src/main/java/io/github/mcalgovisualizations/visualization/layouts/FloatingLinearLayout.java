@@ -1,6 +1,6 @@
 package io.github.mcalgovisualizations.visualization.layouts;
 
-import io.github.mcalgovisualizations.visualization.models.IntListModel;
+import io.github.mcalgovisualizations.visualization.models.IntList;
 import net.minestom.server.coordinate.Pos;
 
 /**
@@ -26,7 +26,7 @@ public final class FloatingLinearLayout implements SortingLayout {
     }
 
     @Override
-    public Pos[] compute(IntListModel model, Pos origin) {
+    public Pos[] compute(IntList model, Pos origin) {
         int n = model.size();
         Pos[] out = new Pos[n];
 

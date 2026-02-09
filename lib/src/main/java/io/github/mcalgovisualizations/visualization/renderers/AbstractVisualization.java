@@ -7,7 +7,7 @@ import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.timer.Task;
 
-import io.github.mcalgovisualizations.visualization.models.IntListModel;
+import io.github.mcalgovisualizations.visualization.models.IntList;
 import io.github.mcalgovisualizations.visualization.layouts.SortingLayout;
 
 import java.time.Duration;
@@ -172,7 +172,7 @@ public abstract class AbstractVisualization<T extends Comparable<T>> implements 
                 arr[i] = (Integer) values.get(i).getValue();
             }
 
-            Pos[] positions = layout.compute(new IntListModel(arr), origin);
+            Pos[] positions = layout.compute(new IntList(arr), origin);
             int limit = Math.min(positions.length, n);
 
             for (int i = 0; i < limit; i++) {
