@@ -121,7 +121,7 @@ public class InsertionSortVisualization extends AbstractVisualization<Integer> {
             // Move to the next item to insert
             currentIndex++;
             compareIndex = -1;
-            // Execute the next step immediately or wait for next tick
+            // Execute the next step immediately or wait for the next tick
         }
 
         renderState(values);

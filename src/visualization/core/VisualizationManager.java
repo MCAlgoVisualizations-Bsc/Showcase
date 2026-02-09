@@ -3,6 +3,7 @@ package visualization.core;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.InstanceContainer;
+import visualization.graphs.BFSVisualization;
 import visualization.sorting.InsertionSortVisualization;
 
 import java.util.HashMap;
@@ -23,6 +24,7 @@ public class VisualizationManager {
         areaLocations.put("sorting", new Pos(5, 42, 5));
         areaLocations.put("pathfinding", new Pos(-100, 42, 0));
         areaLocations.put("trees", new Pos(0, 42, 100));
+        areaLocations.put("bfs", new Pos(50, 42, 50));
     }
 
     /**
@@ -50,6 +52,7 @@ public class VisualizationManager {
             // case "pathfinding", "astar" -> new AStarVisualization(origin, instance);
             // case "bfs" -> new BFSVisualization(origin, instance);
             // case "tree", "bst" -> new BinarySearchTreeVisualization(origin, instance);
+            case "bfs" -> new BFSVisualization("bfs", origin, instance);
             default -> null;
         };
 

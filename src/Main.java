@@ -3,6 +3,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.command.CommandManager;
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.entity.GameMode;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
 import net.minestom.server.event.player.PlayerDisconnectEvent;
@@ -42,13 +43,19 @@ public final class Main {
         globalEventHandler.addListener(AsyncPlayerConfigurationEvent.class, event -> {
             Player player = event.getPlayer();
             event.setSpawningInstance(instance);
+            player.setGameMode(GameMode.CREATIVE);
             player.setRespawnPoint(new Pos(0, 42, 0));
         });
 
-        // Player spawn - give items and assign visualization (player is now fully in the world)
+        globalEventHandler.addListener(PlayerDisconnectEvent.class, event -> {
+            VisualizationManager.removeVisualization(event.getPlayer());
+        });
+
+
+// Player spawn - give items and assign visualization (player is now fully in the world)
         globalEventHandler.addListener(PlayerSpawnEvent.class, event -> {
             if (!event.isFirstSpawn()) return; // Only on first spawn
-            
+
             Player player = event.getPlayer();
 
             // Give fly access to player
@@ -63,8 +70,8 @@ public final class Main {
             player.getInventory().setItemStack(8, VisualizationItems.spawnItem());
 
             // Assign sorting visualization near the player
-            VisualizationManager.assignVisualization(player, "sorting", instance);
-            
+            VisualizationManager.assignVisualization(player, "bfs", instance);
+
             // Send welcome message
             player.sendMessage(Component.text("Welcome! Use the items in your hotbar to control the Insertion Sort visualization.", NamedTextColor.GREEN));
             player.sendMessage(Component.text("Look around - the armor stands with wool blocks represent the array values!", NamedTextColor.YELLOW));
@@ -106,6 +113,7 @@ public final class Main {
                 player.sendMessage(Component.text("Stepped back", NamedTextColor.GOLD));
             }
         });
+
 
         // Cleanup visualization when player disconnects
         globalEventHandler.addListener(PlayerDisconnectEvent.class, event -> {
