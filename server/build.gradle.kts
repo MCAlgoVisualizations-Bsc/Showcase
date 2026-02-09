@@ -39,7 +39,7 @@ tasks {
 
     shadowJar {
         manifest {
-            attributes["Main-Class"] = "Main"
+            attributes["Main-Class"] = "io.github.mcalgovisualizations.Main"
         }
         archiveBaseName.set("minecraft-server")
         archiveClassifier.set("all")
