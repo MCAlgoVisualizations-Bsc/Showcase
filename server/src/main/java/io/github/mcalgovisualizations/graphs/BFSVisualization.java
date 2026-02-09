@@ -1,8 +1,10 @@
-package visualization.graphs;
+package io.github.mcalgovisualizations.graphs;
 
 import graphs.Graph;
 import graphs.GraphLayout;
 import graphs.MatrixLayout;
+import io.github.mcalgovisualizations.visualization.AbstractVisualization;
+import io.github.mcalgovisualizations.visualization.DisplayValue;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.Entity;
@@ -10,8 +12,6 @@ import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.metadata.display.BlockDisplayMeta;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.block.Block;
-import visualization.core.AbstractVisualization;
-import visualization.core.DisplayValue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,7 +68,7 @@ public class BFSVisualization extends AbstractVisualization<Integer> {
     private int startVertexId = 0;
 
     public BFSVisualization(String name, Pos origin, InstanceContainer instance) {
-        super(name, origin, instance);
+        super(name, new ArrayList<>(), origin, instance);
         randomize();
     }
 
