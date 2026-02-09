@@ -4,6 +4,7 @@ import io.github.mcalgovisualizations.commands.Gamemode;
 import io.github.mcalgovisualizations.commands.Greet;
 import io.github.mcalgovisualizations.commands.Spawn;
 import io.github.mcalgovisualizations.commands.Teleport;
+import io.github.mcalgovisualizations.graphs.BFSVisualization;
 import io.github.mcalgovisualizations.gui.AlgorithmSelectorGUI;
 import io.github.mcalgovisualizations.items.VisualizationItems;
 import io.github.mcalgovisualizations.sorting.InsertionSortVisualization;
@@ -36,6 +37,7 @@ public final class Main {
         instance.setTime(6000);   // Sets time to noon
 
         VisualizationManager.addVisualization("insertionsort", InsertionSortVisualization.class);
+        VisualizationManager.addVisualization("bfs", BFSVisualization.class);
 
         registerListeners(instance);
         registerCommands(MinecraftServer.getCommandManager());

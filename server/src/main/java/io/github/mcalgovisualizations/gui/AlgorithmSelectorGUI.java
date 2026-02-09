@@ -34,6 +34,14 @@ public class AlgorithmSelectorGUI {
                 "Time: O(n²) | Space: O(1)"
         ));
 
+        ALGORITHMS.put("bfs", new AlgorithmInfo(
+                "bfs",
+                Material.WIND_CHARGE,
+                "",
+                "",
+                ""
+        ));
+
         // Future algorithms can be added here
         // ALGORITHMS.put("bubblesort", new AlgorithmInfo(...));
         // ALGORITHMS.put("quicksort", new AlgorithmInfo(...));

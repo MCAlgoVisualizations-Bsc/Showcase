@@ -67,8 +67,8 @@ public class BFSVisualization extends AbstractVisualization<Integer> {
 
     private int startVertexId = 0;
 
-    public BFSVisualization(String name, Pos origin, InstanceContainer instance) {
-        super(name, new ArrayList<>(), origin, instance);
+    public BFSVisualization(Pos origin, InstanceContainer instance) {
+        super("bfs", new ArrayList<>(), origin, instance);
         randomize();
     }
 
