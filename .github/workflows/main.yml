@@ -30,7 +30,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
-            cd ~/Architecture
+            cd ~/Showcase
             git fetch origin
             git checkout ${{ steps.vars.outputs.BRANCH }}
             git pull origin ${{ steps.vars.outputs.BRANCH }}
