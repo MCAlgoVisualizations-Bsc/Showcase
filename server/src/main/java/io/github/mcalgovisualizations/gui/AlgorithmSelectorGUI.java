@@ -1,7 +1,7 @@
 package io.github.mcalgovisualizations.gui;
 
 import io.github.mcalgovisualizations.items.VisualizationItems;
-import io.github.mcalgovisualizations.visualization.VisualizationManager;
+import io.github.mcalgovisualizations.visualization.renderers.VisualizationManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;

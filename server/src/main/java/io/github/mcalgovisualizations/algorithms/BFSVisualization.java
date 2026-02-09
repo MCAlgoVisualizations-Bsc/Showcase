@@ -1,10 +1,10 @@
-package io.github.mcalgovisualizations.graphs;
+package io.github.mcalgovisualizations.algorithms;
 
-import graphs.Graph;
-import graphs.GraphLayout;
-import graphs.MatrixLayout;
-import io.github.mcalgovisualizations.visualization.AbstractVisualization;
-import io.github.mcalgovisualizations.visualization.DisplayValue;
+import io.github.mcalgovisualizations.visualization.models.AdjacencyList;
+import io.github.mcalgovisualizations.visualization.layouts.GraphLayout;
+import io.github.mcalgovisualizations.visualization.layouts.MatrixLayout;
+import io.github.mcalgovisualizations.visualization.renderers.AbstractVisualization;
+import io.github.mcalgovisualizations.visualization.renderers.DisplayValue;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.Entity;
@@ -34,7 +34,7 @@ public class BFSVisualization extends AbstractVisualization<Integer> {
     private static final int MAX_EXTRA_EDGES = 0;
 
     // --- Graph ---
-    private Graph graph;
+    private AdjacencyList adjacencyList;
 
     // --- Incremental render state (vertex i then its edges) ---
     private int renderIndex = 0;
@@ -104,8 +104,8 @@ public class BFSVisualization extends AbstractVisualization<Integer> {
         startVertexId = 0;
 
         // Build graph (moved into Graph)
-        graph = Graph.randomConnectedUndirected(DEFAULT_VERTICES, MAX_EXTRA_EDGES, r);
-        int n = graph.size();
+        adjacencyList = AdjacencyList.randomConnectedUndirected(DEFAULT_VERTICES, MAX_EXTRA_EDGES, r);
+        int n = adjacencyList.size();
 
         // One DisplayValue per vertex id (index = id)
         for (int id = 0; id < n; id++) {
@@ -118,7 +118,7 @@ public class BFSVisualization extends AbstractVisualization<Integer> {
          */
 
         GraphLayout layout = new MatrixLayout(2, 20, 20, 20);
-        nodePos = layout.compute(graph, origin);
+        nodePos = layout.compute(adjacencyList, origin);
 
         // Reset incremental render tracking
         renderIndex = 0;
@@ -172,9 +172,9 @@ public class BFSVisualization extends AbstractVisualization<Integer> {
      * Call repeatedly until renderIndex == n.
      */
     private void renderNextVertexAndEdges() {
-        if (graph == null) return;
+        if (adjacencyList == null) return;
 
-        int n = graph.size();
+        int n = adjacencyList.size();
         if (renderIndex >= n) return;
 
         int v = renderIndex;
@@ -191,7 +191,7 @@ public class BFSVisualization extends AbstractVisualization<Integer> {
         }
 
         // 2) Place all edges from v to its neighbors (only once per undirected pair)
-        for (int u : graph.neighbors(v)) {
+        for (int u : adjacencyList.neighbors(v)) {
             if (u < 0 || u >= n) continue;
             Pos pu = nodePos[u];
             if (pu == null) continue;
@@ -329,9 +329,9 @@ public class BFSVisualization extends AbstractVisualization<Integer> {
      * Updates vertex highlights without moving entities or rebuilding edges.
      */
     private void renderGraphHighlightsOnly() {
-        if (graph == null) return;
+        if (adjacencyList == null) return;
 
-        int n = graph.size();
+        int n = adjacencyList.size();
         int limit = Math.min(n, values.size());
         for (int id = 0; id < limit; id++) {
             boolean inFrontier = isInQueue(id);
@@ -359,7 +359,7 @@ public class BFSVisualization extends AbstractVisualization<Integer> {
      * Allows smoother visualization and precise step-back behavior.
      */
     private void bfsStep() {
-        if (complete || graph == null) return;
+        if (complete || adjacencyList == null) return;
 
         if (current == -1) {
             if (head >= tail) {
@@ -371,7 +371,7 @@ public class BFSVisualization extends AbstractVisualization<Integer> {
             return;
         }
 
-        int[] ns = graph.neighbors(current);
+        int[] ns = adjacencyList.neighbors(current);
         while (neighborIndex < ns.length) {
             int u = ns[neighborIndex++];
             if (!visited[u]) {

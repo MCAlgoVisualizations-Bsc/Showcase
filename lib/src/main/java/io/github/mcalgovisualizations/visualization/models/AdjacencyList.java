@@ -1,4 +1,4 @@
-package graphs;
+package io.github.mcalgovisualizations.visualization.models;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,16 +6,16 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Adjacency-list graph where vertices are indexed 0..size-1.
+ * Adjacency-list where vertices are indexed 0..size-1.
  */
-public final class Graph {
+public final class AdjacencyList {
     private final int size;
     private final int[][] adj;
 
     /**
      * @param adj adjacency list (index = vertex, value = neighbors)
      */
-    public Graph(int[][] adj) {
+    public AdjacencyList(int[][] adj) {
         if (adj == null) throw new IllegalArgumentException("adj cannot be null");
         this.size = adj.length;
         this.adj = Arrays.copyOf(adj, adj.length);
@@ -51,7 +51,7 @@ public final class Graph {
      * @param r random generator
      * @return connected graph
      */
-    public static Graph randomConnectedUndirected(int n, int maxExtraEdges, Random r) {
+    public static AdjacencyList randomConnectedUndirected(int n, int maxExtraEdges, Random r) {
         @SuppressWarnings("unchecked")
         List<Integer>[] tmp = new List[n];
         for (int i = 0; i < n; i++) tmp[i] = new ArrayList<>();
@@ -77,7 +77,7 @@ public final class Graph {
             out[i] = tmp[i].stream().mapToInt(Integer::intValue).toArray();
         }
 
-        return new Graph(out);
+        return new AdjacencyList(out);
     }
 
     /**

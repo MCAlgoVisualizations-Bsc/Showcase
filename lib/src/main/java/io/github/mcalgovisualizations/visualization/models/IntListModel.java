@@ -1,4 +1,4 @@
-package sorting;
+package io.github.mcalgovisualizations.visualization.models;
 
 import java.util.Arrays;
 import java.util.Random;

@@ -1,7 +1,7 @@
-package io.github.mcalgovisualizations.sorting;
+package io.github.mcalgovisualizations.algorithms;
 
-import io.github.mcalgovisualizations.visualization.AbstractVisualization;
-import io.github.mcalgovisualizations.visualization.DisplayValue;
+import io.github.mcalgovisualizations.visualization.renderers.AbstractVisualization;
+import io.github.mcalgovisualizations.visualization.renderers.DisplayValue;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -10,7 +10,7 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.sound.SoundEvent;
 
-import sorting.FloatingLinearLayout;
+import io.github.mcalgovisualizations.visualization.layouts.FloatingLinearLayout;
 
 import java.util.ArrayList;
 import java.util.List;
