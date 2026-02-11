@@ -1,16 +1,14 @@
-package io.github.mcalgovisualizations.visualization;
+package io.github.mcalgovisualizations.visualization.renderers;
 
-import net.kyori.adventure.sound.Sound;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.block.Block;
-import net.minestom.server.sound.SoundEvent;
 import net.minestom.server.timer.Task;
 
-import sorting.IntListModel;
-import sorting.SortingLayout;
+import io.github.mcalgovisualizations.visualization.models.IntListModel;
+import io.github.mcalgovisualizations.visualization.layouts.SortingLayout;
 
 import java.time.Duration;
 import java.util.*;

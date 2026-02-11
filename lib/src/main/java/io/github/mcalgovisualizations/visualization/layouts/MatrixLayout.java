@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:lib/src/main/java/io/github/mcalgovisualizations/visualization/graphs/MatrixLayout.java
 package io.github.mcalgovisualizations.visualization.graphs;
-========
-package io.github.mcalgovisualizations.visualization.layouts;
->>>>>>>> origin/dev:lib/src/main/java/io/github/mcalgovisualizations/visualization/layouts/MatrixLayout.java
 
 import io.github.mcalgovisualizations.visualization.models.AdjacencyList;
 import net.minestom.server.coordinate.Pos;

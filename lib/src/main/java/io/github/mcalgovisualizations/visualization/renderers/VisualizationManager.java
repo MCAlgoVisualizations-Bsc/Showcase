@@ -1,4 +1,4 @@
-package io.github.mcalgovisualizations.visualization;
+package io.github.mcalgovisualizations.visualization.renderers;
 
 
 import net.kyori.adventure.text.Component;
