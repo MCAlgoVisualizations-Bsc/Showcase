@@ -1,9 +1,12 @@
 package io.github.mcalgovisualizations.visualization.layouts;
 
+import io.github.mcalgovisualizations.visualization.models.DataModel;
 import io.github.mcalgovisualizations.visualization.models.Graph;
+import io.github.mcalgovisualizations.visualization.render.DisplayValue;
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.instance.block.Block;
 
-public final class CircleLayout implements GraphLayout {
+public final class CircleLayout implements Layout {
 
     private final double radius;
     private final double yOffset;
@@ -18,26 +21,30 @@ public final class CircleLayout implements GraphLayout {
     }
 
     @Override
-    public Pos[] compute(Graph graph, Pos origin) {
-        int n = graph.size();
-        Pos[] pos = new Pos[n];
+    public DisplayValue[] compute(DataModel model, Pos origin) {
+        int n = model.size();
+        var values = new DisplayValue[n];
+        Pos pos = null;
 
         double y = origin.y() + yOffset;
 
+
         // Avoid division by zero; also makes single-node graph sane
         if (n <= 1) {
-            pos[0] = new Pos(origin.x(), y, origin.z());
-            return pos;
+            pos = new Pos(origin.x(), y, origin.z());
+            values[0] = new DisplayValue(pos, Block.GRANITE, "0");
+            return values;
         }
 
         for (int v = 0; v < n; v++) {
             double angle = (2.0 * Math.PI * v) / n;
             double x = origin.x() + (Math.cos(angle) * radius);
             double z = origin.z() + (Math.sin(angle) * radius);
-            pos[v] = new Pos(x, y, z);
+            pos = new Pos(x, y, z);
+            values[v] = new DisplayValue(pos, Block.GRANITE, Integer.toString(v));
         }
 
-        return pos;
+        return values;
     }
 
 }

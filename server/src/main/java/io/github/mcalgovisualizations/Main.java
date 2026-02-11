@@ -4,7 +4,6 @@ import io.github.mcalgovisualizations.commands.Gamemode;
 import io.github.mcalgovisualizations.commands.Greet;
 import io.github.mcalgovisualizations.commands.Spawn;
 import io.github.mcalgovisualizations.commands.Teleport;
-import io.github.mcalgovisualizations.algorithms.BFSVisualization;
 import io.github.mcalgovisualizations.gui.AlgorithmSelectorGUI;
 import io.github.mcalgovisualizations.items.VisualizationItems;
 import io.github.mcalgovisualizations.visualization.refactor.Visualization;
@@ -81,7 +80,7 @@ public final class Main {
 
     }
 
-    // TODO : Move into a controller?
+    // TODO : Move into a controller? Probably also need to remove listener when player leaves!
     private static void visualizationControls(InstanceContainer instance) {
         final var globalEventHandler = MinecraftServer.getGlobalEventHandler();
         // Handle item right-clicks for visualization control

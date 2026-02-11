@@ -15,9 +15,6 @@ public class InsertionSortStepper implements AlgorithmStepper {
         ALGORITHM_COMPLETE = false;
     }
 
-    /**
-     * return TODO : Fix return type to a SortingState
-     */
     @Override
     public SortingState step() {
         if (ALGORITHM_COMPLETE) return this.state;
@@ -44,7 +41,7 @@ public class InsertionSortStepper implements AlgorithmStepper {
             */
         }
 
-        if (state.compareIndex > 0 && model.get(state.compareIndex - 1) > model.get(state.compareIndex)) {
+        if (state.compareIndex > 0 && model.data()[state.compareIndex - 1] > model.data()[state.compareIndex]) {
             model.swap(state.compareIndex, state.compareIndex - 1);
             state.compareIndex--;
 
@@ -63,9 +60,6 @@ public class InsertionSortStepper implements AlgorithmStepper {
         return state;
     }
 
-    /**
-     * return TODO : Fix return type to a snapshot
-     */
     @Override
     public SortingState back() {
         if (state.historyIndex < 0) return state;
@@ -74,7 +68,6 @@ public class InsertionSortStepper implements AlgorithmStepper {
         ALGORITHM_COMPLETE = false;
         return state;
     }
-
 
     public boolean isDone() { return ALGORITHM_COMPLETE; }
 }

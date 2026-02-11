@@ -1,6 +1,10 @@
 package io.github.mcalgovisualizations.visualization;
 
 
+import io.github.mcalgovisualizations.visualization.algorithms.AlgorithmStepper;
+import io.github.mcalgovisualizations.visualization.algorithms.StepperFactory;
+import io.github.mcalgovisualizations.visualization.models.DataModel;
+import io.github.mcalgovisualizations.visualization.models.IntList;
 import io.github.mcalgovisualizations.visualization.refactor.Visualization;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
@@ -18,6 +22,9 @@ public class VisualizationManager {
     private static final Map<UUID, Visualization> playerVisualizations = new HashMap<>();
     private static final Map<String, Pos> areaLocations = new HashMap<>();
     private static final Map<String, Class<? extends Visualization>> visualizations = new HashMap<>();
+
+    private static final Map<String, Class<? extends AlgorithmStepper>> steppers = new HashMap<>();
+    private static final Map<UUID, AlgorithmStepper> playerSteppers = new HashMap<>();
 
     static {
         // Define area locations for different visualization types
@@ -45,46 +52,10 @@ public class VisualizationManager {
         int playerOffset = playerVisualizations.size() * 20; // 20 blocks apart
         Pos origin = baseOrigin.add(0, 0, playerOffset);
 
-        if (visualizations.containsKey(type.toLowerCase())) {
-            Visualization vis = null;
-            try {
-                // 1. You must tell Java the CLASS TYPES of the parameters first
-                vis = visualizations.get(type.toLowerCase())
-                        .getDeclaredConstructor(Pos.class, InstanceContainer.class)
-                        .newInstance(origin, instance); // 2. Then pass the actual values
+        final DataModel model = createModelFor(type, player);
+        final AlgorithmStepper stepper = StepperFactory.create(type, model);
 
-                playerVisualizations.put(player.getUuid(), vis);
-            } catch (NoSuchMethodException e) {
-                System.out.println("Error: The class for " + type + " does not have a (Pos, InstanceContainer) constructor.");
-            } catch (Exception e) {
-                System.out.println("test");
-                e.printStackTrace();
-            }
-            // TODO: fix this
-            /*
-            catch (InvocationTargetException e) {
-                throw new RuntimeException(e);
-            } catch (InstantiationException e) {
-                throw new RuntimeException(e);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            } catch (NoSuchMethodException e) {
-                throw new RuntimeException(e);
-            }
-            */
-            playerVisualizations.put(player.getUuid(), vis);
-        }
-        /*
-        Visualization vis = switch () {
-            case "sorting", "insertionsort" -> new InsertionSortVisualization(origin, instance, 8);
-            // Future visualizations:
-            // case "bubblesort" -> new BubbleSortVisualization(origin, instance, 8);
-            // case "pathfinding", "astar" -> new AStarVisualization(origin, instance);
-            // case "bfs" -> new BFSVisualization(origin, instance);
-            // case "tree", "bst" -> new BinarySearchTreeVisualization(origin, instance);
-            default -> null;
-        };
-        */
+        playerSteppers.put(player.getUuid(), stepper);
     }
 
     public static void addVisualization(String name, Class<? extends Visualization> vis) {
@@ -122,4 +93,13 @@ public class VisualizationManager {
     public static Pos getAreaLocation(String area) {
         return areaLocations.get(area.toLowerCase());
     }
+
+    private static DataModel createModelFor(String type, Player player) {
+        return switch (type.toLowerCase()) {
+            case "sorting", "insertionsort", "insertion" -> new IntList(new int[10]);
+            // case "bfs" -> new Graph(...);  // if Graph implements DataModel
+            default -> new IntList(new int[10]); // or throw if unknown
+        };
+    }
+
 }

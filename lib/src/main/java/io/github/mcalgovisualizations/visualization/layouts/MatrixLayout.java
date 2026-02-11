@@ -1,14 +1,17 @@
 package io.github.mcalgovisualizations.visualization.layouts;
 
+import io.github.mcalgovisualizations.visualization.models.DataModel;
 import io.github.mcalgovisualizations.visualization.models.Graph;
+import io.github.mcalgovisualizations.visualization.render.DisplayValue;
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.instance.block.Block;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public final class MatrixLayout implements GraphLayout {
+public final class MatrixLayout implements Layout {
 
     private final double yOffset;
 
@@ -38,8 +41,8 @@ public final class MatrixLayout implements GraphLayout {
     }
 
     @Override
-    public Pos[] compute(Graph graph, Pos origin) {
-        int n = graph.size();
+    public DisplayValue[] compute(DataModel model, Pos origin) {
+        int n = model.size();
         int capacity = cols * rows;
         if (n > capacity) {
             throw new IllegalArgumentException(
@@ -67,15 +70,17 @@ public final class MatrixLayout implements GraphLayout {
         // Shuffle and assign first n cells to vertex ids
         Collections.shuffle(cells, random);
 
-        Pos[] out = new Pos[n];
+        var values = new DisplayValue[n];
+
         for (int id = 0; id < n; id++) {
             Cell c = cells.get(id);
             double x = startX + c.col * spacing;
             double z = startZ + c.row * spacing;
-            out[id] = new Pos(x, y, z);
+            final var pos = new Pos(x, y, z);
+            values[id] = new DisplayValue(pos, Block.GRANITE, Integer.toString(id));
         }
 
-        return out;
+        return values;
     }
 
     /**

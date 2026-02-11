@@ -8,14 +8,14 @@ import java.util.Random;
 /**
  * Adjacency-list where vertices are indexed 0..size-1.
  */
-public final class Graph {
+public final class Graph implements DataModel {
     private final int size;
     private final int[][] adj;
 
     /**
      * @param adj adjacency list (index = vertex, value = neighbors)
      */
-    public Graph(int[][] adj) {
+    public Graph(int[][] adj){
         if (adj == null) throw new IllegalArgumentException("adj cannot be null");
         this.size = adj.length;
         this.adj = Arrays.copyOf(adj, adj.length);
@@ -25,7 +25,7 @@ public final class Graph {
      * @return number of vertices
      */
     public int size() {
-        return size;
+        return this.size;
     }
 
     /**
