@@ -3,7 +3,6 @@ package io.github.mcalgovisualizations.visualization.refactor;
 
 import io.github.mcalgovisualizations.visualization.render.DisplayValue;
 import net.minestom.server.MinecraftServer;
-import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.block.Block;
@@ -21,7 +20,7 @@ import java.util.Random;
  */
 public abstract class AbstractVisualization<T extends Comparable<T>> /* implements Visualization  */{
     protected final String name;
-    protected final Pos origin;
+    protected final net.minestom.server.coordinate.Pos origin;
     protected final InstanceContainer instance;
     protected boolean algorithmComplete = false;
     private final Random random = new Random();
@@ -40,7 +39,7 @@ public abstract class AbstractVisualization<T extends Comparable<T>> /* implemen
     private static final double HEIGHT_MULTIPLIER = 0.5; // How much height per value unit
 
 
-    public AbstractVisualization(String name,List<DisplayValue> values, Pos origin, InstanceContainer instance) {
+    public AbstractVisualization(String name, List<DisplayValue> values, net.minestom.server.coordinate.Pos origin, InstanceContainer instance) {
         this.name = name;
         this.origin = origin;
         this.instance = instance;
@@ -183,7 +182,7 @@ public abstract class AbstractVisualization<T extends Comparable<T>> /* implemen
             MinecraftServer.getSchedulerManager()
                     .buildTask(
                             () -> {
-                                displayVal.teleport(new Pos(x, y, z));
+                                displayVal.teleport(new net.minestom.server.coordinate.Pos(x, y, z));
                             }
                     )
                     .delay(Duration.ofMillis(100))

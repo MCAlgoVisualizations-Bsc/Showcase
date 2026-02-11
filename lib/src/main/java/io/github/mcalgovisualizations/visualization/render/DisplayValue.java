@@ -18,10 +18,16 @@ import net.minestom.server.instance.block.Block;
  *
  */
 public class DisplayValue {
-    private final Pos       pos;
+    private final Pos pos;
     private final Entity    entity;
     private final Entity    textEntity;
 
+    /**
+     * Constructs a new DisplayValue and spawns it into the specified instance.
+     *
+     * @param pos       The position of the entity.
+     * @param block     The block type to be used for the visual representation.
+     */
     public DisplayValue(Pos pos, Block block) {
         if (block == null) throw new NullPointerException("block cannot be null!");
 
@@ -31,7 +37,6 @@ public class DisplayValue {
 
         // meta data
         var em = (BlockDisplayMeta) entity.getEntityMeta();
-        var tm = (TextDisplayMeta) textEntity.getEntityMeta();
 
         // Set up Block Display
         em.setBlockState(block);

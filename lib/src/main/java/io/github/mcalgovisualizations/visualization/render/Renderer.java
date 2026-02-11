@@ -8,7 +8,7 @@ import net.minestom.server.instance.block.Block;
 
 public interface Renderer {
 
-    void render(Pos[] values, Block block);
+    void render(int[] values, Block block);
 
 
     void addHighlight(int id);

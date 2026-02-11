@@ -1,8 +1,9 @@
 package io.github.mcalgovisualizations.visualization.layouts;
 
 import io.github.mcalgovisualizations.visualization.models.DataModel;
-import io.github.mcalgovisualizations.visualization.render.DisplayValue;
 import net.minestom.server.coordinate.Pos;
+
+import java.util.Random;
 
 /**
  * Defines a strategy for positioning visual elements based on a {@link DataModel}.
@@ -11,15 +12,14 @@ import net.minestom.server.coordinate.Pos;
  * a given origin point.
  */
 public interface Layout {
-
     /**
      * Computes the positions and visual representations for the given data model.
      *
      * @param model  the data model describing how many elements should be laid out
      * @param origin the reference position used as the layout's anchor or center
-     * @return an array of {@link DisplayValue} objects representing positioned elements
+     * @return an array of {@link Pos} objects representing positioned elements
      */
-    DisplayValue[] compute(DataModel model, Pos origin);
+    Pos[] compute(int size, Pos origin);
 
     /**
      * Computes a randomized layout for the given {@link DataModel}.
@@ -29,8 +29,8 @@ public interface Layout {
      *
      * @param model  the data model defining how many elements to generate
      * @param origin the reference position used as the layout's anchor
-     * @return an array of {@link DisplayValue} objects positioned randomly
+     * @return an array of {@link Pos} objects positioned randomly
      */
-    DisplayValue[] random(DataModel model, Pos origin);
+    Pos[] random(int size, Pos origin);
 
 }

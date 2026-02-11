@@ -83,7 +83,6 @@ public final class Main {
 
     }
 
-    // TODO : Move into a controller? Probably also need to remove listener when player leaves!
     private static void visualizationControls(InstanceContainer instance) {
         final var globalEventHandler = MinecraftServer.getGlobalEventHandler();
         // Handle item right-clicks for visualization control

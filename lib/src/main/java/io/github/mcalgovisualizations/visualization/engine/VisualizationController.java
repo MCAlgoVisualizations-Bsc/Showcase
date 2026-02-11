@@ -10,6 +10,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.Instance;
+import net.minestom.server.instance.block.Block;
 import net.minestom.server.timer.Task;
 
 import java.time.Duration;
@@ -59,7 +60,7 @@ public class VisualizationController {
         SortingState state = stepper.step();
         int[] nodesToRender = stepper.getRender();
 
-
+        renderer.render(nodesToRender, Block.GRANITE);
 
 
         // handle rendering im thinking something like converting the state to a DisplayValue[]

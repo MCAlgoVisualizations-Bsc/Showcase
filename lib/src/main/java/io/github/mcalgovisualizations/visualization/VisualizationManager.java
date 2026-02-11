@@ -50,12 +50,6 @@ public class VisualizationManager {
         // Clean up existing visualization
         removeVisualization(player);
 
-        // Calculate origin position for this player's visualization
-        // Offset each player's visualization to avoid overlap
-        Pos baseOrigin = areaLocations.getOrDefault(type.toLowerCase(), new Pos(0, 42, 0));
-        int playerOffset = playerVisualizations.size() * 20; // 20 blocks apart
-        Pos origin = baseOrigin.add(0, 0, playerOffset);
-
         final DataModel model = createModelFor(type, player);
         final AlgorithmStepper stepper = StepperFactory.create(type, model);
 
@@ -67,10 +61,6 @@ public class VisualizationManager {
         var controller = new VisualizationController(stepper, renderer);
 
         playerSteppers.put(player.getUuid(), controller);
-    }
-
-    public static void addVisualization(String name, Class<? extends Visualization> vis) {
-        visualizations.put(name.toLowerCase(), vis);
     }
 
     /**

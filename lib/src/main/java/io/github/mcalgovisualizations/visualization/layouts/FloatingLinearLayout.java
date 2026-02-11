@@ -1,8 +1,5 @@
 package io.github.mcalgovisualizations.visualization.layouts;
 
-import io.github.mcalgovisualizations.visualization.models.DataModel;
-import io.github.mcalgovisualizations.visualization.render.DisplayValue;
-import io.github.mcalgovisualizations.visualization.utils.Utils;
 import net.minestom.server.coordinate.Pos;
 
 /**
@@ -18,7 +15,11 @@ import net.minestom.server.coordinate.Pos;
  * @param yOffset vertical offset added to {@code origin.y()}
  * @param zOffset depth offset added to {@code origin.z()}
  */
-public record FloatingLinearLayout(double spacing, double yOffset, double zOffset) implements Layout {
+public record FloatingLinearLayout(
+        double spacing,
+        double yOffset,
+        double zOffset
+) implements Layout {
 
     /**
      * Creates a floating linear layout with default configuration:
@@ -38,45 +39,35 @@ public record FloatingLinearLayout(double spacing, double yOffset, double zOffse
      * @throws IllegalArgumentException if {@code spacing <= 0}
      */
     public FloatingLinearLayout {
-        if (spacing <= 0)
+        if (spacing <= 0) {
             throw new IllegalArgumentException("spacing must be > 0");
+        }
     }
 
     /**
-     * Computes a linear layout for the given {@link DataModel}.
-     * <p>
-     * Elements are placed sequentially along the +X axis starting from
-     * {@code origin.x()}, spaced evenly by {@code spacing}.
-     * The Y and Z coordinates remain constant (based on offsets).
+     * Computes a linear layout for {@code size} elements.
      *
-     * @param model  the data model defining how many elements to render
-     * @param origin the starting position of the layout
-     * @return an array of {@link DisplayValue} positioned in a straight line
+     * @param size   number of elements to render
+     * @param origin starting position of the layout
+     * @return array of {@link Pos} positions in a straight line
      */
     @Override
-    public DisplayValue[] compute(DataModel model, Pos origin) {
-        int n = model.size();
-        DisplayValue[] values = new DisplayValue[n];
+    public Pos[] compute(int size, Pos origin) {
+        Pos[] positions = new Pos[size];
 
         double y = origin.y() + yOffset;
         double z = origin.z() + zOffset;
 
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < size; i++) {
             double x = origin.x() + (i * spacing);
-            var pos = new Pos(x, y, z);
-            values[i] = new DisplayValue(
-                    pos,
-                    Utils.getBlockForValue(i),
-                    Integer.toString(i)
-            );
+            positions[i] = new Pos(x, y, z);
         }
 
-        return values;
+        return positions;
     }
 
     @Override
-    public DisplayValue[] random(DataModel model, Pos origin) {
-        throw new RuntimeException("Not implemented");
+    public Pos[] random(int size, Pos origin) {
+        throw new UnsupportedOperationException("Not implemented");
     }
-
 }
