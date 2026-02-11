@@ -3,20 +3,15 @@ package io.github.mcalgovisualizations.visualization.models;
 import java.util.Arrays;
 import java.util.Random;
 
-public final class IntList {
-    private final int[] data;
-
-    public IntList(int[] data) {
-        if (data == null) throw new IllegalArgumentException("data cannot be null");
-        this.data = Arrays.copyOf(data, data.length);
+public record IntList(int[] data) implements DataModel {
+    public IntList {
+        if (data == null)
+            throw new IllegalArgumentException("data cannot be null");
     }
 
+    @Override
     public int size() {
         return data.length;
-    }
-
-    public int get(int i) {
-        return data[i];
     }
 
     public void set(int i, int value) {
@@ -29,7 +24,9 @@ public final class IntList {
         data[j] = tmp;
     }
 
-    /** Copy for snapshotting/history. */
+    /**
+     * Copy for snapshotting/history.
+     */
     public int[] toArray() {
         return Arrays.copyOf(data, data.length);
     }

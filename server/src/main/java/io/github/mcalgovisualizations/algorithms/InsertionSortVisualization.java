@@ -1,7 +1,8 @@
 package io.github.mcalgovisualizations.algorithms;
 
-import io.github.mcalgovisualizations.visualization.renderers.AbstractVisualization;
-import io.github.mcalgovisualizations.visualization.renderers.DisplayValue;
+import io.github.mcalgovisualizations.visualization.refactor.AbstractVisualization;
+import io.github.mcalgovisualizations.visualization.render.DisplayValue;
+import io.github.mcalgovisualizations.visualization.utils.Utils;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -9,8 +10,6 @@ import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.sound.SoundEvent;
-
-import io.github.mcalgovisualizations.visualization.layouts.FloatingLinearLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,10 +21,10 @@ import java.util.Random;
  */
 public class InsertionSortVisualization extends AbstractVisualization<Integer> {
     private final Random random = new Random();
-
     // Algorithm state
     private int currentIndex = 1;      // The element we're currently inserting
     private int compareIndex = -1;     // Current position during insertion
+
 
     public InsertionSortVisualization(Pos origin, InstanceContainer instance) {
         List<DisplayValue<Integer>> values = new ArrayList<>();
@@ -35,13 +34,13 @@ public class InsertionSortVisualization extends AbstractVisualization<Integer> {
             values.add(new DisplayValue<>(
                     instance,
                     v,
-                    getBlockForValue(v)
+                    Utils.getBlockForValue(v)
             ));
         }
 
         super("Insertion Sort", values, origin, instance);
 
-        setLayout(new FloatingLinearLayout());
+        //setLayout(new FloatingLinearLayout());
 
         randomize();
     }

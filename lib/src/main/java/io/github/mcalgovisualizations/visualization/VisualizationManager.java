@@ -1,6 +1,7 @@
-package io.github.mcalgovisualizations.visualization.renderers;
+package io.github.mcalgovisualizations.visualization;
 
 
+import io.github.mcalgovisualizations.visualization.refactor.Visualization;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.InstanceContainer;

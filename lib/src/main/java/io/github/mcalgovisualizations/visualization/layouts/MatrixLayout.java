@@ -1,6 +1,6 @@
 package io.github.mcalgovisualizations.visualization.layouts;
 
-import io.github.mcalgovisualizations.visualization.models.AdjacencyList;
+import io.github.mcalgovisualizations.visualization.models.Graph;
 import net.minestom.server.coordinate.Pos;
 
 import java.util.ArrayList;
@@ -38,8 +38,8 @@ public final class MatrixLayout implements GraphLayout {
     }
 
     @Override
-    public Pos[] compute(AdjacencyList adjacencyList, Pos origin) {
-        int n = adjacencyList.size();
+    public Pos[] compute(Graph graph, Pos origin) {
+        int n = graph.size();
         int capacity = cols * rows;
         if (n > capacity) {
             throw new IllegalArgumentException(

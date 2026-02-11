@@ -7,9 +7,8 @@ import io.github.mcalgovisualizations.commands.Teleport;
 import io.github.mcalgovisualizations.algorithms.BFSVisualization;
 import io.github.mcalgovisualizations.gui.AlgorithmSelectorGUI;
 import io.github.mcalgovisualizations.items.VisualizationItems;
-import io.github.mcalgovisualizations.algorithms.InsertionSortVisualization;
-import io.github.mcalgovisualizations.visualization.renderers.Visualization;
-import io.github.mcalgovisualizations.visualization.renderers.VisualizationManager;
+import io.github.mcalgovisualizations.visualization.refactor.Visualization;
+import io.github.mcalgovisualizations.visualization.VisualizationManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.MinecraftServer;
@@ -36,11 +35,13 @@ public final class Main {
         instance.setTimeRate(0);  // Stops time
         instance.setTime(6000);   // Sets time to noon
 
-        VisualizationManager.addVisualization("insertionsort", InsertionSortVisualization.class);
-        VisualizationManager.addVisualization("bfs", BFSVisualization.class);
+        //VisualizationManager.addVisualization("insertionsort", InsertionSortVisualization.class);
+        //VisualizationManager.addVisualization("bfs", BFSVisualization.class);
 
         registerListeners(instance);
         registerCommands(MinecraftServer.getCommandManager());
+
+        visualizationControls(instance); // to be moved?
 
         server.start("0.0.0.0", 25565);
     }
@@ -73,6 +74,16 @@ public final class Main {
             player.sendMessage(Component.text("Right-click the Nether Star to select an algorithm to visualize!", NamedTextColor.YELLOW));
         });
 
+        // Cleanup visualization when player disconnects
+        globalEventHandler.addListener(PlayerDisconnectEvent.class, event -> {
+            VisualizationManager.removeVisualization(event.getPlayer());
+        });
+
+    }
+
+    // TODO : Move into a controller?
+    private static void visualizationControls(InstanceContainer instance) {
+        final var globalEventHandler = MinecraftServer.getGlobalEventHandler();
         // Handle item right-clicks for visualization control
         globalEventHandler.addListener(PlayerUseItemEvent.class, event -> {
             Player player = event.getPlayer();
@@ -115,11 +126,6 @@ public final class Main {
                 vis.stepBack();
                 player.sendMessage(Component.text("Stepped back", NamedTextColor.GOLD));
             }
-        });
-
-        // Cleanup visualization when player disconnects
-        globalEventHandler.addListener(PlayerDisconnectEvent.class, event -> {
-            VisualizationManager.removeVisualization(event.getPlayer());
         });
     }
 

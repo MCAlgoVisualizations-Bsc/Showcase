@@ -1,4 +1,4 @@
-package io.github.mcalgovisualizations.visualization.renderers;
+package io.github.mcalgovisualizations.visualization.refactor;
 
 import net.minestom.server.entity.Player;
 
