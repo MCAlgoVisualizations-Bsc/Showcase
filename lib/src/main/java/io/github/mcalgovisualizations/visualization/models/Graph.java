@@ -17,7 +17,6 @@ import java.util.Random;
  */
 public final class Graph implements DataModel {
 
-    private final int size;
     private final int[][] adj;
 
     /**
@@ -30,7 +29,6 @@ public final class Graph implements DataModel {
         if (adj == null)
             throw new IllegalArgumentException("adj cannot be null");
 
-        this.size = adj.length;
         this.adj = Arrays.copyOf(adj, adj.length); // shallow copy of outer array
     }
 
@@ -41,7 +39,7 @@ public final class Graph implements DataModel {
      */
     @Override
     public int size() {
-        return this.size;
+        throw new  UnsupportedOperationException("Not supported yet.");
     }
 
     /**
