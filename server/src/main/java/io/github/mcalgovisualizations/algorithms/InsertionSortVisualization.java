@@ -89,6 +89,7 @@ public class InsertionSortVisualization extends AbstractVisualization<Integer> {
                     origin
             );
 
+
             compareIndex--;
             saveState();
         } else {
