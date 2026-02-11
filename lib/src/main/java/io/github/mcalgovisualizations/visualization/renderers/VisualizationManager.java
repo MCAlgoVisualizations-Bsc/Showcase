@@ -20,10 +20,10 @@ public class VisualizationManager {
 
     static {
         // Define area locations for different visualization types
-        areaLocations.put("sorting", new Pos(5, 42, 5));
-        areaLocations.put("pathfinding", new Pos(-100, 42, 0));
-        areaLocations.put("trees", new Pos(0, 42, 100));
-        areaLocations.put("bfs", new Pos(50, 42, 50));
+        areaLocations.put("sorting", new Pos(16, -60, -15));
+        areaLocations.put("pathfinding", new Pos(-15, -60, -15));
+        areaLocations.put("trees", new Pos(-15, -60, 16));
+        areaLocations.put("bfs", new Pos(16, -60, 16));
     }
 
     /**
@@ -40,7 +40,7 @@ public class VisualizationManager {
 
         // Calculate origin position for this player's visualization
         // Offset each player's visualization to avoid overlap
-        Pos baseOrigin = areaLocations.getOrDefault(type.toLowerCase(), new Pos(0, 42, 0));
+        Pos baseOrigin = areaLocations.getOrDefault(type.toLowerCase(), new Pos(0, -60, 0));
         int playerOffset = playerVisualizations.size() * 20; // 20 blocks apart
         Pos origin = baseOrigin.add(0, 0, playerOffset);
 
