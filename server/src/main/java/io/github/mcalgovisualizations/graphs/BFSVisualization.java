@@ -103,9 +103,7 @@ public class BFSVisualization extends AbstractVisualization<Integer> {
         int n = graph.size();
 
         // One DisplayValue per vertex id (index = id)
-        for (int id = 0; id < n; id++) {
-            values.add(new DisplayValue<>(instance, id, blockForId(id)));
-        }
+        Collections.shuffle(values);
 
         /*
         double radius = Math.max(6.0, n * 1.2);
@@ -239,7 +237,7 @@ public class BFSVisualization extends AbstractVisualization<Integer> {
         meta.setTranslation(new Vec(-0.5, 0, -0.5));    // <- center the block on the entity
         meta.setScale(new Vec(length, EDGE_THICKNESS, EDGE_THICKNESS));
 
-        edge.setInstance(instance);
+        // edge.setInstance(instance);
         edge.teleport(new Pos(mx, my, mz, yawDeg, pitchDeg));
 
         edgeDisplays.add(edge);
@@ -312,7 +310,7 @@ public class BFSVisualization extends AbstractVisualization<Integer> {
             meta.setTranslation(new Vec(-0.5, -0.5, -0.5));
             meta.setScale(new Vec(segLen, EDGE_THICKNESS, EDGE_THICKNESS));
 
-            seg.setInstance(instance);
+            // seg.setInstance(instance);
             seg.teleport(new Pos(mx, my, mz, yawDeg, pitchDeg));
 
             edgeDisplays.add(seg);

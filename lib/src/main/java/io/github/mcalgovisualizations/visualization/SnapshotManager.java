@@ -49,7 +49,7 @@ class SnapshotManager {
      */
     public Visualization loadSnapshot(UUID uuid, int index) {
         List<byte[]> snapshots = history.get(uuid);
-        if (snapshots == null || index >= snapshots.size()) return null;
+        if (snapshots == null || index >= snapshots.size() || index < 1) return null;
 
         byte[] data = snapshots.get(index);
         try (ByteArrayInputStream bais = new ByteArrayInputStream(data);

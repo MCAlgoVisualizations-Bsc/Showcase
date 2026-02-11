@@ -22,7 +22,6 @@ import java.util.*;
 public abstract class AbstractVisualization<T extends Comparable<T>> implements Visualization {
     protected final String name;
     protected final Pos origin;
-    protected final InstanceContainer instance;
     protected boolean algorithmComplete = false;
     private final Random random = new Random();
 
@@ -44,10 +43,8 @@ public abstract class AbstractVisualization<T extends Comparable<T>> implements 
     protected final UUID uuid;
 
     public AbstractVisualization(String name, UUID uuid, List<DisplayValue<T>> values, Pos origin, InstanceContainer instance) {
-    public AbstractVisualization(String name, List<DisplayValue<T>> values, Pos origin, InstanceContainer instance) {
         this.name = name;
         this.origin = origin;
-        this.instance = instance;
         this.values = values;
         this.uuid = uuid;
     }

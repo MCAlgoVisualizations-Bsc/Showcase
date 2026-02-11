@@ -86,10 +86,13 @@ public class InsertionSortVisualization extends AbstractVisualization<Integer> {
         if (compareIndex > 0 && values.get(compareIndex - 1).compareTo(values.get(compareIndex)) > 0) {
             swap(compareIndex, compareIndex - 1);
 
+            // TODO: add sound back
+            /*
             instance.playSound(
                     Sound.sound(SoundEvent.BLOCK_NOTE_BLOCK_BANJO, Sound.Source.RECORD, 1.0f, 1.2f),
                     origin
             );
+            */
 
             compareIndex--;
             saveState();
