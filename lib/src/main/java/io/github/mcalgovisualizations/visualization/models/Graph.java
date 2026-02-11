@@ -6,38 +6,61 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Adjacency-list where vertices are indexed 0..size-1.
+ * An adjacency-list representation of a graph where vertices are indexed
+ * from {@code 0} to {@code size - 1}.
+ * <p>
+ * The graph is backed by a 2D {@code int[][]} array, where each index
+ * represents a vertex and the corresponding array contains its neighbors.
+ * <p>
+ * This implementation does not enforce immutability of the inner arrays.
+ * Defensive copies are returned where appropriate.
  */
 public final class Graph implements DataModel {
+
     private final int size;
     private final int[][] adj;
 
     /**
+     * Creates a graph from the given adjacency list.
+     *
      * @param adj adjacency list (index = vertex, value = neighbors)
+     * @throws IllegalArgumentException if {@code adj} is {@code null}
      */
     public Graph(int[][] adj){
-        if (adj == null) throw new IllegalArgumentException("adj cannot be null");
+        if (adj == null)
+            throw new IllegalArgumentException("adj cannot be null");
+
         this.size = adj.length;
-        this.adj = Arrays.copyOf(adj, adj.length);
+        this.adj = Arrays.copyOf(adj, adj.length); // shallow copy of outer array
     }
 
     /**
-     * @return number of vertices
+     * Returns the number of vertices in the graph.
+     *
+     * @return total number of vertices
      */
+    @Override
     public int size() {
         return this.size;
     }
 
     /**
-     * @param v vertex id
-     * @return copy of the neighbors for the given vertex
+     * Returns a copy of the neighbors of a given vertex.
+     *
+     * @param v vertex id (0 ≤ v < size)
+     * @return a defensive copy of the neighbor list
+     * @throws ArrayIndexOutOfBoundsException if {@code v} is invalid
      */
     public int[] neighbors(int v) {
         return Arrays.copyOf(adj[v], adj[v].length);
     }
 
     /**
-     * @return shallow copy of the adjacency list
+     * Returns a shallow copy of the adjacency list.
+     * <p>
+     * The outer array is copied, but the inner arrays are shared.
+     *
+     * @return a shallow copy of the adjacency structure
      */
     public int[][] adj() {
         return Arrays.copyOf(adj, adj.length);
@@ -45,11 +68,16 @@ public final class Graph implements DataModel {
 
     /**
      * Generates a connected undirected graph.
+     * <p>
+     * Connectivity is guaranteed by first constructing a spanning tree,
+     * then optionally adding additional random edges.
      *
-     * @param n number of vertices
-     * @param maxExtraEdges maximum additional random edges
-     * @param r random generator
-     * @return connected graph
+     * @param n              number of vertices
+     * @param maxExtraEdges  maximum number of additional random edges
+     * @param r              source of randomness
+     * @return a connected undirected graph
+     *
+     * @throws IllegalArgumentException if {@code n <= 0}
      */
     public static Graph randomConnectedUndirected(int n, int maxExtraEdges, Random r) {
         @SuppressWarnings("unchecked")
@@ -82,10 +110,12 @@ public final class Graph implements DataModel {
 
     /**
      * Adds an undirected edge between two vertices.
+     * <p>
+     * The edge is added symmetrically to both adjacency lists.
      *
      * @param tmp temporary adjacency structure
-     * @param a first vertex
-     * @param b second vertex
+     * @param a   first vertex
+     * @param b   second vertex
      */
     private static void addUndirectedEdge(List<Integer>[] tmp, int a, int b) {
         tmp[a].add(b);

@@ -22,6 +22,27 @@ public class DisplayValue {
     private final Entity    entity;
     private final Entity    textEntity;
 
+    public DisplayValue(Pos pos, Block block) {
+        if (block == null) throw new NullPointerException("block cannot be null!");
+
+        this.pos = pos;
+        this.entity = new Entity(EntityType.BLOCK_DISPLAY);
+        this.textEntity = new Entity(EntityType.TEXT_DISPLAY);
+
+        // meta data
+        var em = (BlockDisplayMeta) entity.getEntityMeta();
+        var tm = (TextDisplayMeta) textEntity.getEntityMeta();
+
+        // Set up Block Display
+        em.setBlockState(block);
+        em.setHasNoGravity(true);
+        // This controls how long the animation lasts (in ticks)
+        em.setPosRotInterpolationDuration(5);
+        // This tells the client to start the animation NOW (0 ticks from receiving)
+        em.setTransformationInterpolationStartDelta(0);
+        em.setScale(new Vec(2.0, 2.0, 2));
+    }
+
     /**
      * Constructs a new DisplayValue and spawns it into the specified instance.
      *

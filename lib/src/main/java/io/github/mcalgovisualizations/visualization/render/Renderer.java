@@ -7,10 +7,15 @@ import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.Block;
 
 public interface Renderer {
-    /**
-     *
-     */
+
     void render(Pos[] values, Block block);
+
+
+    void addHighlight(int id);
+    void addHighlights(int[] ids);
+    void setLayout(Layout layout);
+
+
 
     /**
      * Used when destroying the whole visualization
