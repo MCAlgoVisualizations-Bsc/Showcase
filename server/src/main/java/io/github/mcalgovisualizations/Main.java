@@ -112,9 +112,9 @@ public final class Main {
             }
 
             if (material == Material.ENDER_PEARL) {
-                 event.setCancelled(true); // Prevent teleportation
-                 vis.randomize();
-                 player.sendMessage(Component.text("Values randomized!", NamedTextColor.AQUA));
+                event.setCancelled(true); // Prevent teleportation
+                vis.randomize();
+                player.sendMessage(Component.text("Values randomized!", NamedTextColor.AQUA));
             } else if (material == Material.LIME_DYE) {
                 vis.start(player); // TODO : look into if messages can be sent through another channel?
                 player.sendMessage(Component.text("Visualization started!", NamedTextColor.GREEN));
