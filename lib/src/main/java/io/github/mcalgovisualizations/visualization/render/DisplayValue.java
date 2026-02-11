@@ -37,7 +37,6 @@ public class DisplayValue {
         this.entity = new Entity(EntityType.BLOCK_DISPLAY);
         this.textEntity = new Entity(EntityType.TEXT_DISPLAY);
 
-
         // meta data
         var em = (BlockDisplayMeta) entity.getEntityMeta();
         var tm = (TextDisplayMeta) textEntity.getEntityMeta();
@@ -79,32 +78,56 @@ public class DisplayValue {
         this.textEntity.setGlowing(highlighted);
     }
 
+    /**
+     * Assigns both the block display entity and the text display entity to an instance.
+     * <p>
+     * After calling this, the entities will be spawned/visible in that instance (subject to
+     * client view distance and other normal Minestom rules).
+     *
+     * @param instance The instance to spawn/attach both entities to.
+     */
     public void setInstance(Instance instance) {
         this.entity.setInstance(instance);
         this.textEntity.setInstance(instance);
     }
 
+    /**
+     * Returns the base position associated with this display value.
+     * <p>
+     * Note: this is the stored position passed in the constructor; it is not updated by {@link #teleport(Pos)}.
+     *
+     * @return The original/base {@link Pos} for this display value.
+     */
     public Pos pos() {
         return this.pos;
     }
 
-
+    /**
+     * Returns the current block state id used by the underlying {@link EntityType#BLOCK_DISPLAY}.
+     *
+     * @return The block state id currently set on the block display.
+     */
     public Block block() {
         var em  = (BlockDisplayMeta) entity.getEntityMeta();
         return em.getBlockStateId();
     }
 
     /**
-     * Checks if the entities are currently associated with an instance.
-     * * @return true if both entities are currently despawned/unassigned.
+     * Checks whether both entities are currently <em>unassigned</em> to any {@link Instance}.
+     * <p>
+     * This method returns {@code true} when both entities have no instance (i.e., they are not spawned).
+     *
+     * @return {@code true} if both entities have {@code null} instances; otherwise {@code false}.
      */
     public boolean isSpawned() { return entity.getInstance() == null && textEntity.getInstance() == null; }
 
     /**
-     * Teleports the block to the specified position and offsets the text label
-     * to remain centered above the block.
+     * Teleports the block display entity to the specified position and teleports the
+     * text display entity to a fixed offset above it.
+     * <p>
+     * The text is offset by {@code (1, 2.4, 1)} to keep it centered above a 2x-scaled block display.
      *
-     * @param pos The new base position for the block display.
+     * @param pos The new base position for the block display entity.
      */
     public void teleport(Pos pos) {
         this.entity.teleport(pos);
