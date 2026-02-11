@@ -3,9 +3,12 @@ package io.github.mcalgovisualizations.visualization;
 
 import io.github.mcalgovisualizations.visualization.algorithms.AlgorithmStepper;
 import io.github.mcalgovisualizations.visualization.algorithms.StepperFactory;
+import io.github.mcalgovisualizations.visualization.engine.VisualizationController;
+import io.github.mcalgovisualizations.visualization.layouts.FloatingLinearLayout;
 import io.github.mcalgovisualizations.visualization.models.DataModel;
 import io.github.mcalgovisualizations.visualization.models.IntList;
 import io.github.mcalgovisualizations.visualization.refactor.Visualization;
+import io.github.mcalgovisualizations.visualization.render.VisualizationRenderer;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.InstanceContainer;
@@ -24,7 +27,7 @@ public class VisualizationManager {
     private static final Map<String, Class<? extends Visualization>> visualizations = new HashMap<>();
 
     private static final Map<String, Class<? extends AlgorithmStepper>> steppers = new HashMap<>();
-    private static final Map<UUID, AlgorithmStepper> playerSteppers = new HashMap<>();
+    private static final Map<UUID, VisualizationController> playerSteppers = new HashMap<>();
 
     static {
         // Define area locations for different visualization types
@@ -55,7 +58,14 @@ public class VisualizationManager {
         final DataModel model = createModelFor(type, player);
         final AlgorithmStepper stepper = StepperFactory.create(type, model);
 
-        playerSteppers.put(player.getUuid(), stepper);
+        // TODO : Let players control size of layout!
+        var layout = new FloatingLinearLayout();
+
+        var renderer = new VisualizationRenderer(instance);
+        renderer.setLayout(layout);
+        var controller = new VisualizationController(stepper, renderer);
+
+        playerSteppers.put(player.getUuid(), controller);
     }
 
     public static void addVisualization(String name, Class<? extends Visualization> vis) {
@@ -68,8 +78,8 @@ public class VisualizationManager {
      * @param player The player
      * @return The visualization, or null if none assigned
      */
-    public static Visualization getVisualization(Player player) {
-        return playerVisualizations.get(player.getUuid());
+    public static VisualizationController getVisualization(Player player) {
+        return playerSteppers.get(player.getUuid());
     }
 
     /**
@@ -94,6 +104,7 @@ public class VisualizationManager {
         return areaLocations.get(area.toLowerCase());
     }
 
+    // TODO : this can potentially take a parameter for the size of a list -> player can choose the size in hotbar?
     private static DataModel createModelFor(String type, Player player) {
         return switch (type.toLowerCase()) {
             case "sorting", "insertionsort", "insertion" -> new IntList(new int[10]);

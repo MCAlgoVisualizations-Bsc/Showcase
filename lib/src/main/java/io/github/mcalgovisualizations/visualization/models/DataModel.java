@@ -1,5 +1,7 @@
 package io.github.mcalgovisualizations.visualization.models;
 
-public interface DataModel {
+import java.io.Serializable;
+
+public interface DataModel extends Serializable {
     int size();
 }

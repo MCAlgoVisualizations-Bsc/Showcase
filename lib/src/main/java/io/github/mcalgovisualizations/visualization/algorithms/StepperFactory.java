@@ -11,8 +11,6 @@ import java.util.function.Function;
 public final class StepperFactory {
     private StepperFactory() {}
 
-
-
     private record Entry(
             Class<? extends DataModel> modelType,
             Function<? super DataModel, ? extends AlgorithmStepper> ctor

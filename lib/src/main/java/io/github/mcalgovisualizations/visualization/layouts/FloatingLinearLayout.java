@@ -9,21 +9,14 @@ import net.minestom.server.coordinate.Pos;
  * Places array elements in a straight line along +X.
  * "Floating" = constant Y (no value-based height).
  */
-public final class FloatingLinearLayout implements Layout {
-
-    private final double spacing;
-    private final double yOffset;
-    private final double zOffset;
+public record FloatingLinearLayout(double spacing, double yOffset, double zOffset) implements Layout {
 
     public FloatingLinearLayout() {
         this(2.0, 1.0, 0.0);
     }
 
-    public FloatingLinearLayout(double spacing, double yOffset, double zOffset) {
+    public FloatingLinearLayout {
         if (spacing <= 0) throw new IllegalArgumentException("spacing must be > 0");
-        this.spacing = spacing;
-        this.yOffset = yOffset;
-        this.zOffset = zOffset;
     }
 
     @Override

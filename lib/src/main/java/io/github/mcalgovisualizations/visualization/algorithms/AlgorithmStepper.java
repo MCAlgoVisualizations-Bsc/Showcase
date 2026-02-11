@@ -17,5 +17,7 @@ public interface AlgorithmStepper {
      */
     SortingState back();
 
+    int[] getRender();
+
     boolean isDone();
 }

@@ -6,8 +6,11 @@ import io.github.mcalgovisualizations.commands.Spawn;
 import io.github.mcalgovisualizations.commands.Teleport;
 import io.github.mcalgovisualizations.gui.AlgorithmSelectorGUI;
 import io.github.mcalgovisualizations.items.VisualizationItems;
+import io.github.mcalgovisualizations.visualization.algorithms.AlgorithmStepper;
+import io.github.mcalgovisualizations.visualization.engine.VisualizationController;
 import io.github.mcalgovisualizations.visualization.refactor.Visualization;
 import io.github.mcalgovisualizations.visualization.VisualizationManager;
+import jdk.jshell.spi.ExecutionControl;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.MinecraftServer;
@@ -102,27 +105,27 @@ public final class Main {
             }
 
             // All other items require an active visualization
-            Visualization vis = VisualizationManager.getVisualization(player);
+            VisualizationController vis = VisualizationManager.getVisualization(player);
             if (vis == null) {
                 player.sendMessage(Component.text("No visualization assigned! Use the Algorithm Selector first.", NamedTextColor.RED));
                 return;
             }
 
             if (material == Material.ENDER_PEARL) {
-                event.setCancelled(true); // Prevent teleportation
-                vis.randomize();
-                player.sendMessage(Component.text("Values randomized!", NamedTextColor.AQUA));
+                 event.setCancelled(true); // Prevent teleportation
+                 vis.randomize();
+                 player.sendMessage(Component.text("Values randomized!", NamedTextColor.AQUA));
             } else if (material == Material.LIME_DYE) {
-                vis.start(player);
+                vis.start(player); // TODO : look into if messages can be sent through another channel?
                 player.sendMessage(Component.text("Visualization started!", NamedTextColor.GREEN));
             } else if (material == Material.RED_DYE) {
                 vis.stop();
                 player.sendMessage(Component.text("Visualization stopped!", NamedTextColor.RED));
             } else if (material == Material.ARROW) {
-                vis.stepForward();
+                vis.step();
                 player.sendMessage(Component.text("Stepped forward", NamedTextColor.YELLOW));
             } else if (material == Material.SPECTRAL_ARROW) {
-                vis.stepBack();
+                vis.back();
                 player.sendMessage(Component.text("Stepped back", NamedTextColor.GOLD));
             }
         });

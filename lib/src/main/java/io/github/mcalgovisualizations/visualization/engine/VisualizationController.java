@@ -9,6 +9,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.Player;
+import net.minestom.server.instance.Instance;
 import net.minestom.server.timer.Task;
 
 import java.time.Duration;
@@ -25,12 +26,12 @@ public class VisualizationController {
     private boolean IS_RUNNING = false;
     private Task runningTask = null;
 
-    public VisualizationController(AlgorithmStepper stepper, Layout layout) {
+    public VisualizationController(AlgorithmStepper stepper, Renderer renderer) {
         this.stepper = stepper;
-        this.renderer = new VisualizationRenderer(layout);
+        this.renderer = renderer;
     }
 
-    void start(Player player) {
+    public void start(Player player) {
         if (stepper.isDone()) {
             player.sendMessage(Component.text("Algorithm complete! Use randomize to restart.", NamedTextColor.YELLOW));
             return;
@@ -46,7 +47,7 @@ public class VisualizationController {
 
     }
 
-    void stop() {
+    public void stop() {
         IS_RUNNING = false;
         if(runningTask != null) {
             runningTask.cancel();
@@ -54,8 +55,12 @@ public class VisualizationController {
         }
     }
 
-    void step() {
+    public void step() {
         SortingState state = stepper.step();
+        int[] nodesToRender = stepper.getRender();
+
+
+
 
         // handle rendering im thinking something like converting the state to a DisplayValue[]
         // renderer.render( SortingState converted to DisplayValue[] );
@@ -64,12 +69,12 @@ public class VisualizationController {
         // make the state into a snapshot which can be stored
     }
 
-    void back() {
+    public void back() {
         stepper.back();
         // handle visual
     }
 
-    void setSpeed(int ticksPerStep) {
+    public void setSpeed(int ticksPerStep) {
         this.ticksPerStep = Math.max(1, ticksPerStep);
         // If running, restart with new speed
         if (IS_RUNNING) {
@@ -83,13 +88,15 @@ public class VisualizationController {
         }
     }
 
-    void cleanup() {
+    public void cleanup() {
         stop();
         renderer.cleanup();
 
     }
 
+    public void randomize() {
 
+    }
 
 }
 
