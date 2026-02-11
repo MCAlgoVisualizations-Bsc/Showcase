@@ -1,4 +1,4 @@
-package io.github.mcalgovisualizations.visualization.graphs;
+package io.github.mcalgovisualizations.visualization.models;
 
 import java.util.ArrayList;
 import java.util.Arrays;

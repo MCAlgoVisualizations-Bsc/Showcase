@@ -1,8 +1,8 @@
 package io.github.mcalgovisualizations.algorithms;
 
-import io.github.mcalgovisualizations.visualization.io.github.mcalgovisualizations.visualization.models.AdjacencyList;
-import io.github.mcalgovisualizations.visualization.io.github.mcalgovisualizations.visualization.layouts.GraphLayout;
-import io.github.mcalgovisualizations.visualization.io.github.mcalgovisualizations.visualization.layouts.MatrixLayout;
+import io.github.mcalgovisualizations.visualization.layouts.GraphLayout;
+import io.github.mcalgovisualizations.visualization.layouts.MatrixLayout;
+import io.github.mcalgovisualizations.visualization.models.AdjacencyList;
 import io.github.mcalgovisualizations.visualization.renderers.AbstractVisualization;
 import io.github.mcalgovisualizations.visualization.renderers.DisplayValue;
 import net.minestom.server.coordinate.Pos;

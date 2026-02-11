@@ -1,6 +1,7 @@
 package io.github.mcalgovisualizations.visualization.renderers;
 
 
+import io.github.mcalgovisualizations.visualization.SnapshotManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.coordinate.Pos;

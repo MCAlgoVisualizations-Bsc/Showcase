@@ -1,9 +1,11 @@
 package io.github.mcalgovisualizations.visualization;
 
+import io.github.mcalgovisualizations.visualization.renderers.Visualization;
+
 import java.io.*;
 import java.util.*;
 
-class SnapshotManager {
+public class SnapshotManager {
     private static SnapshotManager single_instance = null;
 
     // Maps a Player/Session UUID to a List of historical states

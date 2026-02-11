@@ -7,8 +7,6 @@ import io.github.mcalgovisualizations.commands.Teleport;
 import io.github.mcalgovisualizations.algorithms.BFSVisualization;
 import io.github.mcalgovisualizations.gui.AlgorithmSelectorGUI;
 import io.github.mcalgovisualizations.items.VisualizationItems;
-import io.github.mcalgovisualizations.sorting.InsertionSortVisualization;
-import io.github.mcalgovisualizations.visualization.VisualizationManager;
 import io.github.mcalgovisualizations.algorithms.InsertionSortVisualization;
 import io.github.mcalgovisualizations.visualization.renderers.Visualization;
 import io.github.mcalgovisualizations.visualization.renderers.VisualizationManager;

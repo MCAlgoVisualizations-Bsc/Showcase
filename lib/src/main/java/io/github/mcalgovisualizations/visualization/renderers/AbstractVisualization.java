@@ -1,5 +1,6 @@
 package io.github.mcalgovisualizations.visualization.renderers;
 
+import io.github.mcalgovisualizations.visualization.SnapshotManager;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;

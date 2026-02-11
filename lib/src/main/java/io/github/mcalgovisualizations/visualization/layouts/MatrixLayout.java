@@ -1,4 +1,4 @@
-package io.github.mcalgovisualizations.visualization.graphs;
+package io.github.mcalgovisualizations.visualization.layouts;
 
 import io.github.mcalgovisualizations.visualization.models.AdjacencyList;
 import net.minestom.server.coordinate.Pos;
