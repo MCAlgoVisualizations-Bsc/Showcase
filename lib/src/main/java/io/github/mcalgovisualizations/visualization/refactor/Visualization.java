@@ -2,11 +2,14 @@ package io.github.mcalgovisualizations.visualization.refactor;
 
 import net.minestom.server.entity.Player;
 
+import java.io.Serializable;
+import java.util.UUID;
+
 /**
  * Base interface for all algorithm visualizations.
  * Each visualization represents a step-by-step demonstration of an algorithm.
  */
-public interface Visualization {
+public interface Visualization extends Serializable {
     /**
      * Randomize the input values for the visualization.
      */
@@ -31,13 +34,13 @@ public interface Visualization {
     /**
      * Go back one step in the algorithm history.
      */
-    void stepBack();
+    void stepBack(UUID uuid);
 
     /**
      * Set the speed of the visualization.
      * @param ticksPerStep Number of ticks between each step (20 ticks = 1 second)
      */
-    void setSpeed(int ticksPerStep);
+    void setSpeed(Player player, int ticksPerStep);
 
     /**
      * Check if the visualization is currently running.
@@ -55,4 +58,9 @@ public interface Visualization {
      * Clean up resources (entities, tasks, etc.)
      */
     void cleanup();
+
+    /**
+     * Renders the current state of visualization.
+     */
+    void Render();
 }

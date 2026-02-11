@@ -1,14 +1,9 @@
-package io.github.mcalgovisualizations.visualization;
+package io.github.mcalgovisualizations.visualization.renderers;
 
 
-import io.github.mcalgovisualizations.visualization.algorithms.AlgorithmStepper;
-import io.github.mcalgovisualizations.visualization.algorithms.StepperFactory;
-import io.github.mcalgovisualizations.visualization.engine.VisualizationController;
-import io.github.mcalgovisualizations.visualization.layouts.FloatingLinearLayout;
-import io.github.mcalgovisualizations.visualization.models.DataModel;
-import io.github.mcalgovisualizations.visualization.models.IntList;
-import io.github.mcalgovisualizations.visualization.refactor.Visualization;
-import io.github.mcalgovisualizations.visualization.render.VisualizationRenderer;
+import io.github.mcalgovisualizations.visualization.SnapshotManager;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.InstanceContainer;
@@ -25,9 +20,6 @@ public class VisualizationManager {
     private static final Map<UUID, Visualization> playerVisualizations = new HashMap<>();
     private static final Map<String, Pos> areaLocations = new HashMap<>();
     private static final Map<String, Class<? extends Visualization>> visualizations = new HashMap<>();
-
-    private static final Map<String, Class<? extends AlgorithmStepper>> steppers = new HashMap<>();
-    private static final Map<UUID, VisualizationController> playerSteppers = new HashMap<>();
 
     static {
         // Define area locations for different visualization types
@@ -55,31 +47,28 @@ public class VisualizationManager {
         int playerOffset = playerVisualizations.size() * 20; // 20 blocks apart
         Pos origin = baseOrigin.add(0, 0, playerOffset);
 
-        final DataModel model = createModelFor(type, player);
-        final AlgorithmStepper stepper = StepperFactory.create(type, model);
+        if (visualizations.containsKey(type.toLowerCase())) {
+            Visualization vis = null;
+            try {
+                // 1. You must tell Java the CLASS TYPES of the parameters first
+                vis = visualizations.get(type.toLowerCase())
+                        .getDeclaredConstructor(UUID.class, Pos.class, InstanceContainer.class)
+                        .newInstance(player.getUuid(), origin, instance); // 2. Then pass the actual values
 
-        // TODO : Let players control size of layout!
-        var layout = new FloatingLinearLayout();
-
-        var renderer = new VisualizationRenderer(instance);
-        renderer.setLayout(layout);
-        var controller = new VisualizationController(stepper, renderer);
-
-        playerSteppers.put(player.getUuid(), controller);
+                playerVisualizations.put(player.getUuid(), vis);
+            } catch (NoSuchMethodException e) {
+                System.out.println("Error: The class for " + type + " does not have a (Pos, InstanceContainer) constructor.");
+            } catch (Exception e) {
+                System.out.println("test");
+                e.printStackTrace();
+            }
+            playerVisualizations.put(player.getUuid(), vis);
+            SnapshotManager.getInstance().assignVisualization(player.getUuid(), vis);
+        }
     }
 
     public static void addVisualization(String name, Class<? extends Visualization> vis) {
         visualizations.put(name.toLowerCase(), vis);
-    }
-
-    /**
-     * Get the current visualization for a player.
-     *
-     * @param player The player
-     * @return The visualization, or null if none assigned
-     */
-    public static VisualizationController getVisualization(Player player) {
-        return playerSteppers.get(player.getUuid());
     }
 
     /**
@@ -88,6 +77,7 @@ public class VisualizationManager {
      * @param player The player
      */
     public static void removeVisualization(Player player) {
+        SnapshotManager.getInstance().remove(player.getUuid());
         Visualization vis = playerVisualizations.remove(player.getUuid());
         if (vis != null) {
             vis.cleanup();
@@ -104,13 +94,54 @@ public class VisualizationManager {
         return areaLocations.get(area.toLowerCase());
     }
 
-    // TODO : this can potentially take a parameter for the size of a list -> player can choose the size in hotbar?
-    private static DataModel createModelFor(String type, Player player) {
-        return switch (type.toLowerCase()) {
-            case "sorting", "insertionsort", "insertion" -> new IntList(new int[10]);
-            // case "bfs" -> new Graph(...);  // if Graph implements DataModel
-            default -> new IntList(new int[10]); // or throw if unknown
-        };
+    public static void randomize(Player player) {
+        var vis = playerVisualizations.get(player.getUuid());
+        if (vis == null) {
+            player.sendMessage(Component.text("No visualization assigned! Use the Algorithm Selector first.", NamedTextColor.RED));
+            return;
+        }
+        vis.randomize();
     }
 
+    public static void start(Player player) {
+        var vis = playerVisualizations.get(player.getUuid());
+        if (vis == null) {
+            player.sendMessage(Component.text("No visualization assigned! Use the Algorithm Selector first.", NamedTextColor.RED));
+            return;
+        }
+        vis.start(player);
+    }
+
+    public static void stop(Player player) {
+        var vis = playerVisualizations.get(player.getUuid());
+        if (vis == null) {
+            player.sendMessage(Component.text("No visualization assigned! Use the Algorithm Selector first.", NamedTextColor.RED));
+            return;
+        }
+        vis.stop();
+    }
+
+    public static void stepForward(Player player) {
+        var vis = playerVisualizations.get(player.getUuid());
+        if (vis == null) {
+            player.sendMessage(Component.text("No visualization assigned! Use the Algorithm Selector first.", NamedTextColor.RED));
+            return;
+        }
+        vis.stepForward();
+        player.sendMessage(Component.text("Stepped forward", NamedTextColor.YELLOW));
+    }
+
+    public static void stepBack(Player player) {
+        var visOld = playerVisualizations.get(player.getUuid());
+        if (visOld == null) {
+            player.sendMessage(Component.text("No visualization assigned! Use the Algorithm Selector first.", NamedTextColor.RED));
+            return;
+        }
+        visOld.cleanup();
+
+        var visNew = SnapshotManager.getInstance().loadLatestSnapshot(player.getUuid());
+        playerVisualizations.put(player.getUuid(), visNew);
+        visNew.Render();
+
+    }
 }
