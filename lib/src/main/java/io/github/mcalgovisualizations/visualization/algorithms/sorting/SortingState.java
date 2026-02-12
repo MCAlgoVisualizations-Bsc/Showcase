@@ -1,39 +1,53 @@
 package io.github.mcalgovisualizations.visualization.algorithms.sorting;
 
-import io.github.mcalgovisualizations.visualization.algorithms.AlgorithmStepper;
-import io.github.mcalgovisualizations.visualization.layouts.FloatingLinearLayout;
-import io.github.mcalgovisualizations.visualization.layouts.Layout;
-import io.github.mcalgovisualizations.visualization.models.DataModel;
-import io.github.mcalgovisualizations.visualization.models.Graph;
-import io.github.mcalgovisualizations.visualization.models.IntList;
+import com.google.common.primitives.Ints;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-public class SortingState {
-    // Algorithm state
-    public int historyIndex = -1;
-    public int currentIndex = 1;      // The element we're currently inserting
-    public int compareIndex = -1;     // Current position during insertion
+public final class SortingState {
+    private int historyIndex = -1;
+    private int currentIndex = 1;
+    private int compareIndex = -1;
 
     private final List<Integer> highlights = new ArrayList<>();
+    private final List<SortingOperation> events = new ArrayList<>();
 
-    public void setHighlights(int v) {
-        this.highlights.add(v);
+    public void beginStep() {
+        highlights.clear();
+        events.clear();
     }
 
-    public void clearHighlights() {
-        this.highlights.clear();
+    @Override
+    public String toString() {
+        return historyIndex + " " + currentIndex + " " + compareIndex + " " + highlights.size() + " " + events.size();
     }
 
-    // TODO : potentially make this an array instead of list?
-    public List<Integer> getHighlights() {
-        return List.copyOf(this.highlights);
+    public void reset() {
+        currentIndex = 0;
+        compareIndex = -1;
+        highlights.clear();
+        events.clear();
     }
 
-    public enum sortingOperations {
-        SWAP, COMPARE
-    }
+
+    public int historyIndex() { return historyIndex; }
+    public int currentIndex() { return currentIndex; }
+    public int compareIndex() { return compareIndex; }
+
+    public void setCompareIndex(int i) { compareIndex = i; }
+    public void incrementCurrentIndex() { currentIndex++; }
+    public void decrementHistoryIndex() { historyIndex--; }
+    public void setHistoryIndex(int i) { historyIndex = i; }
+
+    public void highlightIndex(int index) { highlights.add(index); }
+    public int[] highlights() { return Ints.toArray(highlights); }
+
+    public void addEvent(SortingOperation op) { events.add(op); }
+    public List<SortingOperation> events() { return List.copyOf(events); }
+
+    public enum SortingOperation { SWAP, COMPARE }
+
+
 }
+

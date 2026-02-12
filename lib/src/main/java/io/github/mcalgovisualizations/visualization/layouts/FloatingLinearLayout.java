@@ -1,6 +1,14 @@
 package io.github.mcalgovisualizations.visualization.layouts;
 
+import io.github.mcalgovisualizations.visualization.models.DataModel;
+import io.github.mcalgovisualizations.visualization.models.IntList;
+import io.github.mcalgovisualizations.visualization.render.LayoutEntry;
 import net.minestom.server.coordinate.Pos;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * A {@link Layout} implementation that arranges elements in a straight
@@ -47,27 +55,34 @@ public record FloatingLinearLayout(
     /**
      * Computes a linear layout for {@code size} elements.
      *
-     * @param size   number of elements to render
      * @param origin starting position of the layout
      * @return array of {@link Pos} positions in a straight line
      */
     @Override
-    public Pos[] compute(int size, Pos origin) {
-        Pos[] positions = new Pos[size];
+    public LayoutEntry[] compute(int[] model, Pos origin) {
+        final var size = model.length;
+        final var out = new LayoutEntry[size];
 
-        double y = origin.y() + yOffset;
-        double z = origin.z() + zOffset;
+        final double y = origin.y() + yOffset;
+        final double z = origin.z() + zOffset;
 
         for (int i = 0; i < size; i++) {
-            double x = origin.x() + (i * spacing);
-            positions[i] = new Pos(x, y, z);
+            final double x = origin.x() + (i * spacing);
+            final var pos = new Pos(x, y, z);
+
+            out[i] = new LayoutEntry(pos, model[i]);
         }
 
-        return positions;
+        return out;
     }
 
     @Override
-    public Pos[] random(int size, Pos origin) {
-        throw new UnsupportedOperationException("Not implemented");
+    public LayoutEntry[] random(int[] model, Pos origin) {
+        LayoutEntry[] layout = compute(model, origin);
+
+        List<LayoutEntry> list = new ArrayList<>(Arrays.asList(layout));
+        Collections.shuffle(list);
+
+        return list.toArray(new LayoutEntry[0]);
     }
 }

@@ -1,23 +1,21 @@
 package io.github.mcalgovisualizations.visualization.algorithms;
 
-import io.github.mcalgovisualizations.visualization.algorithms.sorting.SortingState;
-import io.github.mcalgovisualizations.visualization.layouts.CircleLayout;
-import io.github.mcalgovisualizations.visualization.layouts.Layout;
-import io.github.mcalgovisualizations.visualization.models.DataModel;
+import io.github.mcalgovisualizations.visualization.SnapShot;
 
 public interface AlgorithmStepper {
 
     /**
      * Execute one step forward in the algorithm.
      */
-    SortingState step();
+    SnapShot step();
 
     /**
      * Go back one step in the algorithm history.
      */
-    SortingState back();
+    SnapShot back();
 
-    int[] getRender();
+    SnapShot randomize();
 
     boolean isDone();
+
 }

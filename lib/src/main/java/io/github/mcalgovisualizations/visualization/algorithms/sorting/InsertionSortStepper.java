@@ -1,5 +1,7 @@
 package io.github.mcalgovisualizations.visualization.algorithms.sorting;
 
+import io.github.mcalgovisualizations.visualization.HistorySnapshot;
+import io.github.mcalgovisualizations.visualization.SnapShot;
 import io.github.mcalgovisualizations.visualization.algorithms.AlgorithmStepper;
 import io.github.mcalgovisualizations.visualization.models.DataModel;
 import io.github.mcalgovisualizations.visualization.models.IntList;
@@ -7,47 +9,48 @@ import io.github.mcalgovisualizations.visualization.models.IntList;
 import java.io.Serializable;
 
 public class InsertionSortStepper implements AlgorithmStepper {
-    
+
     private final IntList model;
-    private final SortingState state;
-    private boolean ALGORITHM_COMPLETE;
+    private final SortingState state = new SortingState();
+    private boolean ALGORITHM_COMPLETE = false;
 
     public InsertionSortStepper(IntList model) {
         this.model = model;
-        this.state = new SortingState();
-        ALGORITHM_COMPLETE = false;
     }
 
-    // Make this compatible with outside algorithms/operations.
     @Override
-    public SortingState step() {
-        if (ALGORITHM_COMPLETE) return this.state;
+    public SnapShot step() {
+        if (ALGORITHM_COMPLETE)
+            return getHistorySnapshot();
 
-        if (state.currentIndex >= model.size()) {
+
+        state.beginStep();
+        if (state.currentIndex() >= model.size()) {
             ALGORITHM_COMPLETE = true;
-            return this.state;
+            return getHistorySnapshot();
         }
 
-        if (state.compareIndex == -1) {
-            state.compareIndex = state.currentIndex;
+        if (state.compareIndex() == -1) {
+            state.setCompareIndex(state.currentIndex());
         }
 
-        if (state.compareIndex > 0) {
-            var x = model.data()[state.compareIndex];
-            var y = model.data()[state.compareIndex - 1];
-            state.setHighlights(x);
-            state.setHighlights(y);
+        if (state.compareIndex() > 0) {
+            state.highlightIndex(state.compareIndex());
+            state.highlightIndex(state.compareIndex() - 1);
+            state.addEvent(SortingState.SortingOperation.COMPARE);
         }
 
-        if (state.compareIndex > 0 && model.data()[state.compareIndex - 1] > model.data()[state.compareIndex]) {
-            model.swap(state.compareIndex, state.compareIndex - 1);
-            state.compareIndex--;
+        int j = state.compareIndex();
+        if (j > 0 && model.data()[j - 1] > model.data()[j]) {
+            model.swap(j, j - 1);
+            state.addEvent(SortingState.SortingOperation.SWAP);
+            state.setCompareIndex(j - 1);
         } else {
-            state.currentIndex++;
-            state.compareIndex = -1;
+            state.incrementCurrentIndex();
+            state.setCompareIndex(-1);
         }
 
-        return state;
+        return getHistorySnapshot();
     }
 
     public int[] getRender() {
@@ -55,11 +58,37 @@ public class InsertionSortStepper implements AlgorithmStepper {
     }
 
     @Override
-    public SortingState back() {
-        if (state.historyIndex < 0) return state;
-        state.historyIndex--;
+    public SnapShot back() {
+        return getHistorySnapshot();
+    }
+
+    private HistorySnapshot getHistorySnapshot() {
+        return new HistorySnapshot(
+                model.toArray(),
+                state.highlights(),
+                state.currentIndex(),
+                state.compareIndex(),
+                ALGORITHM_COMPLETE
+        );
+    }
+
+    @Override
+    public SnapShot randomize() {
+        // Fisher–Yates shuffle
+        int[] data = model.data();
+
+        for (int i = data.length - 1; i > 0; i--) {
+            int j = (int) (Math.random() * (i + 1));
+
+            int temp = data[i];
+            data[i] = data[j];
+            data[j] = temp;
+        }
+
+        state.reset();
         ALGORITHM_COMPLETE = false;
-        return state;
+
+        return getHistorySnapshot();
     }
 
 

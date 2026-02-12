@@ -1,5 +1,7 @@
 package io.github.mcalgovisualizations.visualization.engine;
 
+import io.github.mcalgovisualizations.visualization.HistorySnapshot;
+import io.github.mcalgovisualizations.visualization.SnapShot;
 import io.github.mcalgovisualizations.visualization.algorithms.AlgorithmStepper;
 import io.github.mcalgovisualizations.visualization.algorithms.sorting.SortingState;
 import io.github.mcalgovisualizations.visualization.layouts.Layout;
@@ -57,21 +59,19 @@ public class VisualizationController {
     }
 
     public void step() {
-        SortingState state = stepper.step();
-        int[] nodesToRender = stepper.getRender();
+        final var snapshot = (HistorySnapshot) stepper.step();
 
-        renderer.render(nodesToRender, Block.GRANITE);
-
-
-        // handle rendering im thinking something like converting the state to a DisplayValue[]
-        // renderer.render( SortingState converted to DisplayValue[] );
-
+        renderer.render(snapshot, Block.GRANITE);
         // handle history with snapshots
         // make the state into a snapshot which can be stored
+
+
     }
 
     public void back() {
-        stepper.back();
+
+        final var snapShot = stepper.back();
+
         // handle visual
     }
 
@@ -92,11 +92,13 @@ public class VisualizationController {
     public void cleanup() {
         stop();
         renderer.cleanup();
-
     }
 
     public void randomize() {
+        final var snapshot = stepper.randomize();
+        renderer.render(snapshot, Block.GRANITE);
 
+        // TODO : Save snapshot in history !
     }
 
 }

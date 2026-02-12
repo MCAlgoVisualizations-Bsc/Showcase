@@ -68,7 +68,7 @@ public final class Main {
             player.setAllowFlying(true);
 
             // Give only the algorithm selector and spawn item by default
-            player.getInventory().setItemStack(4, VisualizationItems.algorithmSelectorItem());
+            player.getInventory().setItemStack(0, VisualizationItems.algorithmSelectorItem());
             player.getInventory().setItemStack(8, VisualizationItems.spawnItem());
 
             // Send welcome message

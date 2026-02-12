@@ -1,6 +1,5 @@
 package io.github.mcalgovisualizations.visualization;
 
-
 import io.github.mcalgovisualizations.visualization.algorithms.AlgorithmStepper;
 import io.github.mcalgovisualizations.visualization.algorithms.StepperFactory;
 import io.github.mcalgovisualizations.visualization.engine.VisualizationController;
@@ -14,6 +13,7 @@ import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.InstanceContainer;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -23,9 +23,9 @@ import java.util.UUID;
  * Each player can have their own active visualization instance.
  */
 public class VisualizationManager {
-    private static final Map<UUID, Visualization> playerVisualizations = new HashMap<>();
     private static final Map<String, Pos> areaLocations = new HashMap<>();
     private static final Map<String, Class<? extends Visualization>> visualizations = new HashMap<>();
+    private static final Map<UUID, Visualization> playerVisualizations = new HashMap<>();
 
     private static final Map<String, Class<? extends AlgorithmStepper>> steppers = new HashMap<>();
     private static final Map<UUID, VisualizationController> playerSteppers = new HashMap<>();
@@ -50,10 +50,10 @@ public class VisualizationManager {
         // Clean up existing visualization
         removeVisualization(player);
 
-        final DataModel model = createModelFor(type, player);
+        // TODO : Let players control Layout and model's size n!
+        final DataModel model = createModelFor(type, player, 10);
         final AlgorithmStepper stepper = StepperFactory.create(type, model);
 
-        // TODO : Let players control Layout and size!
         Layout layout = new FloatingLinearLayout();
 
         var renderer = new VisualizationRenderer(instance);
@@ -79,7 +79,7 @@ public class VisualizationManager {
      * @param player The player
      */
     public static void removeVisualization(Player player) {
-        Visualization vis = playerVisualizations.remove(player.getUuid());
+        VisualizationController vis = playerSteppers.remove(player.getUuid());
         if (vis != null) {
             vis.cleanup();
         }
@@ -96,9 +96,18 @@ public class VisualizationManager {
     }
 
     // TODO : this can potentially take a parameter for the size of a list -> player can choose the size in hotbar?
-    private static DataModel createModelFor(String type, Player player) {
+    private static DataModel createModelFor(String type, Player player, int n) {
         return switch (type.toLowerCase()) {
-            case "sorting", "insertionsort", "insertion" -> new IntList(new int[10]);
+            case "sorting", "insertionsort", "insertion" -> {
+                var out = new IntList(new int[n]);
+
+                for (int i = 0; i < out.length(); i++) {
+                    out.set(i, i);
+                }
+
+                yield out;
+
+            }
             // case "bfs" -> new Graph(...);  // if Graph implements DataModel
             default -> new IntList(new int[10]); // or throw if unknown
         };

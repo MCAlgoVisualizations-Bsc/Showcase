@@ -47,6 +47,17 @@ public record IntList(int[] data) implements DataModel {
     }
 
     /**
+     *
+     */
+    public int get(int i) {
+        return data[i];
+    }
+
+    public int length() {
+        return data.length;
+    }
+
+    /**
      * Swaps the values at the specified indices.
      *
      * @param i first index
@@ -68,7 +79,7 @@ public record IntList(int[] data) implements DataModel {
      * @return a copy of the backing array
      */
     public int[] toArray() {
-        return Arrays.copyOf(data, data.length);
+        return data;
     }
 
     /**

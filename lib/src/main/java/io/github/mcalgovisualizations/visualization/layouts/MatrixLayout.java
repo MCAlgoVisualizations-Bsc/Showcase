@@ -1,5 +1,7 @@
 package io.github.mcalgovisualizations.visualization.layouts;
 
+import io.github.mcalgovisualizations.visualization.models.DataModel;
+import io.github.mcalgovisualizations.visualization.render.LayoutEntry;
 import net.minestom.server.coordinate.Pos;
 
 import java.util.ArrayList;
@@ -35,15 +37,16 @@ public record MatrixLayout (
      * Throws if size exceeds capacity.
      */
     @Override
-    public Pos[] compute(int size, Pos origin) {
-        return random(size, origin);
+    public LayoutEntry[] compute(int[] model, Pos origin) {
+        return random(model, origin);
     }
 
     /**
      * Randomized (but deterministic per seed) grid positions.
      */
     @Override
-    public Pos[] random(int size, Pos origin) {
+    public LayoutEntry[] random(int[] model, Pos origin) {
+        final var size = model.length;
         final var random = new Random(seed);
         int capacity = cols * rows;
         if (size > capacity) {
@@ -82,7 +85,7 @@ public record MatrixLayout (
             positions[id] = new Pos(x, y, z);
         }
 
-        return positions;
+        return new LayoutEntry[0];
     }
 
     private record Cell(int col, int row) { }
