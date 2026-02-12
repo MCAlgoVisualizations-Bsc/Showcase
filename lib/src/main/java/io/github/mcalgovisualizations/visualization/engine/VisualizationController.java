@@ -62,17 +62,18 @@ public class VisualizationController {
         final var snapshot = (HistorySnapshot) stepper.step();
 
         renderer.render(snapshot, Block.GRANITE);
+
         // handle history with snapshots
         // make the state into a snapshot which can be stored
-
-
     }
 
     public void back() {
+        final var snapshot = (HistorySnapshot) stepper.back();
 
-        final var snapShot = stepper.back();
+        renderer.render(snapshot, Block.GRANITE);
 
-        // handle visual
+        // handle history with snapshots
+        // make the state into a snapshot which can be stored
     }
 
     public void setSpeed(int ticksPerStep) {
@@ -95,6 +96,7 @@ public class VisualizationController {
     }
 
     public void randomize() {
+        stop();
         final var snapshot = stepper.randomize();
         renderer.render(snapshot, Block.GRANITE);
 

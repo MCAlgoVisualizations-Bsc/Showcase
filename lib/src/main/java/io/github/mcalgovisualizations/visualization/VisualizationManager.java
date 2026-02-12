@@ -55,8 +55,9 @@ public class VisualizationManager {
         final AlgorithmStepper stepper = StepperFactory.create(type, model);
 
         Layout layout = new FloatingLinearLayout();
+        var origin = new Pos(0, 43, 0);
 
-        var renderer = new VisualizationRenderer(instance);
+        var renderer = new VisualizationRenderer(instance, origin);
         renderer.setLayout(layout);
         var controller = new VisualizationController(stepper, renderer);
 

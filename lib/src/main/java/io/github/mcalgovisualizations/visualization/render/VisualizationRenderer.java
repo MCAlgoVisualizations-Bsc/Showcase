@@ -17,19 +17,21 @@ import java.util.Set;
 public class VisualizationRenderer implements Renderer {
 
     private final Instance instance;
-    private final Pos origin = new Pos(0, 43, 0); // TODO: externalize
+    private final Pos origin;
     private Layout layout;
 
     // index = stable identity
     private final Map<Integer, DisplayValue> activeValues = new HashMap<>();
 
-    public VisualizationRenderer(Instance instance) {
+    public VisualizationRenderer(Instance instance, Pos origin) {
         this.instance = instance;
+        this.origin = origin;
     }
 
-    public VisualizationRenderer(Instance instance, Layout layout) {
+    public VisualizationRenderer(Instance instance, Layout layout, Pos origin) {
         this.instance = instance;
         this.layout = layout;
+        this.origin = origin;
     }
 
     public Layout getLayout() {
@@ -96,10 +98,5 @@ public class VisualizationRenderer implements Renderer {
             dv.remove();
         }
         activeValues.clear();
-    }
-
-    @Override
-    public void clear() {
-        cleanup();
     }
 }

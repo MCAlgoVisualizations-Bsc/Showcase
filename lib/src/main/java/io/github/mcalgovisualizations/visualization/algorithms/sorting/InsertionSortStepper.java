@@ -53,13 +53,9 @@ public class InsertionSortStepper implements AlgorithmStepper {
         return getHistorySnapshot();
     }
 
-    public int[] getRender() {
-        return this.model.toArray();
-    }
-
     @Override
     public SnapShot back() {
-        return getHistorySnapshot();
+        return step(); // TODO : fix when history works
     }
 
     private HistorySnapshot getHistorySnapshot() {

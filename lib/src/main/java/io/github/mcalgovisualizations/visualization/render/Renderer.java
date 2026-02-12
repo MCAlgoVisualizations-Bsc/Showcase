@@ -18,8 +18,4 @@ public interface Renderer {
      */
     void cleanup();
 
-    /**
-     * clears the current visualization
-     */
-    void clear();
 }
