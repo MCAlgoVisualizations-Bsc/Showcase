@@ -34,9 +34,10 @@ public record FloatingLinearLayout(
      *     <li>yOffset = 1.0</li>
      *     <li>zOffset = 0.0</li>
      * </ul>
+     * Useful for testing
      */
     public FloatingLinearLayout() {
-        this(2.0, 1.0, 0.0);
+        this(1.0, 0.0, 0.0);
     }
 
     /**
@@ -58,6 +59,10 @@ public record FloatingLinearLayout(
      */
     @Override
     public LayoutEntry[] compute(int[] model, Pos origin) {
+        if(model == null || model.length == 0) {
+            return new LayoutEntry[0];
+        }
+
         final var size = model.length;
         final var out = new LayoutEntry[size];
 
