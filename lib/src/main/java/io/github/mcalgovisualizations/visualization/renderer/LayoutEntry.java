@@ -1,4 +1,4 @@
-package io.github.mcalgovisualizations.visualization.render;
+package io.github.mcalgovisualizations.visualization.renderer;
 
 import net.minestom.server.coordinate.Pos;
 import org.jetbrains.annotations.NotNull;

@@ -1,7 +1,7 @@
 package io.github.mcalgovisualizations.visualization.refactor;
 
 
-import io.github.mcalgovisualizations.visualization.render.DisplayValue;
+import io.github.mcalgovisualizations.visualization.renderer.DisplayValue;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.InstanceContainer;

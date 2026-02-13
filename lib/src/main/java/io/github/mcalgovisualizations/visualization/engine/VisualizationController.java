@@ -1,17 +1,12 @@
 package io.github.mcalgovisualizations.visualization.engine;
 
 import io.github.mcalgovisualizations.visualization.HistorySnapshot;
-import io.github.mcalgovisualizations.visualization.SnapShot;
 import io.github.mcalgovisualizations.visualization.algorithms.AlgorithmStepper;
-import io.github.mcalgovisualizations.visualization.algorithms.sorting.SortingState;
-import io.github.mcalgovisualizations.visualization.layouts.Layout;
-import io.github.mcalgovisualizations.visualization.render.Renderer;
-import io.github.mcalgovisualizations.visualization.render.VisualizationRenderer;
+import io.github.mcalgovisualizations.visualization.renderer.Renderer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.Player;
-import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.timer.Task;
 

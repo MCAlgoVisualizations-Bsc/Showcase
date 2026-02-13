@@ -1,4 +1,4 @@
-package io.github.mcalgovisualizations.visualization.render;
+package io.github.mcalgovisualizations.visualization.renderer;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;

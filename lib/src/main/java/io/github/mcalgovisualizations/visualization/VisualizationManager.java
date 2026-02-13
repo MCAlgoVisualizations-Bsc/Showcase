@@ -8,12 +8,11 @@ import io.github.mcalgovisualizations.visualization.layouts.Layout;
 import io.github.mcalgovisualizations.visualization.models.DataModel;
 import io.github.mcalgovisualizations.visualization.models.IntList;
 import io.github.mcalgovisualizations.visualization.refactor.Visualization;
-import io.github.mcalgovisualizations.visualization.render.VisualizationRenderer;
+import io.github.mcalgovisualizations.visualization.renderer.VisualizationRenderer;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.InstanceContainer;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
