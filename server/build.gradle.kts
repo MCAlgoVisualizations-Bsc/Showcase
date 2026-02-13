@@ -1,6 +1,14 @@
 plugins {
     id("java")
     id("com.gradleup.shadow") version "9.3.0"
+    jacoco
+}
+
+group = "io.github.mcalgovisualizations"
+version = "unspecified"
+
+repositories {
+    mavenCentral()
 }
 
 sourceSets {
@@ -9,13 +17,6 @@ sourceSets {
             srcDirs("src")
         }
     }
-}
-
-group = "io.github.mcalgovisualizations"
-version = "unspecified"
-
-repositories {
-    mavenCentral()
 }
 
 dependencies {
@@ -32,20 +33,32 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-tasks {
-    test {
-        useJUnitPlatform()
-    }
+tasks.test {
+    useJUnitPlatform()
+}
 
-    shadowJar {
-        manifest {
-            attributes["Main-Class"] = "io.github.mcalgovisualizations.Main"
-        }
-        archiveBaseName.set("minecraft-server")
-        archiveClassifier.set("all")
+tasks.shadowJar {
+    manifest {
+        attributes["Main-Class"] = "io.github.mcalgovisualizations.Main"
     }
+    archiveBaseName.set("minecraft-server")
+    archiveClassifier.set("all")
+}
 
-    build {
-        dependsOn(shadowJar)
+tasks.build {
+    dependsOn(tasks.shadowJar)
+}
+
+tasks.test {
+    useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        html.required.set(true)
+        xml.required.set(true)
+        csv.required.set(false)
     }
 }

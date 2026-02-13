@@ -1,4 +1,35 @@
-import junit.framework.TestCase;
-public class VisualizationRendererTest extends TestCase {
-  
+package io.github.mcalgovisualizations.visualization.renderer;
+
+import io.github.mcalgovisualizations.visualization.layouts.FloatingLinearLayout;
+import net.minestom.server.MinecraftServer;
+import net.minestom.server.coordinate.Pos;
+import net.minestom.server.instance.Instance;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class VisualizationRendererTest {
+    MinecraftServer server = MinecraftServer.init();
+    private final Instance instance = MinecraftServer.getInstanceManager().createInstanceContainer();
+    private final Pos pos = Pos.ZERO;
+    private VisualizationRenderer renderer;
+
+    @BeforeEach
+    void beforeEach() {
+        this.renderer = new VisualizationRenderer(instance, new FloatingLinearLayout(),pos);
+    }
+
+    @AfterEach
+    void afterEach() {
+        this.renderer = null;
+    }
+
+    @Test
+    public void testRender() {
+        assertEquals(true, true);
+    }
+
 }

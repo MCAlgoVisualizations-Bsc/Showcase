@@ -94,6 +94,10 @@ public record IntList(int[] data) implements DataModel {
      * @throws IllegalArgumentException if {@code n < 0} or {@code min > maxInclusive}
      */
     public static IntList random(int n, int min, int maxInclusive, Random r) {
+        if (n < 0) throw new IllegalArgumentException("n must be >= 0");
+        if (min > maxInclusive) throw new IllegalArgumentException("min must be <= maxInclusive");
+        if (r == null) throw new IllegalArgumentException("r cannot be null");
+
         int[] a = new int[n];
         for (int i = 0; i < n; i++) {
             a[i] = min + r.nextInt(maxInclusive - min + 1);
