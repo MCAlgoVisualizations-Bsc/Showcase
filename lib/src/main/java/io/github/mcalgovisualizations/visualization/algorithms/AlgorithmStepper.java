@@ -18,4 +18,5 @@ public interface AlgorithmStepper {
 
     boolean isDone();
 
+    SnapShot start();
 }

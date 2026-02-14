@@ -5,8 +5,11 @@ import io.github.mcalgovisualizations.visualization.SnapShot;
 import io.github.mcalgovisualizations.visualization.algorithms.AlgorithmStepper;
 import io.github.mcalgovisualizations.visualization.models.DataModel;
 import io.github.mcalgovisualizations.visualization.models.IntList;
+import net.minestom.server.snapshot.Snapshot;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class InsertionSortStepper implements AlgorithmStepper {
 
@@ -16,6 +19,10 @@ public class InsertionSortStepper implements AlgorithmStepper {
 
     public InsertionSortStepper(IntList model) {
         this.model = model;
+    }
+
+    public SnapShot start() {
+        return getHistorySnapshot();
     }
 
     @Override
@@ -62,6 +69,7 @@ public class InsertionSortStepper implements AlgorithmStepper {
         return new HistorySnapshot(
                 model.toArray(),
                 state.highlights(),
+                new ArrayList<>(),
                 state.currentIndex(),
                 state.compareIndex(),
                 ALGORITHM_COMPLETE

@@ -1,7 +1,7 @@
 package io.github.mcalgovisualizations.visualization.refactor;
 
 
-import io.github.mcalgovisualizations.visualization.renderer.DisplayValue;
+import io.github.mcalgovisualizations.visualization.renderer.BlockDisplay;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.InstanceContainer;
@@ -29,8 +29,8 @@ public abstract class AbstractVisualization<T extends Comparable<T>> /* implemen
     protected int ticksPerStep = 20; // 1 second default
     protected boolean running = false;
     protected Task runningTask = null;
-    protected List<DisplayValue> values = new ArrayList<>();
-    protected final List<List<DisplayValue>> history = new ArrayList<>();
+    protected List<BlockDisplay> values = new ArrayList<>();
+    protected final List<List<BlockDisplay>> history = new ArrayList<>();
     protected int historyIndex = -1;
 
     // Visual spacing constants
@@ -39,7 +39,7 @@ public abstract class AbstractVisualization<T extends Comparable<T>> /* implemen
     private static final double HEIGHT_MULTIPLIER = 0.5; // How much height per value unit
 
 
-    public AbstractVisualization(String name, List<DisplayValue> values, net.minestom.server.coordinate.Pos origin, InstanceContainer instance) {
+    public AbstractVisualization(String name, List<BlockDisplay> values, net.minestom.server.coordinate.Pos origin, InstanceContainer instance) {
         this.name = name;
         this.origin = origin;
         this.instance = instance;
@@ -94,7 +94,7 @@ public abstract class AbstractVisualization<T extends Comparable<T>> /* implemen
     // @Override
     public void cleanup() {
         stop();
-        for (DisplayValue entity : values) {
+        for (BlockDisplay entity : values) {
             entity.remove();
         }
         values.clear();
@@ -151,8 +151,8 @@ public abstract class AbstractVisualization<T extends Comparable<T>> /* implemen
         }
 
         // Save a snapshot of the current values (not the DisplayValue objects themselves)
-        List<DisplayValue> snapshot = new ArrayList<>();
-        for (DisplayValue dv : values) {
+        List<BlockDisplay> snapshot = new ArrayList<>();
+        for (BlockDisplay dv : values) {
             // We only care about the integer value for history
             // The entities stay the same
             snapshot.add(dv);
@@ -193,7 +193,7 @@ public abstract class AbstractVisualization<T extends Comparable<T>> /* implemen
     }
 
     private void clearRenderState() {
-        for (DisplayValue value : values) {
+        for (BlockDisplay value : values) {
             value.setHighlighted(false);
         }
     }

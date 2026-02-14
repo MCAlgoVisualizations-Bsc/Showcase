@@ -21,12 +21,9 @@ public class VisualizationRenderer implements Renderer {
     // index = stable identity
     private final Map<Integer, DisplayValue> activeValues = new HashMap<>();
 
-    public VisualizationRenderer(Instance instance, Pos origin) {
-        this.instance = instance;
-        this.origin = origin;
-    }
+    public VisualizationRenderer(Instance instance, Pos origin, Layout layout) {
+        if (layout == null) { throw new IllegalStateException("Layout is null"); }
 
-    public VisualizationRenderer(Instance instance, Layout layout, Pos origin) {
         this.instance = instance;
         this.layout = layout;
         this.origin = origin;
@@ -42,9 +39,6 @@ public class VisualizationRenderer implements Renderer {
 
     @Override
     public void render(SnapShot snapshot, Block block) {
-        if (layout == null) {
-            throw new IllegalStateException("Layout is null");
-        }
 
         final int[] model = snapshot.values();
         final LayoutEntry[] entries = layout.compute(model, origin);
@@ -69,7 +63,8 @@ public class VisualizationRenderer implements Renderer {
         for (int i = 0; i < length; i++) {
             DisplayValue dv = activeValues.get(i);
             if (dv == null) {
-                dv = new DisplayValue(entries[i].pos(), block, Integer.toString(entries[i].value()));
+                dv = new BlockDisplay(entries[i].pos(), block, Integer.toString(entries[i].value()));
+                //dv = new CircleDisplay(entries[i].pos(), 5, 20, block, 0);
                 dv.setInstance(instance);
 
                 final Pos spawnPos = entries[i].pos();
@@ -81,7 +76,7 @@ public class VisualizationRenderer implements Renderer {
 
         // Update all active entities (no respawn; no delayed teleports)
         for (int i = 0; i < length; i++) {
-            DisplayValue dv = activeValues.get(i);
+            var dv = (BlockDisplay) activeValues.get(i);
 
             dv.updateBlock(block);                 // safe if block changes; no-op if same
             dv.updateValue(entries[i].value());
@@ -97,4 +92,6 @@ public class VisualizationRenderer implements Renderer {
         }
         activeValues.clear();
     }
+
+
 }

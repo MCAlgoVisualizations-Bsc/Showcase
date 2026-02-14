@@ -19,7 +19,7 @@ public class VisualizationRendererTest {
 
     @BeforeEach
     void beforeEach() {
-        this.renderer = new VisualizationRenderer(instance, new FloatingLinearLayout(),pos);
+        this.renderer = new VisualizationRenderer(instance, pos, new FloatingLinearLayout());
     }
 
     @AfterEach

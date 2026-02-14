@@ -1,9 +1,11 @@
 package io.github.mcalgovisualizations.visualization;
 
-import java.io.Serializable;
+import net.minestom.server.instance.block.Block;
 
-public interface SnapShot extends Serializable {
+import java.util.List;
+
+public interface SnapShot {
     int[] values();
     int[] highlights();
-
+    List<AlgorithmEvent> events();
 }
