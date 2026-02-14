@@ -1,13 +1,12 @@
-package io.github.mcalgovisualizations.visualization;
+package io.github.mcalgovisualizations.visualization.engine;
 
 import io.github.mcalgovisualizations.visualization.algorithms.AlgorithmStepper;
 import io.github.mcalgovisualizations.visualization.algorithms.StepperFactory;
-import io.github.mcalgovisualizations.visualization.engine.VisualizationController;
 import io.github.mcalgovisualizations.visualization.layouts.FloatingLinearLayout;
 import io.github.mcalgovisualizations.visualization.layouts.Layout;
 import io.github.mcalgovisualizations.visualization.models.DataModel;
 import io.github.mcalgovisualizations.visualization.models.IntList;
-import io.github.mcalgovisualizations.visualization.refactor.Visualization;
+import io.github.mcalgovisualizations.visualization.renderer.Renderer;
 import io.github.mcalgovisualizations.visualization.renderer.VisualizationRenderer;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
@@ -23,12 +22,7 @@ import java.util.UUID;
  */
 public class VisualizationManager {
     private static final Map<String, Pos> areaLocations = new HashMap<>();
-    private static final Map<String, Class<? extends Visualization>> visualizations = new HashMap<>();
-    private static final Map<UUID, Visualization> playerVisualizations = new HashMap<>();
-
-    private static final Map<String, Class<? extends AlgorithmStepper>> steppers = new HashMap<>();
     private static final Map<UUID, VisualizationController> playerSteppers = new HashMap<>();
-
     static {
         // Define area locations for different visualization types
         areaLocations.put("sorting", new Pos(5, 42, 5));
@@ -53,12 +47,13 @@ public class VisualizationManager {
         final DataModel model = createModelFor(type, player, 10);
         final AlgorithmStepper stepper = StepperFactory.create(type, model);
 
-        Layout layout = new FloatingLinearLayout();
-        var origin = new Pos(0, 43, 0);
+        final Layout layout = new FloatingLinearLayout();
+        final Pos origin = new Pos(0, 43, 0);
 
-        var renderer = new VisualizationRenderer(instance, origin);
+        final Renderer renderer = new VisualizationRenderer(instance, origin);
         renderer.setLayout(layout);
-        var controller = new VisualizationController(stepper, renderer);
+
+        final var controller = new VisualizationController(stepper, renderer);
 
         playerSteppers.put(player.getUuid(), controller);
     }
@@ -70,7 +65,7 @@ public class VisualizationManager {
      * @return The visualization, or null if none assigned
      */
     public static VisualizationController getVisualization(Player player) {
-        return playerSteppers.get(player.getUuid());
+         return playerSteppers.get(player.getUuid());
     }
 
     /**
@@ -79,7 +74,8 @@ public class VisualizationManager {
      * @param player The player
      */
     public static void removeVisualization(Player player) {
-        VisualizationController vis = playerSteppers.remove(player.getUuid());
+        var vis = playerSteppers.remove(player.getUuid());
+        //var vis = activeVisualizations.remove(player.getUuid());
         if (vis != null) {
             vis.cleanup();
         }

@@ -1,12 +1,9 @@
 package io.github.mcalgovisualizations.visualization.algorithms.sorting;
 
 import io.github.mcalgovisualizations.visualization.HistorySnapshot;
-import io.github.mcalgovisualizations.visualization.SnapShot;
+import io.github.mcalgovisualizations.visualization.Snapshot;
 import io.github.mcalgovisualizations.visualization.algorithms.AlgorithmStepper;
-import io.github.mcalgovisualizations.visualization.models.DataModel;
 import io.github.mcalgovisualizations.visualization.models.IntList;
-
-import java.io.Serializable;
 
 public class InsertionSortStepper implements AlgorithmStepper {
 
@@ -19,7 +16,7 @@ public class InsertionSortStepper implements AlgorithmStepper {
     }
 
     @Override
-    public SnapShot step() {
+    public Snapshot step() {
         if (ALGORITHM_COMPLETE)
             return getHistorySnapshot();
 
@@ -54,7 +51,7 @@ public class InsertionSortStepper implements AlgorithmStepper {
     }
 
     @Override
-    public SnapShot back() {
+    public Snapshot back() {
         return step(); // TODO : fix when history works
     }
 
@@ -69,7 +66,7 @@ public class InsertionSortStepper implements AlgorithmStepper {
     }
 
     @Override
-    public SnapShot randomize() {
+    public Snapshot randomize() {
         // Fisher–Yates shuffle
         int[] data = model.data();
 

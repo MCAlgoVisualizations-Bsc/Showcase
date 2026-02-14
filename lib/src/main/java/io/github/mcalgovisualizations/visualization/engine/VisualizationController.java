@@ -23,18 +23,14 @@ public class VisualizationController {
     private int ticksPerStep = 20;
     private boolean IS_RUNNING = false;
     private Task runningTask = null;
+    public boolean isRunning() { return this.IS_RUNNING; }
 
     public VisualizationController(AlgorithmStepper stepper, Renderer renderer) {
         this.stepper = stepper;
         this.renderer = renderer;
     }
 
-    public void start(Player player) {
-        if (stepper.isDone()) {
-            player.sendMessage(Component.text("Algorithm complete! Use randomize to restart.", NamedTextColor.YELLOW));
-            return;
-        }
-
+    public void start() {
         if(IS_RUNNING) return;
         IS_RUNNING = true;
 
@@ -97,6 +93,7 @@ public class VisualizationController {
 
         // TODO : Save snapshot in history !
     }
+
 
 }
 

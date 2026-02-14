@@ -1,6 +1,6 @@
 package io.github.mcalgovisualizations.visualization.renderer;
 
-import io.github.mcalgovisualizations.visualization.SnapShot;
+import io.github.mcalgovisualizations.visualization.Snapshot;
 import io.github.mcalgovisualizations.visualization.layouts.Layout;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.instance.Instance;
@@ -41,7 +41,7 @@ public class VisualizationRenderer implements Renderer {
     }
 
     @Override
-    public void render(SnapShot snapshot, Block block) {
+    public void render(Snapshot snapshot, Block block) {
         if (layout == null) {
             throw new IllegalStateException("Layout is null");
         }
