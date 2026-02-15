@@ -1,6 +1,6 @@
 package io.github.mcalgovisualizations.visualization.renderer;
 
-import io.github.mcalgovisualizations.visualization.SnapShot;
+import io.github.mcalgovisualizations.visualization.Snapshot;
 import io.github.mcalgovisualizations.visualization.layouts.Layout;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.instance.Instance;
@@ -38,8 +38,11 @@ public class VisualizationRenderer implements Renderer {
     }
 
     @Override
-    public void render(SnapShot snapshot, Block block) {
+    public void render(Snapshot snapshot, Block block) {
 
+        for(var e : snapshot.events()) {
+            System.out.println(e.toString());
+        }
         final int[] model = snapshot.values();
         final LayoutEntry[] entries = layout.compute(model, origin);
         final int length = entries.length;

@@ -4,13 +4,12 @@ import io.github.mcalgovisualizations.visualization.algorithms.AlgorithmStepper;
 import io.github.mcalgovisualizations.visualization.algorithms.StepperFactory;
 import io.github.mcalgovisualizations.visualization.engine.VisualizationController;
 import io.github.mcalgovisualizations.visualization.layouts.CircleLayout;
-import io.github.mcalgovisualizations.visualization.layouts.FloatingLinearLayout;
 import io.github.mcalgovisualizations.visualization.layouts.Layout;
 import io.github.mcalgovisualizations.visualization.models.DataModel;
 import io.github.mcalgovisualizations.visualization.models.IntList;
 import io.github.mcalgovisualizations.visualization.refactor.Visualization;
-import io.github.mcalgovisualizations.visualization.renderer.VisualizationRenderer;
-import io.github.mcalgovisualizations.visualization.renderer.VisualizationScene;
+import io.github.mcalgovisualizations.visualization.renderer.update.VisualizationRenderer;
+import io.github.mcalgovisualizations.visualization.renderer.update.VisualizationScene;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.InstanceContainer;
@@ -58,7 +57,7 @@ public class VisualizationManager {
         Layout layout = new CircleLayout();
         var origin = new Pos(0, 43, 0);
 
-        var renderer = new VisualizationScene(instance, origin, layout);
+        var renderer = new VisualizationRenderer(instance, origin, layout);
         var controller = new VisualizationController(stepper, renderer);
         controller.onStart();
 

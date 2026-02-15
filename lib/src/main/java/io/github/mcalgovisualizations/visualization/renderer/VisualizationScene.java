@@ -1,6 +1,6 @@
 package io.github.mcalgovisualizations.visualization.renderer;
 
-import io.github.mcalgovisualizations.visualization.SnapShot;
+import io.github.mcalgovisualizations.visualization.Snapshot;
 import io.github.mcalgovisualizations.visualization.layouts.Layout;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
@@ -28,7 +28,7 @@ public class VisualizationScene {
      * Spawns all the entities on algorithm startup
      * @param snapShot original layout
      */
-    public void start(SnapShot snapShot) {
+    public void onStart(Snapshot snapShot) {
         final var values = snapShot.values();
         final var entries = layout.compute(values, origin);
 
@@ -45,7 +45,7 @@ public class VisualizationScene {
         }
     }
 
-    public void render(SnapShot snapShot) {
+    public void render(Snapshot snapShot) {
         final var events = snapShot.events();
 
         // handle events, nodes are keyed to the value
@@ -55,4 +55,5 @@ public class VisualizationScene {
         for (var node : nodes.values()) node.remove();
         this.nodes.clear();
     }
+
 }

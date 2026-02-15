@@ -1,8 +1,6 @@
 package io.github.mcalgovisualizations.visualization;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public record HistorySnapshot(
         int[] values,
@@ -11,6 +9,6 @@ public record HistorySnapshot(
         int currentIndex,
         int compareIndex,
         boolean completed
-) implements SnapShot {
+) implements Snapshot {
 
 }

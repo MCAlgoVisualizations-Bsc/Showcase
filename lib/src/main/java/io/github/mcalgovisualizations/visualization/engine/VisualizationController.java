@@ -1,14 +1,15 @@
 package io.github.mcalgovisualizations.visualization.engine;
 
 import io.github.mcalgovisualizations.visualization.HistorySnapshot;
+import io.github.mcalgovisualizations.visualization.Snapshot;
 import io.github.mcalgovisualizations.visualization.algorithms.AlgorithmStepper;
-import io.github.mcalgovisualizations.visualization.renderer.Renderer;
-import io.github.mcalgovisualizations.visualization.renderer.VisualizationScene;
+import io.github.mcalgovisualizations.visualization.renderer.update.RenderContext;
+import io.github.mcalgovisualizations.visualization.renderer.update.VisualizationRenderer;
+import io.github.mcalgovisualizations.visualization.renderer.update.VisualizationScene;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.Player;
-import net.minestom.server.instance.block.Block;
 import net.minestom.server.timer.Task;
 
 import java.time.Duration;
@@ -19,20 +20,20 @@ import java.time.Duration;
 public class VisualizationController {
 
     private final AlgorithmStepper stepper;
-    private final VisualizationScene renderer;
+    private final VisualizationRenderer renderer;
 
     private int ticksPerStep = 20;
     private boolean IS_RUNNING = false;
     private Task runningTask = null;
 
-    public VisualizationController(AlgorithmStepper stepper, VisualizationScene renderer) {
+    public VisualizationController(AlgorithmStepper stepper, VisualizationRenderer renderer) {
         this.stepper = stepper;
         this.renderer = renderer;
     }
 
     public void onStart() {
-        var snapshot = stepper.start();
-        renderer.start(snapshot);
+        var snapshot = stepper.onStart();
+        renderer.onStart();
     }
 
     public void start(Player player) {
@@ -61,7 +62,7 @@ public class VisualizationController {
     public void step() {
         final var snapshot = (HistorySnapshot) stepper.step();
 
-        renderer.render(snapshot);
+        renderer.step(snapshot);
 
         // handle history with snapshots
         // make the state into a snapshot which can be stored
@@ -69,8 +70,7 @@ public class VisualizationController {
 
     public void back() {
         final var snapshot = (HistorySnapshot) stepper.back();
-
-        renderer.render(snapshot);
+        // renderer.back(snapshot);
 
         // handle history with snapshots
         // make the state into a snapshot which can be stored
@@ -92,13 +92,13 @@ public class VisualizationController {
 
     public void cleanup() {
         stop();
-        renderer.cleanup();
+        renderer.onCleanup();
     }
 
     public void randomize() {
         stop();
         final var snapshot = stepper.randomize();
-        renderer.render(snapshot);
+        renderer.step(snapshot);
 
         // TODO : Save snapshot in history !
     }
