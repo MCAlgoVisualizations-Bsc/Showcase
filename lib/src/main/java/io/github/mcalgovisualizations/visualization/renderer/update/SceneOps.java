@@ -1,5 +1,7 @@
 package io.github.mcalgovisualizations.visualization.renderer.update;
 
+import net.minestom.server.coordinate.Pos;
+
 public interface SceneOps {
 
     // lifecycle
@@ -15,7 +17,7 @@ public interface SceneOps {
     void clearHighlights();
 
     // movement primitives
-    void moveSlotTo(int slot, Object position);
+    void moveSlotTo(int slot, Pos position);
 
     void swapSlots(int a, int b);
 

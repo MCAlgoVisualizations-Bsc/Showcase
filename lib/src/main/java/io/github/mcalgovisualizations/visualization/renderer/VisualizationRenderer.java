@@ -66,9 +66,9 @@ public class VisualizationRenderer implements Renderer {
         for (int i = 0; i < length; i++) {
             DisplayValue dv = activeValues.get(i);
             if (dv == null) {
-                dv = new BlockDisplay(entries[i].pos(), block, Integer.toString(entries[i].value()));
+                dv = new BlockDisplay(instance, entries[i].pos(), block, Integer.toString(entries[i].value()));
                 //dv = new CircleDisplay(entries[i].pos(), 5, 20, block, 0);
-                dv.setInstance(instance);
+                dv.setInstance();
 
                 final Pos spawnPos = entries[i].pos();
                 final DisplayValue spawnDv = dv;
@@ -82,7 +82,7 @@ public class VisualizationRenderer implements Renderer {
             var dv = (BlockDisplay) activeValues.get(i);
 
             dv.updateBlock(block);                 // safe if block changes; no-op if same
-            dv.updateValue(entries[i].value());
+            dv.setValue(entries[i].value());
             dv.setHighlighted(highlighted.contains(i));
             dv.teleport(entries[i].pos());
         }

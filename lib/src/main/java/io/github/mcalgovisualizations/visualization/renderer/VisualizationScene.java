@@ -33,10 +33,10 @@ public class VisualizationScene {
         final var entries = layout.compute(values, origin);
 
         for (var layoutEntry : entries) {
-            var dv = new BlockDisplay(layoutEntry.pos(), Block.GRANITE, Integer.toString(layoutEntry.value()));
+            var dv = new BlockDisplay(instance, layoutEntry.pos(), Block.GRANITE, Integer.toString(layoutEntry.value()));
 
             nodes.put(layoutEntry.value(), dv);
-            dv.setInstance(instance);
+            dv.setInstance();
 
             MinecraftServer.getSchedulerManager()
                     .buildTask(() -> dv.teleport(dv.getPos()))

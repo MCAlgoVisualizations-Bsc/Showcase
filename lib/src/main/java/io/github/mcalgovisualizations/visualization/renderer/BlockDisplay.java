@@ -2,7 +2,6 @@ package io.github.mcalgovisualizations.visualization.renderer;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.Entity;
@@ -13,10 +12,8 @@ import net.minestom.server.entity.metadata.display.TextDisplayMeta;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.Block;
 
-import java.time.Duration;
-
 public class BlockDisplay implements DisplayValue {
-
+    private final Instance instance;
     private final Entity blockEntity;
     private final Entity textEntity;
 
@@ -25,9 +22,12 @@ public class BlockDisplay implements DisplayValue {
     private Pos pos;
     private Block currentBlock;
 
-    public BlockDisplay(Pos pos, Block block, String text) {
+    public BlockDisplay(Instance instance, Pos pos, Block block, String text) {
         if (block == null) throw new NullPointerException("block cannot be null");
+        if (instance == null) throw new NullPointerException("instance cannot be null");
         if (text == null || text.isBlank()) throw new IllegalArgumentException("text cannot be blank");
+
+        this.instance = instance;
 
         this.blockEntity = new Entity(EntityType.BLOCK_DISPLAY);
         this.textEntity = new Entity(EntityType.TEXT_DISPLAY);
@@ -65,7 +65,7 @@ public class BlockDisplay implements DisplayValue {
         meta.setTransformationInterpolationStartDelta(0);
     }
 
-    public void setInstance(Instance instance) {
+    public void setInstance() {
         blockEntity.setInstance(instance);
         textEntity.setInstance(instance);
     }
@@ -81,7 +81,7 @@ public class BlockDisplay implements DisplayValue {
         textEntity.teleport(pos.add(TEXT_OFFSET));
     }
 
-    public void updateValue(int value) {
+    public void setValue(int value) {
         var meta = (TextDisplayMeta) textEntity.getEntityMeta();
         meta.setText(Component.text(Integer.toString(value), NamedTextColor.GOLD));
     }
@@ -101,6 +101,6 @@ public class BlockDisplay implements DisplayValue {
     }
 
     public boolean isSpawned() {
-        return blockEntity.getInstance() != null;
+        return blockEntity.getInstance() != null || textEntity.getInstance() != null;
     }
 }

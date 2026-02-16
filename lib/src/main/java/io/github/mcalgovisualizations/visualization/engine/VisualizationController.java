@@ -32,8 +32,8 @@ public class VisualizationController {
     }
 
     public void onStart() {
-        var snapshot = stepper.onStart();
         renderer.onStart();
+        renderer.render(stepper.onStart());
     }
 
     public void start(Player player) {
@@ -62,18 +62,19 @@ public class VisualizationController {
     public void step() {
         final var snapshot = (HistorySnapshot) stepper.step();
 
-        renderer.step(snapshot);
+        if(renderer.isIdle())
+            renderer.render(snapshot);
 
-        // handle history with snapshots
-        // make the state into a snapshot which can be stored
+        // TODO : handle history with snapshots
     }
 
     public void back() {
         final var snapshot = (HistorySnapshot) stepper.back();
-        // renderer.back(snapshot);
 
-        // handle history with snapshots
-        // make the state into a snapshot which can be stored
+        if(renderer.isIdle())
+            renderer.render(snapshot);
+
+        // TODO : handle history with snapshots
     }
 
     public void setSpeed(int ticksPerStep) {
@@ -98,9 +99,9 @@ public class VisualizationController {
     public void randomize() {
         stop();
         final var snapshot = stepper.randomize();
-        renderer.step(snapshot);
+        renderer.render(snapshot);
 
-        // TODO : Save snapshot in history !
+        // TODO : handle history with snapshots
     }
 
 }
