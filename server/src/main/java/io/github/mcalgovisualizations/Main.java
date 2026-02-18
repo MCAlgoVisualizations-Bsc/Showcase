@@ -4,12 +4,9 @@ import io.github.mcalgovisualizations.commands.Gamemode;
 import io.github.mcalgovisualizations.commands.Greet;
 import io.github.mcalgovisualizations.commands.Spawn;
 import io.github.mcalgovisualizations.commands.Teleport;
-import io.github.mcalgovisualizations.gui.AlgorithmSelectorGUI;
 import io.github.mcalgovisualizations.items.VisualizationItems;
-import io.github.mcalgovisualizations.visualization.engine.VisualizationController;
 import io.github.mcalgovisualizations.visualization.VisualizationManager;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import io.github.mcalgovisualizations.visualization.renderer.handlers.MessageHandler;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.command.CommandManager;
 import net.minestom.server.coordinate.Pos;
@@ -17,10 +14,7 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
 import net.minestom.server.event.player.PlayerDisconnectEvent;
 import net.minestom.server.event.player.PlayerSpawnEvent;
-import net.minestom.server.event.player.PlayerUseItemEvent;
 import net.minestom.server.instance.InstanceContainer;
-import net.minestom.server.item.Material;
-
 import static io.github.mcalgovisualizations.config.WorldConfig.createMainInstance;
 
 
@@ -40,7 +34,8 @@ public final class Main {
         registerListeners(instance);
         registerCommands(MinecraftServer.getCommandManager());
 
-        visualizationControls(instance); // to be moved?
+        // Register visualization control listeners (item interactions)
+        io.github.mcalgovisualizations.listeners.VisualizationControls.register(MinecraftServer.getGlobalEventHandler(), instance);
 
         server.start("0.0.0.0", 25565);
     }
@@ -69,8 +64,8 @@ public final class Main {
             player.getInventory().setItemStack(8, VisualizationItems.spawnItem());
 
             // Send welcome message
-            player.sendMessage(Component.text("Welcome to Algorithm Visualizations!", NamedTextColor.GREEN));
-            player.sendMessage(Component.text("Right-click the Nether Star to select an algorithm to visualize!", NamedTextColor.YELLOW));
+            MessageHandler.send(player, MessageHandler.WELCOME);
+            MessageHandler.send(player, MessageHandler.SELECT_ALGORITHM_HINT);
         });
 
         // Cleanup visualization when player disconnects
@@ -80,52 +75,7 @@ public final class Main {
 
     }
 
-    private static void visualizationControls(InstanceContainer instance) {
-        final var globalEventHandler = MinecraftServer.getGlobalEventHandler();
-        // Handle item right-clicks for visualization control
-        globalEventHandler.addListener(PlayerUseItemEvent.class, event -> {
-            Player player = event.getPlayer();
-            Material material = event.getItemStack().material();
 
-            // Handle algorithm selector (Nether Star) - available to everyone
-            if (material == Material.NETHER_STAR) {
-                AlgorithmSelectorGUI.openSelector(player, instance);
-                return;
-            }
-
-            // Handle compass (return to hub) - available to everyone
-            if (material == Material.COMPASS) {
-                player.teleport(new Pos(0, 42, 0));
-                player.sendMessage(Component.text("Returned to hub!", NamedTextColor.LIGHT_PURPLE));
-                return;
-            }
-
-            // All other items require an active visualization
-            VisualizationController vis = VisualizationManager.getVisualization(player);
-            if (vis == null) {
-                player.sendMessage(Component.text("No visualization assigned! Use the Algorithm Selector first.", NamedTextColor.RED));
-                return;
-            }
-
-            if (material == Material.ENDER_PEARL) {
-                event.setCancelled(true); // Prevent teleportation
-                vis.randomize();
-                player.sendMessage(Component.text("Values randomized!", NamedTextColor.AQUA));
-            } else if (material == Material.LIME_DYE) {
-                vis.start(player); // TODO : look into if messages can be sent through another channel?
-                player.sendMessage(Component.text("Visualization started!", NamedTextColor.GREEN));
-            } else if (material == Material.RED_DYE) {
-                vis.stop();
-                player.sendMessage(Component.text("Visualization stopped!", NamedTextColor.RED));
-            } else if (material == Material.ARROW) {
-                vis.step();
-                player.sendMessage(Component.text("Stepped forward", NamedTextColor.YELLOW));
-            } else if (material == Material.SPECTRAL_ARROW) {
-                vis.back();
-                player.sendMessage(Component.text("Stepped back", NamedTextColor.GOLD));
-            }
-        });
-    }
 
     private static void registerCommands(CommandManager cm) {
         cm.register(new Greet());
