@@ -6,58 +6,37 @@ import net.minestom.server.timer.Task;
 
 import java.time.Duration;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.Queue;
 
-/**
- * Runs AnimationPlans sequentially over time (one at a time).
- *
- * Enqueue many plans per Controller.step(). The executor will consume them
- * one-by-one on subsequent scheduler ticks.
- *
- * This class does NOT decide what to animate (dispatcher does).
- * It only decides WHEN to advance (time).
- */
 public final class Executor {
 
-    /** Where a frame's SceneOps should be applied. Usually: renderer::apply */
-    private final SceneOps apply;
-
+    private final SceneOps scene; // <- interface type, not concrete
     private Task runningTask = null;
 
     private final Queue<AnimationPlan> queue = new LinkedList<>();
 
-    // Current running plan state
     private AnimationPlan currentPlan = null;
-    private int frameIndex = 0;
-    private int ticksRemainingInFrame = 0;
-    private boolean frameJustEntered = false;
+    private int stepIndex = 0;
+    private int ticksRemaining = 0;
+    private boolean stepJustEntered = false;
 
     private boolean paused = false;
 
-    /**
-     * SPEED controls how often we tick the executor.
-     * If you want "Minecraft ticks": 50ms per tick.
-     * Using SPEED as a multiplier keeps your earlier convention (SPEED * 50ms).
-     */
     private int SPEED = 1;
 
-    public Executor(SceneOps apply) {
-        this.apply = apply;
+    public Executor(SceneOps scene) {
+        this.scene = Objects.requireNonNull(scene, "scene");
     }
 
-    /** Enqueue work. Safe to call even while running. */
     public void add(AnimationPlan plan) {
-        if (plan == null) return;
+        if (plan == null || plan.isEmpty()) return;
         queue.add(plan);
     }
 
-    /**
-     * Called after you enqueue plans (e.g., from Controller.step()).
-     * Starts the scheduler if idle.
-     */
     public void startIfIdle() {
         if (paused) return;
-        if (runningTask != null) return; // already ticking
+        if (runningTask != null) return;
 
         runningTask = MinecraftServer.getSchedulerManager()
                 .buildTask(this::tick)
@@ -65,102 +44,86 @@ public final class Executor {
                 .schedule();
     }
 
-    /** Stops ticking but keeps queued and current state (resume continues). */
     public void pause() {
         paused = true;
-        if (runningTask != null) {
-            runningTask.cancel();
-            runningTask = null;
-        }
+        stopScheduler();
     }
 
-    /** Resumes ticking from the current state. */
     public void resume() {
         if (!paused) return;
         paused = false;
         startIfIdle();
     }
 
-    /** True when there is no running plan and nothing queued. */
     public boolean isIdle() {
         return currentPlan == null && queue.isEmpty() && runningTask == null;
     }
 
-    /** Optional: change speed at runtime (will restart ticking if running). */
     public void setSpeed(int speed) {
         if (speed <= 0) throw new IllegalArgumentException("speed must be > 0");
         this.SPEED = speed;
 
-        // restart scheduler to apply new interval
         if (runningTask != null) {
-            runningTask.cancel();
-            runningTask = null;
+            stopScheduler();
             startIfIdle();
         }
     }
 
-    /**
-     * One scheduler tick.
-     * - If no current plan: poll next.
-     * - Advance current plan by one tick.
-     * - When plan ends: move to next next tick.
-     * - If nothing left: stop scheduler (become idle).
-     */
     private void tick() {
         if (paused) return;
 
-        // Ensure we have a current plan
+        // If we're waiting inside a step, consume one tick and return
+        if (ticksRemaining > 0) {
+            ticksRemaining--;
+            return;
+        }
+
+        // Ensure we have a plan
         if (currentPlan == null) {
             currentPlan = queue.poll();
-            frameIndex = 0;
-            ticksRemainingInFrame = 0;
-            frameJustEntered = true;
+            stepIndex = 0;
+            stepJustEntered = true;
 
             if (currentPlan == null) {
-                stopScheduler(); // nothing to do
+                stopScheduler();
                 return;
             }
         }
 
-        // If we've exhausted frames, finish plan
-//        if (frameIndex >= currentPlan.frames().size()) {
-//            finishCurrentPlan();
-//            return;
-//        }
-
-        // var frame = currentPlan.frames().get(frameIndex);
-
-        // Entering a new frame: initialize countdown and apply ops once
-        if (frameJustEntered) {
-            //ticksRemainingInFrame = Math.max(1, frame.durationTicks());
-            frameJustEntered = false;
-
-            // Apply ops for this frame (once at frame entry)
-            SceneOps ops = new SceneOps(); // replace with your real SceneOps impl if needed
-            //frame.ops().accept(ops);
-            //apply.accept(ops);
+        // Finished plan?
+        if (stepIndex >= currentPlan.steps().size()) {
+            finishCurrentPlan();
+            return;
         }
 
-        // Consume one tick of this frame
-        ticksRemainingInFrame--;
+        // Enter new step: apply op ONCE, then set wait
+        if (stepJustEntered) {
+            var step = currentPlan.steps().get(stepIndex);
 
-        // If this frame is done, advance to next frame on next tick
-        if (ticksRemainingInFrame <= 0) {
-            frameIndex++;
-            frameJustEntered = true;
+            // This is the whole point:
+            step.op().accept(scene);
+
+            // Wait AFTER applying (0 means continue next tick)
+            ticksRemaining = step.ticks();
+
+            stepJustEntered = false;
+
+            // Advance to next step once this step's wait has elapsed
+            stepIndex++;
+            stepJustEntered = true;
+
+            // If ticksRemaining == 0, we could loop and apply multiple 0-tick steps
+            // in one scheduler tick — optional. Keep simple for now.
         }
     }
 
     private void finishCurrentPlan() {
         currentPlan = null;
-        frameIndex = 0;
-        ticksRemainingInFrame = 0;
-        frameJustEntered = false;
+        stepIndex = 0;
+        ticksRemaining = 0;
+        stepJustEntered = false;
 
-        // If nothing queued, stop ticking
-        if (queue.isEmpty()) {
-            stopScheduler();
-        }
+        if (queue.isEmpty()) stopScheduler();
     }
 
     private void stopScheduler() {
@@ -170,22 +133,13 @@ public final class Executor {
         }
     }
 
-    /** Cancels ticking, drops current + queued work. */
     public void onCleanup() {
         paused = false;
         stopScheduler();
         currentPlan = null;
-        frameIndex = 0;
-        ticksRemainingInFrame = 0;
-        frameJustEntered = false;
+        stepIndex = 0;
+        ticksRemaining = 0;
+        stepJustEntered = false;
         queue.clear();
-    }
-
-    /**
-     * Placeholder. Replace with your real SceneOps type.
-     * The executor should not know Minestom; apply() should.
-     */
-    public static class SceneOps {
-        // put your ops recording API here (or use your existing type)
     }
 }

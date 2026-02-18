@@ -11,7 +11,6 @@ import java.util.Objects;
 public final class Dispatcher {
 
     private final Map<Class<? extends AlgorithmEvent>, AnimationHandler<?>> handlers = new HashMap<>();
-    private AnimationHandler<AlgorithmEvent> defaultHandler = (_, _) -> AnimationPlan.empty();
 
     public <E extends AlgorithmEvent> void register(Class<E> eventType, AnimationHandler<E> handler) {
         Objects.requireNonNull(eventType, "eventType");
@@ -19,18 +18,12 @@ public final class Dispatcher {
         handlers.put(eventType, handler);
     }
 
-    public void setDefaultHandler(AnimationHandler<AlgorithmEvent> handler) {
-        this.defaultHandler = Objects.requireNonNull(handler, "handler");
-    }
 
     public AnimationPlan dispatch(AlgorithmEvent event, RenderContext ctx) {
         Objects.requireNonNull(event, "event");
         Objects.requireNonNull(ctx, "ctx");
 
         var handler = handlers.get(event.getClass());
-        if (handler == null) {
-            return defaultHandler.handle(event, ctx);
-        }
 
         return invokeUnchecked(handler, event, ctx);
     }

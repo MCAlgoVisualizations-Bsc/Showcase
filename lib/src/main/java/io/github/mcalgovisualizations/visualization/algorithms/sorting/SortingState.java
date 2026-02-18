@@ -47,8 +47,6 @@ public final class SortingState {
     public void addEvent(AlgorithmEvent op) { events.add(op); }
     public List<AlgorithmEvent> events() { return List.copyOf(events); }
 
-    public enum SortingOperation { SWAP, COMPARE }
-
 
 }
 

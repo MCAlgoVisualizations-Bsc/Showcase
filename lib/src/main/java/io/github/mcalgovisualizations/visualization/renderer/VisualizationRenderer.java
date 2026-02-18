@@ -1,12 +1,10 @@
 package io.github.mcalgovisualizations.visualization.renderer;
 
 import io.github.mcalgovisualizations.visualization.Snapshot;
-import io.github.mcalgovisualizations.visualization.algorithms.events.Compare;
-import io.github.mcalgovisualizations.visualization.algorithms.events.Swap;
+import io.github.mcalgovisualizations.visualization.algorithms.events.*;
 import io.github.mcalgovisualizations.visualization.layouts.Layout;
 import io.github.mcalgovisualizations.visualization.renderer.dispatch.Dispatcher;
-import io.github.mcalgovisualizations.visualization.renderer.handlers.CompareHandler;
-import io.github.mcalgovisualizations.visualization.renderer.handlers.SwapHandler;
+import io.github.mcalgovisualizations.visualization.renderer.handlers.*;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.instance.Instance;
 
@@ -17,7 +15,7 @@ public final class VisualizationRenderer {
     private final VisualizationScene scene;
     private final Layout layout;
     private final Dispatcher dispatcher;
-    //private final Executor executor;
+    private final Executor executor;
     private final Pos origin;
     //private final Object settings;
 
@@ -34,18 +32,20 @@ public final class VisualizationRenderer {
         this.origin = origin;
         this.layout = Objects.requireNonNull(layout, "layout");
         this.dispatcher = Objects.requireNonNull(dispatcher, "dispatcher");
-        //this.executor = Objects.requireNonNull(executor, "executor");
+        this.executor = new Executor(scene);
         //this.settings = settings != null ? settings : RenderSettings.defaults();
     }
-
-
-
 
     public void onStart() {
         if (started) return;
         started = true;
-        dispatcher.register(Swap.class, new SwapHandler());
         dispatcher.register(Compare.class, new CompareHandler());
+        dispatcher.register(Complete.class, new CompleteHandler());
+        dispatcher.register(Highlight.class, new HighlightHandler());
+        dispatcher.register(PlayerMessage.class, new MessageHandler());
+        dispatcher.register(Validate.class, new ValidateHandler());
+        dispatcher.register(Swap.class, new SwapHandler());
+
     }
 
     /**
@@ -75,10 +75,12 @@ public final class VisualizationRenderer {
 
         for (var e : events) {
             var plan = dispatcher.dispatch(e, ctx);
-            //executor.add(plan);
+            System.out.println(plan);
+            executor.add(plan);
         }
 
-        // startIfIdle();
+        executor.startIfIdle();
+        scene.clearHighlights();
     }
 
     public boolean isIdle() {
