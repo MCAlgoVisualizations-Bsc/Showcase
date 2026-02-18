@@ -1,7 +1,8 @@
 package io.github.mcalgovisualizations.visualization.engine;
 
 import io.github.mcalgovisualizations.visualization.HistorySnapshot;
-import io.github.mcalgovisualizations.visualization.algorithms.AlgorithmStepper;
+import io.github.mcalgovisualizations.visualization.algorithms.IAlgorithmStepper;
+import io.github.mcalgovisualizations.visualization.algorithms.sorting.AlgorithmStepper;
 import io.github.mcalgovisualizations.visualization.renderer.VisualizationRenderer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -16,14 +17,14 @@ import java.time.Duration;
  */
 public class VisualizationController {
 
-    private final AlgorithmStepper stepper;
+    private final IAlgorithmStepper stepper;
     private final VisualizationRenderer renderer;
 
     private int ticksPerStep = 20;
     private boolean IS_RUNNING = false;
     private Task runningTask = null;
 
-    public VisualizationController(AlgorithmStepper stepper, VisualizationRenderer renderer) {
+    public VisualizationController(IAlgorithmStepper stepper, VisualizationRenderer renderer) {
         this.stepper = stepper;
         this.renderer = renderer;
     }

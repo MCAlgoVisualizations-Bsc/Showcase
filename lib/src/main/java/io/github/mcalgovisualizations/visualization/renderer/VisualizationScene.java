@@ -142,35 +142,6 @@ public final class VisualizationScene implements SceneOps {
         // For now: no-op stub so handlers can call it safely.
     }
 
-    /**
-     * Ensures there is exactly one display per slot in [0, n).
-     * Spawns missing, removes extras.
-     *
-     * This is a Scene responsibility (entity set correctness).
-     */
-    public void ensureSize(int n) {
-        assertStarted();
-
-        // Remove slots >= n
-        var toRemove = new HashSet<Integer>();
-        for (int slot : displaysBySlot.keySet()) {
-            if (slot >= n) toRemove.add(slot);
-        }
-        for (int slot : toRemove) {
-            var display = displaysBySlot.remove(slot);
-            safeRemove(display);
-            highlightedSlots.remove(slot);
-        }
-
-        // Create missing slots [0, n)
-        for (int slot = 0; slot < n; slot++) {
-            if (!displaysBySlot.containsKey(slot)) {
-                // Spawn at origin initially; renderer will position it via moveSlotTo / base sync
-                displaysBySlot.put(slot, createDisplay(origin));
-            }
-        }
-    }
-
     public void sendMessage(String message, NamedTextColor color) {
         // player.sendMessage(Component.text(msg.message(), color));
     }
