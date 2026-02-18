@@ -1,8 +1,13 @@
 package io.github.mcalgovisualizations.visualization.renderer;
 
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.coordinate.Vec;
+import net.minestom.server.entity.Entity;
+import net.minestom.server.entity.EntityType;
+import net.minestom.server.entity.metadata.display.AbstractDisplayMeta;
+import net.minestom.server.entity.metadata.display.TextDisplayMeta;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.Block;
 
@@ -36,6 +41,8 @@ public final class VisualizationScene implements SceneOps {
     // Visual state
     private final Set<Integer> highlightedSlots = new HashSet<>();
 
+    private Entity statusHologram;
+
     private boolean started = false;
 
     public VisualizationScene(Instance instance, Pos origin) {
@@ -46,6 +53,16 @@ public final class VisualizationScene implements SceneOps {
     @Override
     public void onStart(LayoutResult[] layoutResults) {
         this.started = true;
+
+        this.statusHologram = new Entity(EntityType.TEXT_DISPLAY);
+        var meta = (TextDisplayMeta) this.statusHologram.getEntityMeta();
+        meta.setBillboardRenderConstraints(AbstractDisplayMeta.BillboardConstraints.CENTER);;
+        meta.setBackgroundColor(0x40000000); // semi-transparent black
+        meta.setScale(new Vec(3.0)); // Make text bigger
+        meta.setHasNoGravity(true); // Prevent falling
+
+        // Position higher up
+        this.statusHologram.setInstance(instance, origin.add(9, 6, 0));
 
         for(var layout : layoutResults) {
             var pos = layout.pos();
@@ -61,6 +78,11 @@ public final class VisualizationScene implements SceneOps {
 
     @Override
     public void cleanUp() {
+        if (statusHologram != null) {
+            statusHologram.remove();
+            statusHologram = null;
+        }
+
         // Despawn/remove everything owned by this Scene
         for (var display : displaysBySlot.values()) {
             safeRemove(display);
@@ -144,6 +166,15 @@ public final class VisualizationScene implements SceneOps {
 
     public void sendMessage(String message, NamedTextColor color) {
         // player.sendMessage(Component.text(msg.message(), color));
+    }
+
+    @Override
+    public void setStatusText(String text, NamedTextColor color) {
+        assertStarted();
+        if (statusHologram != null) {
+            var meta = (TextDisplayMeta) statusHologram.getEntityMeta();
+            meta.setText(Component.text(text, color));
+        }
     }
 
     private BlockDisplay createDisplay(Pos spawnPos) {
