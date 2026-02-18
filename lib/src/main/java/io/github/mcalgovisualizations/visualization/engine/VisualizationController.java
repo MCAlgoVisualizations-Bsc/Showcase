@@ -30,7 +30,8 @@ public class VisualizationController {
 
     public void onStart() {
         renderer.onStart();
-        renderer.render(stepper.onStart());
+        var snapshot = stepper.onStart();
+        renderer.render(snapshot);
     }
 
     public void start(Player player) {

@@ -4,11 +4,9 @@ import io.github.mcalgovisualizations.visualization.Snapshot;
 import io.github.mcalgovisualizations.visualization.algorithms.events.Compare;
 import io.github.mcalgovisualizations.visualization.algorithms.events.Swap;
 import io.github.mcalgovisualizations.visualization.layouts.Layout;
-import io.github.mcalgovisualizations.visualization.renderer.update.dispatch.AnimationPlan;
 import io.github.mcalgovisualizations.visualization.renderer.update.dispatch.Dispatcher;
 import io.github.mcalgovisualizations.visualization.renderer.update.handlers.CompareHandler;
 import io.github.mcalgovisualizations.visualization.renderer.update.handlers.SwapHandler;
-import io.github.mcalgovisualizations.visualization.renderer.update.Executor;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.instance.Instance;
 
@@ -19,7 +17,7 @@ public final class VisualizationRenderer {
     private final VisualizationScene scene;
     private final Layout layout;
     private final Dispatcher dispatcher;
-    private final Executor executor;
+    //private final Executor executor;
     private final Pos origin;
     //private final Object settings;
 
@@ -28,15 +26,15 @@ public final class VisualizationRenderer {
     public VisualizationRenderer(
             Instance instance,
             Pos origin, Layout layout,
-            Dispatcher dispatcher,
-            Executor executor // TODO : introduce executor
+            Dispatcher dispatcher
+            //Executor executor // TODO : introduce executor
             //Object settings // TODO : introduce settings for ease, speed, etc.
     ) {
         this.scene = new VisualizationScene(instance, origin);
         this.origin = origin;
         this.layout = Objects.requireNonNull(layout, "layout");
         this.dispatcher = Objects.requireNonNull(dispatcher, "dispatcher");
-        this.executor = Objects.requireNonNull(executor, "executor");
+        //this.executor = Objects.requireNonNull(executor, "executor");
         //this.settings = settings != null ? settings : RenderSettings.defaults();
     }
 
@@ -57,7 +55,7 @@ public final class VisualizationRenderer {
     public void onStop() {
         if (!started) return;
 
-        executor.pause();        // or stopTickLoop()
+        //executor.pause();        // or stopTickLoop()
         //executor.clearQueue();   // optional; decide policy
     }
     private boolean test = false;
@@ -72,25 +70,19 @@ public final class VisualizationRenderer {
             test = true;
         }
 
-
-//        Controller.tick()
-//            -> stepper.next()                           // algorithm produces events
-//            -> dispatcher.toAnimationPlans(events)      // translate events -> AnimationPlan(s)
-
-
         final var events = snapshot.events();
         var ctx = new RenderContext(scene, events);
 
         for (var e : events) {
             var plan = dispatcher.dispatch(e, ctx);
-            executor.add(plan);
+            //executor.add(plan);
         }
 
-        executor.step();
+        // startIfIdle();
     }
 
     public boolean isIdle() {
-        return executor.isIdle();
+        return true;
     }
 
     /**
@@ -100,7 +92,7 @@ public final class VisualizationRenderer {
     public void onCleanup() {
         if (!started) return;
 
-        executor.onCleanup();   // kill tick loop + clear queue
+        //executor.onCleanup();   // kill tick loop + clear queue
         scene.cleanUp();   // despawn entities
         started = false;
     }

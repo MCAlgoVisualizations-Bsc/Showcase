@@ -19,6 +19,7 @@ import net.minestom.server.instance.InstanceContainer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 /**
  * Manages visualizations for all players.
@@ -60,9 +61,8 @@ public class VisualizationManager {
         var origin = new Pos(0, 43, 0);
 
         var dispatcher = new Dispatcher();
-        var executor = new Executor();
 
-        var renderer = new VisualizationRenderer(instance, origin, layout,  dispatcher, executor);
+        var renderer = new VisualizationRenderer(instance, origin, layout,  dispatcher);
         var controller = new VisualizationController(stepper, renderer);
         controller.onStart();
 

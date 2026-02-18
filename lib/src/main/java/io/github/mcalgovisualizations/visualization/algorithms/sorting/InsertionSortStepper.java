@@ -50,6 +50,7 @@ public class InsertionSortStepper implements AlgorithmStepper {
             state.addEvent(new Highlight(state.compareIndex()));
             state.addEvent(new Highlight(state.compareIndex() - 1));
             state.addEvent(new Compare(state.compareIndex(),  state.compareIndex() - 1));
+
         }
 
         int j = state.compareIndex();

@@ -32,14 +32,12 @@ public record FloatingLinearLayout(
      * Creates a floating linear layout with default configuration:
      * <ul>
      *     <li>spacing = 2.0</li>
-     *     <li>yOffset = 1.0</li>
+     *     <li>yOffset = 0.0</li>
      *     <li>zOffset = 0.0</li>
      * </ul>
      * Useful for testing
      */
-    public FloatingLinearLayout() {
-        this(1.0, 0.0, 0.0);
-    }
+    public FloatingLinearLayout() { this(2.0, 0.0, 0.0); }
 
     /**
      * Compact constructor with validation.
