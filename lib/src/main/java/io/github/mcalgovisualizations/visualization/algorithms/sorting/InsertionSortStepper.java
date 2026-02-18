@@ -3,10 +3,7 @@ package io.github.mcalgovisualizations.visualization.algorithms.sorting;
 import io.github.mcalgovisualizations.visualization.HistorySnapshot;
 import io.github.mcalgovisualizations.visualization.Snapshot;
 import io.github.mcalgovisualizations.visualization.algorithms.AlgorithmStepper;
-import io.github.mcalgovisualizations.visualization.algorithms.events.Compare;
-import io.github.mcalgovisualizations.visualization.algorithms.events.Complete;
-import io.github.mcalgovisualizations.visualization.algorithms.events.Highlight;
-import io.github.mcalgovisualizations.visualization.algorithms.events.Swap;
+import io.github.mcalgovisualizations.visualization.algorithms.events.*;
 import io.github.mcalgovisualizations.visualization.models.IntList;
 
 import java.util.ArrayList;
@@ -22,13 +19,14 @@ public class InsertionSortStepper implements AlgorithmStepper {
     }
 
     public Snapshot onStart() {
+        state.addEvent(new MessageEvent("Starting Insertion Sort", MessageEvent.MessageType.INFO));
         return getHistorySnapshot();
     }
 
     @Override
     public Snapshot step() {
         if (ALGORITHM_COMPLETE) {
-            state.addEvent(new Complete());
+            state.beginStep();
             return getHistorySnapshot();
         }
 
@@ -36,6 +34,7 @@ public class InsertionSortStepper implements AlgorithmStepper {
         state.beginStep();
         if (state.currentIndex() >= model.size()) {
             ALGORITHM_COMPLETE = true;
+            state.addEvent(new MessageEvent("Sorting complete!", MessageEvent.MessageType.SUCCESS));
             state.addEvent(new Complete());
             return getHistorySnapshot();
         }
@@ -44,20 +43,23 @@ public class InsertionSortStepper implements AlgorithmStepper {
             state.setCompareIndex(state.currentIndex());
         }
 
-        if (state.compareIndex() > 0) {
-//            state.highlightIndex(state.compareIndex());
-//            state.highlightIndex(state.compareIndex() - 1);
-            state.addEvent(new Highlight(state.compareIndex()));
-            state.addEvent(new Highlight(state.compareIndex() - 1));
-            state.addEvent(new Compare(state.compareIndex(),  state.compareIndex() - 1));
-
-        }
-
         int j = state.compareIndex();
-        if (j > 0 && model.data()[j - 1] > model.data()[j]) {
-            model.swap(j, j - 1);
-            state.addEvent(new Swap(j - 1, j));
-            state.setCompareIndex(j - 1);
+        if (j > 0) {
+            state.addEvent(new Highlight(j));
+            state.addEvent(new Highlight(j - 1));
+            state.addEvent(new Compare(j, j - 1));
+            state.addEvent(new MessageEvent("Comparing indices " + j + " and " + (j - 1), MessageEvent.MessageType.INFO));
+
+            if (model.data()[j - 1] > model.data()[j]) {
+                model.swap(j, j - 1);
+                state.addEvent(new Swap(j - 1, j));
+                state.addEvent(new MessageEvent("Swapped " + j + " and " + (j - 1), MessageEvent.MessageType.INFO));
+                state.setCompareIndex(j - 1);
+            } else {
+                state.addEvent(new MessageEvent("Element in correct position", MessageEvent.MessageType.SUCCESS));
+                state.incrementCurrentIndex();
+                state.setCompareIndex(-1);
+            }
         } else {
             state.incrementCurrentIndex();
             state.setCompareIndex(-1);

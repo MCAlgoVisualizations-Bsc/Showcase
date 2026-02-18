@@ -2,14 +2,19 @@ package io.github.mcalgovisualizations.visualization;
 
 import io.github.mcalgovisualizations.visualization.algorithms.AlgorithmStepper;
 import io.github.mcalgovisualizations.visualization.algorithms.StepperFactory;
+import io.github.mcalgovisualizations.visualization.algorithms.events.MessageEvent;
 import io.github.mcalgovisualizations.visualization.engine.VisualizationController;
+import io.github.mcalgovisualizations.visualization.layouts.CircleLayout;
 import io.github.mcalgovisualizations.visualization.layouts.FloatingLinearLayout;
 import io.github.mcalgovisualizations.visualization.layouts.Layout;
 import io.github.mcalgovisualizations.visualization.models.DataModel;
 import io.github.mcalgovisualizations.visualization.models.IntList;
 import io.github.mcalgovisualizations.visualization.refactor.Visualization;
-import io.github.mcalgovisualizations.visualization.renderer.VisualizationRenderer;
-import io.github.mcalgovisualizations.visualization.renderer.dispatch.Dispatcher;
+import io.github.mcalgovisualizations.visualization.renderer.update.VisualizationRenderer;
+import io.github.mcalgovisualizations.visualization.renderer.update.Executor;
+import io.github.mcalgovisualizations.visualization.renderer.update.dispatch.Dispatcher;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.InstanceContainer;
@@ -17,6 +22,7 @@ import net.minestom.server.instance.InstanceContainer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 /**
  * Manages visualizations for all players.
@@ -61,6 +67,20 @@ public class VisualizationManager {
 
         var renderer = new VisualizationRenderer(instance, origin, layout,  dispatcher);
         var controller = new VisualizationController(stepper, renderer);
+
+        controller.addEventListener(event -> {
+            if (event instanceof MessageEvent msg) {
+                // Update Chat
+                NamedTextColor color = switch (msg.type()) {
+                    case INFO -> NamedTextColor.GRAY;
+                    case SUCCESS -> NamedTextColor.GREEN;
+                    case ERROR -> NamedTextColor.RED;
+                    case HINT -> NamedTextColor.AQUA;
+                };
+                player.sendMessage(Component.text(msg.message(), color));
+            }
+        });
+
         controller.onStart();
 
         playerSteppers.put(player.getUuid(), controller);
