@@ -8,6 +8,11 @@ public final class CompareHandler implements AnimationHandler<Compare> {
 
     @Override
     public AnimationPlan handle(Compare event, RenderContext ctx) {
-        return null;
+        return AnimationPlan.builder()
+                .step(5, sceneOps -> {
+                    sceneOps.hoverDisplay(event.x(), true);
+                    sceneOps.hoverDisplay(event.y(), true);
+                })
+                .build();
     }
 }

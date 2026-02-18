@@ -54,9 +54,8 @@ public final class VisualizationRenderer {
      */
     public void onStop() {
         if (!started) return;
+        executor.pause();
 
-        //executor.pause();        // or stopTickLoop()
-        //executor.clearQueue();   // optional; decide policy
     }
     private boolean test = false;
     public void render(Snapshot snapshot) {
@@ -104,16 +103,6 @@ public final class VisualizationRenderer {
         //executor.onCleanup();   // kill tick loop + clear queue
         scene.cleanUp();   // despawn entities
         started = false;
-    }
-
-
-    private boolean shouldHardSyncPositions(Snapshot snapshot) {
-        // Keep this stupid-simple initially:
-        // - hard sync if this is the first render
-        // - hard sync if snapshot indicates reset/layoutSwap/backJump
-        // You can add flags to Snapshot for these.
-        // return snapshot.isFirstFrame() || snapshot.isHardReset(); // adapt to your snapshot flags
-        return false;
     }
 
     private void requireStarted() { if (!started) throw new IllegalStateException("Renderer not started. Call onStart() first."); }

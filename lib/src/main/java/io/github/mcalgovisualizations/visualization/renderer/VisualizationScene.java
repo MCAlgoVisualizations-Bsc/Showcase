@@ -116,15 +116,8 @@ public final class VisualizationScene implements SceneOps {
 
         var posA = da.getPos();
         var posB = db.getPos();
-
-        setHighlighted(a, true);
-        setHighlighted(b, true);
-
         da.teleport(posB);
         db.teleport(posA);
-
-        setHighlighted(a, false);
-        setHighlighted(b, false);
     }
 
     @Override
@@ -143,6 +136,16 @@ public final class VisualizationScene implements SceneOps {
 
     public void sendMessage(String message, NamedTextColor color) {
         // player.sendMessage(Component.text(msg.message(), color));
+    }
+
+    public void hoverDisplay(int slot, boolean hover) {
+        assertStarted();
+        var dv = requireDisplay(slot);
+        if (hover) {
+            dv.teleport(dv.getPos().add(0, 1, 0));
+        } else {
+            dv.teleport(dv.getPos().add(0, -1, 0));
+        }
     }
 
     private BlockDisplay createDisplay(Pos spawnPos) {

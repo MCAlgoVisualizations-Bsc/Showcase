@@ -9,8 +9,6 @@ public class HighlightHandler implements AnimationHandler<Highlight> {
 
     @Override
     public AnimationPlan handle(Highlight event, RenderContext ctx) {
-        return AnimationPlan.instant(scene -> {
-            scene.setHighlighted(event.x(), true);
-        });
+        return AnimationPlan.instant(scene -> scene.setHighlighted(event.x(), true));
     }
 }

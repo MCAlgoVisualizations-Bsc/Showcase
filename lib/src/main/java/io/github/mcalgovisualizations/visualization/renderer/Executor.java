@@ -131,6 +131,7 @@ public final class Executor {
             runningTask.cancel();
             runningTask = null;
         }
+        System.out.println(currentPlan.toString());
     }
 
     public void onCleanup() {

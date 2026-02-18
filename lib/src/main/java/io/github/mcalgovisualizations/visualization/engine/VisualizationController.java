@@ -56,6 +56,7 @@ public class VisualizationController {
             runningTask.cancel();
             runningTask = null;
         }
+        renderer.onStop();
     }
 
     public void step() {
@@ -66,11 +67,9 @@ public class VisualizationController {
     }
 
     public void back() {
-        step();
-//        final var snapshot = (HistorySnapshot) stepper.back();
-//
-//        if(renderer.isIdle())
-//            renderer.render(snapshot);
+        final var snapshot = (HistorySnapshot) stepper.back();
+
+        renderer.render(snapshot);
 
         // TODO : handle history with snapshots
     }

@@ -28,5 +28,6 @@ public interface SceneOps {
     void playEffect(int slot, String effectId);
 
     void sendMessage(String message, NamedTextColor color);
+    void hoverDisplay(int slot, boolean hover);
 }
 
