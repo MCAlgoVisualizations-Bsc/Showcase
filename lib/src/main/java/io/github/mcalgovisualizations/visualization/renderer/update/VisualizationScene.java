@@ -43,8 +43,19 @@ public final class VisualizationScene implements SceneOps {
     }
 
     @Override
-    public void onStart() {
+    public void onStart(LayoutResult[] layoutResults) {
         this.started = true;
+
+        for(var layout : layoutResults) {
+            var pos = layout.pos();
+            var block = Block.GRANITE;
+            var value = Integer.toString(layout.value());
+
+            var dv = new BlockDisplay(instance, pos, block, value);
+            displaysBySlot.put(layout.value(), dv);
+            dv.setInstance();
+            dv.teleport(pos);
+        }
     }
 
     @Override
@@ -62,9 +73,6 @@ public final class VisualizationScene implements SceneOps {
     public void setValue(int slot, int value) {
         assertStarted();
         var display = requireDisplay(slot);
-
-        // Assumption: your BlockDisplay wrapper can render an int value.
-        // Rename this to whatever your actual API is (setText, setValue, setBlock, etc.)
         display.setValue(value);
     }
 

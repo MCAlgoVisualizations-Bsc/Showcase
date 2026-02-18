@@ -1,6 +1,7 @@
 package io.github.mcalgovisualizations.visualization.layouts;
 
 import io.github.mcalgovisualizations.visualization.renderer.LayoutEntry;
+import io.github.mcalgovisualizations.visualization.renderer.update.LayoutResult;
 import net.minestom.server.coordinate.Pos;
 
 import java.util.ArrayList;
@@ -58,13 +59,13 @@ public record FloatingLinearLayout(
      * @return array of {@link Pos} positions in a straight line
      */
     @Override
-    public LayoutEntry[] compute(int[] model, Pos origin) {
+    public LayoutResult[] compute(int[] model, Pos origin) {
         if(model == null || model.length == 0) {
-            return new LayoutEntry[0];
+            return new LayoutResult[0];
         }
 
         final var size = model.length;
-        final var out = new LayoutEntry[size];
+        final var out = new LayoutResult[size];
 
         final double y = origin.y() + yOffset;
         final double z = origin.z() + zOffset;
@@ -73,19 +74,18 @@ public record FloatingLinearLayout(
             final double x = origin.x() + (i * spacing);
             final var pos = new Pos(x, y, z);
 
-            out[i] = new LayoutEntry(pos, model[i]);
+            out[i] = new LayoutResult(model[i], pos);
         }
 
         return out;
     }
 
     @Override
-    public LayoutEntry[] random(int[] model, Pos origin) {
-        LayoutEntry[] layout = compute(model, origin);
+    public LayoutResult[] random(int[] model, Pos origin) {
+        var layout = compute(model, origin);
+        var layoutList = new ArrayList<>(Arrays.asList(layout));
+        Collections.shuffle(layoutList);
 
-        List<LayoutEntry> list = new ArrayList<>(Arrays.asList(layout));
-        Collections.shuffle(list);
-
-        return list.toArray(new LayoutEntry[0]);
+        return layoutList.toArray(new LayoutResult[0]);
     }
 }

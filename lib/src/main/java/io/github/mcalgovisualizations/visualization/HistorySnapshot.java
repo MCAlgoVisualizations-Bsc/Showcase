@@ -1,5 +1,7 @@
 package io.github.mcalgovisualizations.visualization;
 
+import io.github.mcalgovisualizations.visualization.algorithms.events.AlgorithmEvent;
+
 import java.util.List;
 
 public record HistorySnapshot(

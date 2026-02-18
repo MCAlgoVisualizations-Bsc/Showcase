@@ -1,6 +1,7 @@
 package io.github.mcalgovisualizations.visualization.algorithms.sorting;
 
 import com.google.common.primitives.Ints;
+import io.github.mcalgovisualizations.visualization.algorithms.events.AlgorithmEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +12,7 @@ public final class SortingState {
     private int compareIndex = -1;
 
     private final List<Integer> highlights = new ArrayList<>();
-    private final List<SortingOperation> events = new ArrayList<>();
+    private final List<AlgorithmEvent> events = new ArrayList<>();
 
     public void beginStep() {
         highlights.clear();
@@ -43,8 +44,8 @@ public final class SortingState {
     public void highlightIndex(int index) { highlights.add(index); }
     public int[] highlights() { return Ints.toArray(highlights); }
 
-    public void addEvent(SortingOperation op) { events.add(op); }
-    public List<SortingOperation> events() { return List.copyOf(events); }
+    public void addEvent(AlgorithmEvent op) { events.add(op); }
+    public List<AlgorithmEvent> events() { return List.copyOf(events); }
 
     public enum SortingOperation { SWAP, COMPARE }
 

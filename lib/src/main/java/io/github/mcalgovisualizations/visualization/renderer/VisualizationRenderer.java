@@ -40,11 +40,13 @@ public class VisualizationRenderer implements Renderer {
     @Override
     public void render(Snapshot snapshot, Block block) {
 
+        System.out.println(snapshot.events().size());
         for(var e : snapshot.events()) {
             System.out.println(e.toString());
         }
+
         final int[] model = snapshot.values();
-        final LayoutEntry[] entries = layout.compute(model, origin);
+        final var entries = layout.compute(model, origin);
         final int length = entries.length;
 
         // highlights should be indices

@@ -2,6 +2,7 @@ package io.github.mcalgovisualizations.visualization.layouts;
 
 import io.github.mcalgovisualizations.visualization.models.DataModel;
 import io.github.mcalgovisualizations.visualization.renderer.LayoutEntry;
+import io.github.mcalgovisualizations.visualization.renderer.update.LayoutResult;
 import net.minestom.server.coordinate.Pos;
 
 /**
@@ -17,7 +18,7 @@ public interface Layout {
      * @param origin the reference position used as the layout's anchor or center
      * @return an array of {@link Pos} objects representing positioned elements
      */
-    LayoutEntry[] compute(int[] model, Pos origin);
+    LayoutResult[] compute(int[] model, Pos origin);
 
     /**
      * Computes a randomized layout for the given {@link DataModel}.
@@ -29,6 +30,6 @@ public interface Layout {
      * @param origin the reference position used as the layout's anchor
      * @return an array of {@link Pos} objects positioned randomly
      */
-    LayoutEntry[] random(int[] model, Pos origin);
+    LayoutResult[] random(int[] model, Pos origin);
 
 }

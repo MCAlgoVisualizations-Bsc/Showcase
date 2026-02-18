@@ -4,12 +4,14 @@ import io.github.mcalgovisualizations.visualization.algorithms.AlgorithmStepper;
 import io.github.mcalgovisualizations.visualization.algorithms.StepperFactory;
 import io.github.mcalgovisualizations.visualization.engine.VisualizationController;
 import io.github.mcalgovisualizations.visualization.layouts.CircleLayout;
+import io.github.mcalgovisualizations.visualization.layouts.FloatingLinearLayout;
 import io.github.mcalgovisualizations.visualization.layouts.Layout;
 import io.github.mcalgovisualizations.visualization.models.DataModel;
 import io.github.mcalgovisualizations.visualization.models.IntList;
 import io.github.mcalgovisualizations.visualization.refactor.Visualization;
 import io.github.mcalgovisualizations.visualization.renderer.update.VisualizationRenderer;
-import io.github.mcalgovisualizations.visualization.renderer.update.VisualizationScene;
+import io.github.mcalgovisualizations.visualization.renderer.update.Executor;
+import io.github.mcalgovisualizations.visualization.renderer.update.dispatch.Dispatcher;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.InstanceContainer;
@@ -54,10 +56,13 @@ public class VisualizationManager {
         final DataModel model = createModelFor(type, player, 10);
         final AlgorithmStepper stepper = StepperFactory.create(type, model);
 
-        Layout layout = new CircleLayout();
+        Layout layout = new FloatingLinearLayout();
         var origin = new Pos(0, 43, 0);
 
-        var renderer = new VisualizationRenderer(instance, origin, layout);
+        var dispatcher = new Dispatcher();
+        var executor = new Executor();
+
+        var renderer = new VisualizationRenderer(instance, origin, layout,  dispatcher, executor);
         var controller = new VisualizationController(stepper, renderer);
         controller.onStart();
 

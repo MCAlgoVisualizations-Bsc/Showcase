@@ -2,6 +2,7 @@ package io.github.mcalgovisualizations.visualization.renderer.update.dispatch;
 
 import io.github.mcalgovisualizations.visualization.algorithms.events.AlgorithmEvent;
 import io.github.mcalgovisualizations.visualization.renderer.update.RenderContext;
+import io.github.mcalgovisualizations.visualization.renderer.update.handlers.AnimationHandler;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +11,7 @@ import java.util.Objects;
 public final class Dispatcher {
 
     private final Map<Class<? extends AlgorithmEvent>, AnimationHandler<?>> handlers = new HashMap<>();
-    private AnimationHandler<AlgorithmEvent> defaultHandler = (e, ctx) -> AnimationPlan.empty();
+    private AnimationHandler<AlgorithmEvent> defaultHandler = (_, _) -> AnimationPlan.empty();
 
     public <E extends AlgorithmEvent> void register(Class<E> eventType, AnimationHandler<E> handler) {
         Objects.requireNonNull(eventType, "eventType");

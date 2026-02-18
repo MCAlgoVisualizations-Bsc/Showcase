@@ -1,8 +1,14 @@
 package io.github.mcalgovisualizations.visualization.renderer.update;
 
 import io.github.mcalgovisualizations.visualization.Snapshot;
+import io.github.mcalgovisualizations.visualization.algorithms.events.AlgorithmEvent;
+import io.github.mcalgovisualizations.visualization.renderer.DisplayValue;
 
-public record RenderContext(SceneOps scene, LayoutResult layout, Snapshot snapshot) {
+import java.util.List;
+import java.util.Map;
 
-}
+public record RenderContext(
+        SceneOps sceneOps,
+        List<AlgorithmEvent> event
+) { }
 

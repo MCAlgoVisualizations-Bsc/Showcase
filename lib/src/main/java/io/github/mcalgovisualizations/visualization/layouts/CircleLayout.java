@@ -1,6 +1,7 @@
 package io.github.mcalgovisualizations.visualization.layouts;
 
 import io.github.mcalgovisualizations.visualization.renderer.LayoutEntry;
+import io.github.mcalgovisualizations.visualization.renderer.update.LayoutResult;
 import net.minestom.server.coordinate.Pos;
 
 public record CircleLayout(double radius, double yOffset) implements Layout {
@@ -13,16 +14,16 @@ public record CircleLayout(double radius, double yOffset) implements Layout {
     }
 
     @Override
-    public LayoutEntry[] compute(int[] model, Pos origin) {
+    public LayoutResult[] compute(int[] model, Pos origin) {
         var size = model.length;
-        var out = new LayoutEntry[size];
+        var out = new LayoutResult[size];
 
         double y = origin.y() + yOffset;
 
-        if (size == 0) return new LayoutEntry[0];
+        if (size == 0) return new LayoutResult[0];
 
         if (size == 1) {
-            out[0] = new LayoutEntry(origin, model[0]);
+            out[0] = new LayoutResult(model[0], origin);
             return out;
         }
 
@@ -31,14 +32,14 @@ public record CircleLayout(double radius, double yOffset) implements Layout {
             double x = origin.x() + (Math.cos(angle) * radius);
             double z = origin.z() + (Math.sin(angle) * radius);
             final var pos = new Pos(x, y, z);
-            out[i] = new LayoutEntry(pos, model[i]);
+            out[i] = new LayoutResult(model[i], pos);
         }
 
         return out;
     }
 
     @Override
-    public LayoutEntry[] random(int[] model, Pos origin) {
+    public LayoutResult[] random(int[] model, Pos origin) {
         throw new UnsupportedOperationException("Not implemented");
     }
 }

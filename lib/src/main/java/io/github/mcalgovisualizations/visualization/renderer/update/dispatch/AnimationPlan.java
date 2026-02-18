@@ -7,4 +7,7 @@ public interface AnimationPlan {
         static final EmptyPlan INSTANCE = new EmptyPlan();
         private EmptyPlan() {}
     }
+
+
+
 }

@@ -35,8 +35,13 @@ public class BlockDisplay implements DisplayValue {
         this.pos = pos;
         this.currentBlock = block;
 
+
         setupBlock(block);
         setupText(text);
+
+        // TODO : add such its only a specific client that receives the packets
+
+        // blockEntity.addViewer(Player player);
 
         // IMPORTANT: do NOT teleport here if your spawn positioning is scheduled after setInstance()
         // teleport(pos);
@@ -48,6 +53,7 @@ public class BlockDisplay implements DisplayValue {
 
     private void setupBlock(Block block) {
         var meta = (BlockDisplayMeta) blockEntity.getEntityMeta();
+
         meta.setBlockState(block);
         meta.setHasNoGravity(true);
         meta.setPosRotInterpolationDuration(5);

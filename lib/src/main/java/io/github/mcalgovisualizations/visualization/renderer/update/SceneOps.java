@@ -5,7 +5,7 @@ import net.minestom.server.coordinate.Pos;
 public interface SceneOps {
 
     // lifecycle
-    void onStart();
+    void onStart(LayoutResult[] model);
 
     void cleanUp();
 

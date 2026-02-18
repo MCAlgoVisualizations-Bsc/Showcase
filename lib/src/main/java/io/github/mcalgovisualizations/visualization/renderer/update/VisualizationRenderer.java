@@ -1,13 +1,17 @@
 package io.github.mcalgovisualizations.visualization.renderer.update;
 
 import io.github.mcalgovisualizations.visualization.Snapshot;
+import io.github.mcalgovisualizations.visualization.algorithms.events.Compare;
+import io.github.mcalgovisualizations.visualization.algorithms.events.Swap;
 import io.github.mcalgovisualizations.visualization.layouts.Layout;
 import io.github.mcalgovisualizations.visualization.renderer.update.dispatch.AnimationPlan;
 import io.github.mcalgovisualizations.visualization.renderer.update.dispatch.Dispatcher;
+import io.github.mcalgovisualizations.visualization.renderer.update.handlers.CompareHandler;
+import io.github.mcalgovisualizations.visualization.renderer.update.handlers.SwapHandler;
+import io.github.mcalgovisualizations.visualization.renderer.update.Executor;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.instance.Instance;
 
-import java.util.List;
 import java.util.Objects;
 
 public final class VisualizationRenderer {
@@ -16,7 +20,8 @@ public final class VisualizationRenderer {
     private final Layout layout;
     private final Dispatcher dispatcher;
     private final Executor executor;
-    private final RenderSettings settings;
+    private final Pos origin;
+    //private final Object settings;
 
     private boolean started = false;
 
@@ -24,20 +29,25 @@ public final class VisualizationRenderer {
             Instance instance,
             Pos origin, Layout layout,
             Dispatcher dispatcher,
-            Executor executor,
-            RenderSettings settings
+            Executor executor // TODO : introduce executor
+            //Object settings // TODO : introduce settings for ease, speed, etc.
     ) {
         this.scene = new VisualizationScene(instance, origin);
+        this.origin = origin;
         this.layout = Objects.requireNonNull(layout, "layout");
         this.dispatcher = Objects.requireNonNull(dispatcher, "dispatcher");
         this.executor = Objects.requireNonNull(executor, "executor");
-        this.settings = settings != null ? settings : RenderSettings.defaults(); }
+        //this.settings = settings != null ? settings : RenderSettings.defaults();
+    }
+
+
+
 
     public void onStart() {
         if (started) return;
-        scene.onStart();
-        executor.start();   // if your executor has a tick loop, start it here
         started = true;
+        dispatcher.register(Swap.class, new SwapHandler());
+        dispatcher.register(Compare.class, new CompareHandler());
     }
 
     /**
@@ -47,44 +57,36 @@ public final class VisualizationRenderer {
     public void onStop() {
         if (!started) return;
 
-        // Important: do NOT despawn entities here.
-        // Just stop time-based activity and optionally clear queued work.
         executor.pause();        // or stopTickLoop()
-        executor.clearQueue();   // optional; decide policy
+        //executor.clearQueue();   // optional; decide policy
     }
-
+    private boolean test = false;
     public void render(Snapshot snapshot) {
         requireStarted();
         Objects.requireNonNull(snapshot, "snapshot");
+        if (!test) {
+            // move to onstart()
+            final var layoutResult = this.layout.compute(snapshot.values(), origin);
+            scene.onStart(layoutResult);
 
-        var values = snapshot.values();
-        LayoutResult layoutResult = layout.compute(values);
-
-        scene.ensureSize(values.length);
-
-        for (int slot = 0; slot < values.length; slot++) {
-            scene.setValue(slot, values[slot]);
+            test = true;
         }
 
-        scene.clearHighlights();
-        for (int slot : snapshot.highlights()) {
-            scene.setHighlighted(slot, true);
+
+//        Controller.tick()
+//            -> stepper.next()                           // algorithm produces events
+//            -> dispatcher.toAnimationPlans(events)      // translate events -> AnimationPlan(s)
+
+
+        final var events = snapshot.events();
+        var ctx = new RenderContext(scene, events);
+
+        for (var e : events) {
+            var plan = dispatcher.dispatch(e, ctx);
+            executor.add(plan);
         }
 
-        if (shouldHardSyncPositions(snapshot)) {
-            for (int slot = 0; slot < values.length; slot++) {
-                scene.moveSlotTo(slot, layoutResult.positionOf(slot));
-            }
-        }
-
-        RenderContext ctx = new RenderContext(scene, layoutResult, snapshot, settings);
-
-        for (AlgorithmEvent e : snapshot.events()) {
-            AnimationPlan plan = dispatcher.dispatch(e, ctx);
-            if (plan != null && !plan.isEmpty()) {
-                executor.enqueue(plan);
-            }
-        }
+        executor.step();
     }
 
     public boolean isIdle() {
@@ -98,7 +100,7 @@ public final class VisualizationRenderer {
     public void onCleanup() {
         if (!started) return;
 
-        executor.stop();   // kill tick loop + clear queue
+        executor.onCleanup();   // kill tick loop + clear queue
         scene.cleanUp();   // despawn entities
         started = false;
     }
@@ -114,5 +116,4 @@ public final class VisualizationRenderer {
     }
     private void requireStarted() { if (!started) throw new IllegalStateException("Renderer not started. Call onStart() first."); }
 
-    // ... shouldHardSyncPositions + requireStarted unchanged ...
 }

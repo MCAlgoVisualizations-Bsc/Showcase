@@ -3,6 +3,10 @@ package io.github.mcalgovisualizations.visualization.algorithms.sorting;
 import io.github.mcalgovisualizations.visualization.HistorySnapshot;
 import io.github.mcalgovisualizations.visualization.Snapshot;
 import io.github.mcalgovisualizations.visualization.algorithms.AlgorithmStepper;
+import io.github.mcalgovisualizations.visualization.algorithms.events.Compare;
+import io.github.mcalgovisualizations.visualization.algorithms.events.Complete;
+import io.github.mcalgovisualizations.visualization.algorithms.events.Highlight;
+import io.github.mcalgovisualizations.visualization.algorithms.events.Swap;
 import io.github.mcalgovisualizations.visualization.models.IntList;
 
 import java.util.ArrayList;
@@ -23,13 +27,16 @@ public class InsertionSortStepper implements AlgorithmStepper {
 
     @Override
     public Snapshot step() {
-        if (ALGORITHM_COMPLETE)
+        if (ALGORITHM_COMPLETE) {
+            state.addEvent(new Complete());
             return getHistorySnapshot();
+        }
 
 
         state.beginStep();
         if (state.currentIndex() >= model.size()) {
             ALGORITHM_COMPLETE = true;
+            state.addEvent(new Complete());
             return getHistorySnapshot();
         }
 
@@ -38,15 +45,17 @@ public class InsertionSortStepper implements AlgorithmStepper {
         }
 
         if (state.compareIndex() > 0) {
-            state.highlightIndex(state.compareIndex());
-            state.highlightIndex(state.compareIndex() - 1);
-            state.addEvent(SortingState.SortingOperation.COMPARE);
+//            state.highlightIndex(state.compareIndex());
+//            state.highlightIndex(state.compareIndex() - 1);
+            state.addEvent(new Highlight(state.compareIndex()));
+            state.addEvent(new Highlight(state.compareIndex() - 1));
+            state.addEvent(new Compare(state.compareIndex(),  state.compareIndex() - 1));
         }
 
         int j = state.compareIndex();
         if (j > 0 && model.data()[j - 1] > model.data()[j]) {
             model.swap(j, j - 1);
-            state.addEvent(SortingState.SortingOperation.SWAP);
+            state.addEvent(new Swap(j - 1, j));
             state.setCompareIndex(j - 1);
         } else {
             state.incrementCurrentIndex();
@@ -65,7 +74,7 @@ public class InsertionSortStepper implements AlgorithmStepper {
         return new HistorySnapshot(
                 model.toArray(),
                 state.highlights(),
-                new ArrayList<>(),
+                state.events(),
                 state.currentIndex(),
                 state.compareIndex(),
                 ALGORITHM_COMPLETE

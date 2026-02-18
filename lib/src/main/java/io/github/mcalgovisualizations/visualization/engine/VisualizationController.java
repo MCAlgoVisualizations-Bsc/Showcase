@@ -1,11 +1,8 @@
 package io.github.mcalgovisualizations.visualization.engine;
 
 import io.github.mcalgovisualizations.visualization.HistorySnapshot;
-import io.github.mcalgovisualizations.visualization.Snapshot;
 import io.github.mcalgovisualizations.visualization.algorithms.AlgorithmStepper;
-import io.github.mcalgovisualizations.visualization.renderer.update.RenderContext;
 import io.github.mcalgovisualizations.visualization.renderer.update.VisualizationRenderer;
-import io.github.mcalgovisualizations.visualization.renderer.update.VisualizationScene;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.MinecraftServer;
@@ -62,17 +59,16 @@ public class VisualizationController {
     public void step() {
         final var snapshot = (HistorySnapshot) stepper.step();
 
-        if(renderer.isIdle())
-            renderer.render(snapshot);
-
+        renderer.render(snapshot);
         // TODO : handle history with snapshots
     }
 
     public void back() {
-        final var snapshot = (HistorySnapshot) stepper.back();
-
-        if(renderer.isIdle())
-            renderer.render(snapshot);
+        step();
+//        final var snapshot = (HistorySnapshot) stepper.back();
+//
+//        if(renderer.isIdle())
+//            renderer.render(snapshot);
 
         // TODO : handle history with snapshots
     }
