@@ -2,42 +2,57 @@ package io.github.mcalgovisualizations.visualization.algorithms.sorting;
 
 import io.github.mcalgovisualizations.visualization.HistorySnapshot;
 import io.github.mcalgovisualizations.visualization.Snapshot;
-import io.github.mcalgovisualizations.visualization.algorithms.AlgorithmStepper;
+import io.github.mcalgovisualizations.visualization.algorithms.IAlgorithmStepper;
 import io.github.mcalgovisualizations.visualization.algorithms.events.Compare;
 import io.github.mcalgovisualizations.visualization.algorithms.events.Complete;
 import io.github.mcalgovisualizations.visualization.algorithms.events.Highlight;
 import io.github.mcalgovisualizations.visualization.algorithms.events.Swap;
 import io.github.mcalgovisualizations.visualization.models.IntList;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 
-public class InsertionSortStepper implements AlgorithmStepper {
 
+// TODO: remove insertion sort from AlgorithmStepper
+public class AlgorithmStepper implements IAlgorithmStepper {
+    private final ArrayList<HistorySnapshot> history = new ArrayList<>();
+    private int historyPointer = 0;
     private final IntList model;
     private final SortingState state = new SortingState();
     private boolean ALGORITHM_COMPLETE = false;
 
-    public InsertionSortStepper(IntList model) {
+    public AlgorithmStepper(IntList model) {
         this.model = model;
     }
 
     public Snapshot onStart() {
-        return getHistorySnapshot();
+        history.add(getHistorySnapshot());
+        return history.get(historyPointer);
     }
 
     @Override
     public Snapshot step() {
-        if (ALGORITHM_COMPLETE) {
-            state.addEvent(new Complete());
-            return getHistorySnapshot();
+        // Check if step is old
+        if ((historyPointer + 1) < history.size()) {
+            historyPointer++;
+            return history.get(historyPointer);
         }
 
+        // Check if done
+        if (ALGORITHM_COMPLETE) {
+            state.addEvent(new Complete());
+            System.out.println("Done");
+            return history.get(historyPointer);
+        }
 
+        // calc next step
         state.beginStep();
         if (state.currentIndex() >= model.size()) {
             ALGORITHM_COMPLETE = true;
             state.addEvent(new Complete());
-            return getHistorySnapshot();
+            history.add(getHistorySnapshot());
+            historyPointer++;
+            return history.get(historyPointer);
         }
 
         if (state.compareIndex() == -1) {
@@ -45,8 +60,6 @@ public class InsertionSortStepper implements AlgorithmStepper {
         }
 
         if (state.compareIndex() > 0) {
-//            state.highlightIndex(state.compareIndex());
-//            state.highlightIndex(state.compareIndex() - 1);
             state.addEvent(new Highlight(state.compareIndex()));
             state.addEvent(new Highlight(state.compareIndex() - 1));
             state.addEvent(new Compare(state.compareIndex(),  state.compareIndex() - 1));
@@ -63,12 +76,16 @@ public class InsertionSortStepper implements AlgorithmStepper {
             state.setCompareIndex(-1);
         }
 
-        return getHistorySnapshot();
+        history.add(getHistorySnapshot());
+        historyPointer++;
+        return history.get(historyPointer);
     }
 
     @Override
-    public Snapshot back() {
-        return step(); // TODO : fix when history works
+    public @Nullable Snapshot back() {
+        if ((historyPointer - 1) < 0) return null;
+        historyPointer--;
+        return history.get(historyPointer);
     }
 
     private HistorySnapshot getHistorySnapshot() {
@@ -98,7 +115,10 @@ public class InsertionSortStepper implements AlgorithmStepper {
         state.reset();
         ALGORITHM_COMPLETE = false;
 
-        return getHistorySnapshot();
+        history.clear();
+        history.add(getHistorySnapshot());
+        historyPointer++;
+        return history.get(historyPointer);
     }
 
 

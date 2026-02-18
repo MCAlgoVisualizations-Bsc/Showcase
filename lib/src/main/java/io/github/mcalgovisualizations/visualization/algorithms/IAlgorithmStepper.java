@@ -2,7 +2,7 @@ package io.github.mcalgovisualizations.visualization.algorithms;
 
 import io.github.mcalgovisualizations.visualization.Snapshot;
 
-public interface AlgorithmStepper {
+public interface IAlgorithmStepper {
 
     /**
      * Execute one step forward in the algorithm.
