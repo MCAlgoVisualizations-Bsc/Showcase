@@ -26,6 +26,7 @@ public class InsertionSortStepper implements AlgorithmStepper {
     @Override
     public Snapshot step() {
         if (ALGORITHM_COMPLETE) {
+            state.beginStep();
             return getHistorySnapshot();
         }
 
