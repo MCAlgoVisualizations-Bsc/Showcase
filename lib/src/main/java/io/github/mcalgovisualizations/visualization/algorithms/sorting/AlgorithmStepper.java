@@ -121,7 +121,7 @@ public class AlgorithmStepper implements IAlgorithmStepper {
 
         history.clear();
         history.add(getHistorySnapshot());
-        historyPointer++;
+        historyPointer = 0;
         return history.get(historyPointer);
     }
 
