@@ -1,8 +1,11 @@
 package io.github.mcalgovisualizations.visualization.engine;
 
 import io.github.mcalgovisualizations.visualization.HistorySnapshot;
+import io.github.mcalgovisualizations.visualization.algorithms.sorting.AlgorithmStepper;
 import io.github.mcalgovisualizations.visualization.renderer.VisualizationRenderer;
 import io.github.mcalgovisualizations.visualization.algorithms.IAlgorithmStepper;
+import io.github.mcalgovisualizations.visualization.Snapshot;
+import io.github.mcalgovisualizations.visualization.algorithms.events.AlgorithmEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.MinecraftServer;
@@ -12,6 +15,7 @@ import net.minestom.server.timer.Task;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * A controller of time so forwards, back, adjusting speed belongs here.
@@ -19,6 +23,7 @@ import java.util.List;
 public class VisualizationController {
     private final IAlgorithmStepper stepper;
     private final VisualizationRenderer renderer;
+    private final List<Consumer<AlgorithmEvent>> eventListeners = new ArrayList<>();
 
     private int ticksPerStep = 20;
     private boolean IS_RUNNING = false;
@@ -29,9 +34,14 @@ public class VisualizationController {
         this.renderer = renderer;
     }
 
+    public void addEventListener(Consumer<AlgorithmEvent> listener) {
+        eventListeners.add(listener);
+    }
+
     public void onStart() {
         renderer.onStart();
         var snapshot = stepper.onStart();
+        dispatchEvents(snapshot);
         renderer.render(snapshot);
     }
 
@@ -60,7 +70,17 @@ public class VisualizationController {
 
     public void step() {
         final var snapshot = (HistorySnapshot) stepper.step();
+
+        dispatchEvents(snapshot);
         renderer.render(snapshot);
+    }
+
+    private void dispatchEvents(Snapshot snapshot) {
+        for (AlgorithmEvent event : snapshot.events()) {
+            for (Consumer<AlgorithmEvent> listener : eventListeners) {
+                listener.accept(event);
+            }
+        }
     }
 
     public void back() {
