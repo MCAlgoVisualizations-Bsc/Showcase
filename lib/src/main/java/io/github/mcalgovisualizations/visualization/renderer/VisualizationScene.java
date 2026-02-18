@@ -1,5 +1,7 @@
 package io.github.mcalgovisualizations.visualization.renderer;
 
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.Block;
@@ -167,6 +169,10 @@ public final class VisualizationScene implements SceneOps {
                 displaysBySlot.put(slot, createDisplay(origin));
             }
         }
+    }
+
+    public void sendMessage(String message, NamedTextColor color) {
+        // player.sendMessage(Component.text(msg.message(), color));
     }
 
     private BlockDisplay createDisplay(Pos spawnPos) {

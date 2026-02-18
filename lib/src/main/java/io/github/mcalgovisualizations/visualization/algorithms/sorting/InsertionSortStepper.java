@@ -6,8 +6,6 @@ import io.github.mcalgovisualizations.visualization.algorithms.AlgorithmStepper;
 import io.github.mcalgovisualizations.visualization.algorithms.events.*;
 import io.github.mcalgovisualizations.visualization.models.IntList;
 
-import java.util.ArrayList;
-
 public class InsertionSortStepper implements AlgorithmStepper {
 
     private final IntList model;
@@ -19,7 +17,7 @@ public class InsertionSortStepper implements AlgorithmStepper {
     }
 
     public Snapshot onStart() {
-        state.addEvent(new MessageEvent("Starting Insertion Sort", MessageEvent.MessageType.INFO));
+        state.addEvent(new Message("Starting Insertion Sort", Message.MessageType.INFO));
         return getHistorySnapshot();
     }
 
@@ -34,7 +32,7 @@ public class InsertionSortStepper implements AlgorithmStepper {
         state.beginStep();
         if (state.currentIndex() >= model.size()) {
             ALGORITHM_COMPLETE = true;
-            state.addEvent(new MessageEvent("Sorting complete!", MessageEvent.MessageType.SUCCESS));
+            state.addEvent(new Message("Sorting complete!", Message.MessageType.SUCCESS));
             state.addEvent(new Complete());
             return getHistorySnapshot();
         }
@@ -48,15 +46,15 @@ public class InsertionSortStepper implements AlgorithmStepper {
             state.addEvent(new Highlight(j));
             state.addEvent(new Highlight(j - 1));
             state.addEvent(new Compare(j, j - 1));
-            state.addEvent(new MessageEvent("Comparing indices " + j + " and " + (j - 1), MessageEvent.MessageType.INFO));
+            state.addEvent(new Message("Comparing indices " + j + " and " + (j - 1), Message.MessageType.INFO));
 
             if (model.data()[j - 1] > model.data()[j]) {
                 model.swap(j, j - 1);
                 state.addEvent(new Swap(j - 1, j));
-                state.addEvent(new MessageEvent("Swapped " + j + " and " + (j - 1), MessageEvent.MessageType.INFO));
+                state.addEvent(new Message("Swapped " + j + " and " + (j - 1), Message.MessageType.INFO));
                 state.setCompareIndex(j - 1);
             } else {
-                state.addEvent(new MessageEvent("Element in correct position", MessageEvent.MessageType.SUCCESS));
+                state.addEvent(new Message("Element in correct position", Message.MessageType.SUCCESS));
                 state.incrementCurrentIndex();
                 state.setCompareIndex(-1);
             }
