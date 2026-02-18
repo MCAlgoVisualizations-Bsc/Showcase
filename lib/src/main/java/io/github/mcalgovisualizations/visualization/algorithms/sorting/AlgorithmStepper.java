@@ -23,7 +23,7 @@ public class AlgorithmStepper implements IAlgorithmStepper {
     }
 
     public Snapshot onStart() {
-        state.addEvent(new Message("Starting Insertion Sort", Message.MessageType.INFO));
+        state.addEvent(new MessageEvent("Starting Insertion Sort", MessageEvent.MessageType.INFO));
         history.add(getHistorySnapshot());
         return history.get(historyPointer);
     }
@@ -47,7 +47,7 @@ public class AlgorithmStepper implements IAlgorithmStepper {
         state.beginStep();
         if (state.currentIndex() >= model.size()) {
             ALGORITHM_COMPLETE = true;
-            state.addEvent(new Message("Sorting complete!", Message.MessageType.SUCCESS));
+            state.addEvent(new MessageEvent("Sorting complete!", MessageEvent.MessageType.SUCCESS));
             state.addEvent(new Complete());
             history.add(getHistorySnapshot());
             historyPointer++;
@@ -63,15 +63,15 @@ public class AlgorithmStepper implements IAlgorithmStepper {
             state.addEvent(new Highlight(j));
             state.addEvent(new Highlight(j - 1));
             state.addEvent(new Compare(j, j - 1));
-            state.addEvent(new Message("Comparing indices " + j + " and " + (j - 1), Message.MessageType.INFO));
+            state.addEvent(new MessageEvent("Comparing indices " + j + " and " + (j - 1), MessageEvent.MessageType.INFO));
 
             if (model.data()[j - 1] > model.data()[j]) {
                 model.swap(j, j - 1);
                 state.addEvent(new Swap(j - 1, j));
-                state.addEvent(new Message("Swapped " + j + " and " + (j - 1), Message.MessageType.INFO));
+                state.addEvent(new MessageEvent("Swapped " + j + " and " + (j - 1), MessageEvent.MessageType.INFO));
                 state.setCompareIndex(j - 1);
             } else {
-                state.addEvent(new Message("Element in correct position", Message.MessageType.SUCCESS));
+                state.addEvent(new MessageEvent("Element in correct position", MessageEvent.MessageType.SUCCESS));
                 state.incrementCurrentIndex();
                 state.setCompareIndex(-1);
             }
@@ -121,7 +121,8 @@ public class AlgorithmStepper implements IAlgorithmStepper {
 
         history.clear();
         history.add(getHistorySnapshot());
-        return history.get(historyPointer++);
+        historyPointer = 0;
+        return history.get(historyPointer);
     }
 
 
