@@ -1,14 +1,12 @@
-package io.github.mcalgovisualizations.visualization.renderer.update;
+package io.github.mcalgovisualizations.visualization.renderer;
 
-import io.github.mcalgovisualizations.visualization.renderer.update.dispatch.AnimationPlan;
+import io.github.mcalgovisualizations.visualization.renderer.dispatch.AnimationPlan;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.timer.Task;
 
 import java.time.Duration;
 import java.util.LinkedList;
-import java.util.Objects;
 import java.util.Queue;
-import java.util.function.Consumer;
 
 /**
  * Runs AnimationPlans sequentially over time (one at a time).

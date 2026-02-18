@@ -1,9 +1,8 @@
-package io.github.mcalgovisualizations.visualization.renderer.update.handlers;
+package io.github.mcalgovisualizations.visualization.renderer.handlers;
 
-import io.github.mcalgovisualizations.visualization.algorithms.events.AlgorithmEvent;
 import io.github.mcalgovisualizations.visualization.algorithms.events.Swap;
-import io.github.mcalgovisualizations.visualization.renderer.update.RenderContext;
-import io.github.mcalgovisualizations.visualization.renderer.update.dispatch.AnimationPlan;
+import io.github.mcalgovisualizations.visualization.renderer.RenderContext;
+import io.github.mcalgovisualizations.visualization.renderer.dispatch.AnimationPlan;
 
 public final class SwapHandler implements AnimationHandler<Swap> {
     @Override

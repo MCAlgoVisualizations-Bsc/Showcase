@@ -1,4 +1,4 @@
-package io.github.mcalgovisualizations.visualization.renderer.update.dispatch;
+package io.github.mcalgovisualizations.visualization.renderer.dispatch;
 
 public interface AnimationPlan {
     static AnimationPlan empty() { return EmptyPlan.INSTANCE; }

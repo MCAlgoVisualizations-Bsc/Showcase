@@ -1,8 +1,8 @@
-package io.github.mcalgovisualizations.visualization.renderer.update.dispatch;
+package io.github.mcalgovisualizations.visualization.renderer.dispatch;
 
 import io.github.mcalgovisualizations.visualization.algorithms.events.AlgorithmEvent;
-import io.github.mcalgovisualizations.visualization.renderer.update.RenderContext;
-import io.github.mcalgovisualizations.visualization.renderer.update.handlers.AnimationHandler;
+import io.github.mcalgovisualizations.visualization.renderer.RenderContext;
+import io.github.mcalgovisualizations.visualization.renderer.handlers.AnimationHandler;
 
 import java.util.HashMap;
 import java.util.Map;

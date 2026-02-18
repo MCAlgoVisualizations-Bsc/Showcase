@@ -1,4 +1,4 @@
-package io.github.mcalgovisualizations.visualization.renderer.update;
+package io.github.mcalgovisualizations.visualization.renderer;
 
 import net.minestom.server.coordinate.Pos;
 
