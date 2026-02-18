@@ -1,6 +1,6 @@
 package io.github.mcalgovisualizations.visualization.algorithms;
 
-import io.github.mcalgovisualizations.visualization.algorithms.sorting.InsertionSortStepper;
+import io.github.mcalgovisualizations.visualization.algorithms.sorting.AlgorithmStepper;
 import io.github.mcalgovisualizations.visualization.models.DataModel;
 import io.github.mcalgovisualizations.visualization.models.IntList;
 
@@ -13,7 +13,7 @@ public final class StepperFactory {
 
     private record Entry(
             Class<? extends DataModel> modelType,
-            Function<? super DataModel, ? extends AlgorithmStepper> ctor
+            Function<? super DataModel, ? extends IAlgorithmStepper> ctor
     ) {}
 
     private static final Map<String, Entry> registry = new HashMap<>();
@@ -21,7 +21,7 @@ public final class StepperFactory {
     public static <M extends DataModel> void register(
             String key,
             Class<M> modelType,
-            Function<? super M, ? extends AlgorithmStepper> ctor
+            Function<? super M, ? extends IAlgorithmStepper> ctor
     ) {
         registry.put(key.toLowerCase(), new Entry(
                 modelType,
@@ -31,10 +31,10 @@ public final class StepperFactory {
 
     // register the algorithms here with their model
     static {
-        register("insertionsort", IntList.class, InsertionSortStepper::new);
+        register("insertionsort", IntList.class, AlgorithmStepper::new);
     }
 
-    public static AlgorithmStepper create(String key, DataModel model) {
+    public static IAlgorithmStepper create(String key, DataModel model) {
         Entry e = registry.get(key.toLowerCase());
         if (e == null) throw new IllegalArgumentException("No stepper registered for key: " + key);
 
