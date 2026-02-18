@@ -1,10 +1,11 @@
 package io.github.mcalgovisualizations.visualization.engine;
 
 import io.github.mcalgovisualizations.visualization.HistorySnapshot;
+import io.github.mcalgovisualizations.visualization.algorithms.sorting.AlgorithmStepper;
+import io.github.mcalgovisualizations.visualization.renderer.VisualizationRenderer;
+import io.github.mcalgovisualizations.visualization.algorithms.IAlgorithmStepper;
 import io.github.mcalgovisualizations.visualization.Snapshot;
-import io.github.mcalgovisualizations.visualization.algorithms.AlgorithmStepper;
 import io.github.mcalgovisualizations.visualization.algorithms.events.AlgorithmEvent;
-import io.github.mcalgovisualizations.visualization.renderer.update.VisualizationRenderer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.MinecraftServer;
@@ -20,8 +21,7 @@ import java.util.function.Consumer;
  * A controller of time so forwards, back, adjusting speed belongs here.
  */
 public class VisualizationController {
-
-    private final AlgorithmStepper stepper;
+    private final IAlgorithmStepper stepper;
     private final VisualizationRenderer renderer;
     private final List<Consumer<AlgorithmEvent>> eventListeners = new ArrayList<>();
 
@@ -29,7 +29,7 @@ public class VisualizationController {
     private boolean IS_RUNNING = false;
     private Task runningTask = null;
 
-    public VisualizationController(AlgorithmStepper stepper, VisualizationRenderer renderer) {
+    public VisualizationController(IAlgorithmStepper stepper, VisualizationRenderer renderer) {
         this.stepper = stepper;
         this.renderer = renderer;
     }
@@ -73,7 +73,6 @@ public class VisualizationController {
 
         dispatchEvents(snapshot);
         renderer.render(snapshot);
-        // TODO : handle history with snapshots
     }
 
     private void dispatchEvents(Snapshot snapshot) {
@@ -85,13 +84,8 @@ public class VisualizationController {
     }
 
     public void back() {
-        step();
-//        final var snapshot = (HistorySnapshot) stepper.back();
-//
-//        if(renderer.isIdle())
-//            renderer.render(snapshot);
-
-        // TODO : handle history with snapshots
+        final var snapshot = (HistorySnapshot) stepper.back();
+        renderer.render(snapshot);
     }
 
     public void setSpeed(int ticksPerStep) {
@@ -117,8 +111,6 @@ public class VisualizationController {
         stop();
         final var snapshot = stepper.randomize();
         renderer.render(snapshot);
-
-        // TODO : handle history with snapshots
     }
 
 }

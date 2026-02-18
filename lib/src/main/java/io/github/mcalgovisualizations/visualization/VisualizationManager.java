@@ -1,6 +1,6 @@
 package io.github.mcalgovisualizations.visualization;
 
-import io.github.mcalgovisualizations.visualization.algorithms.AlgorithmStepper;
+import io.github.mcalgovisualizations.visualization.algorithms.IAlgorithmStepper;
 import io.github.mcalgovisualizations.visualization.algorithms.StepperFactory;
 import io.github.mcalgovisualizations.visualization.algorithms.events.MessageEvent;
 import io.github.mcalgovisualizations.visualization.engine.VisualizationController;
@@ -10,9 +10,8 @@ import io.github.mcalgovisualizations.visualization.layouts.Layout;
 import io.github.mcalgovisualizations.visualization.models.DataModel;
 import io.github.mcalgovisualizations.visualization.models.IntList;
 import io.github.mcalgovisualizations.visualization.refactor.Visualization;
-import io.github.mcalgovisualizations.visualization.renderer.update.VisualizationRenderer;
-import io.github.mcalgovisualizations.visualization.renderer.update.Executor;
-import io.github.mcalgovisualizations.visualization.renderer.update.dispatch.Dispatcher;
+import io.github.mcalgovisualizations.visualization.renderer.VisualizationRenderer;
+import io.github.mcalgovisualizations.visualization.renderer.dispatch.Dispatcher;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.coordinate.Pos;
@@ -33,7 +32,7 @@ public class VisualizationManager {
     private static final Map<String, Class<? extends Visualization>> visualizations = new HashMap<>();
     private static final Map<UUID, Visualization> playerVisualizations = new HashMap<>();
 
-    private static final Map<String, Class<? extends AlgorithmStepper>> steppers = new HashMap<>();
+    private static final Map<String, Class<? extends IAlgorithmStepper>> steppers = new HashMap<>();
     private static final Map<UUID, VisualizationController> playerSteppers = new HashMap<>();
 
     static {
@@ -58,7 +57,7 @@ public class VisualizationManager {
 
         // TODO : Let players control Layout and model's size n!
         final DataModel model = createModelFor(type, player, 10);
-        final AlgorithmStepper stepper = StepperFactory.create(type, model);
+        final IAlgorithmStepper stepper = StepperFactory.create(type, model);
 
         Layout layout = new FloatingLinearLayout();
         var origin = new Pos(0, 43, 0);

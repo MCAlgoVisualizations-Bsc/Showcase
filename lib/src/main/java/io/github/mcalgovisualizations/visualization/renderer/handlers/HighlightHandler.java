@@ -11,7 +11,6 @@ public class HighlightHandler implements AnimationHandler<Highlight> {
     public AnimationPlan handle(Highlight event, RenderContext ctx) {
         return AnimationPlan.instant(scene -> {
             scene.setHighlighted(event.x(), true);
-            scene.moveSlotTo(event.x(), ctx.sceneOps().);
         });
     }
 }

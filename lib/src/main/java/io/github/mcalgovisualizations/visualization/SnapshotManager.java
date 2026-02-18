@@ -1,12 +1,13 @@
 package io.github.mcalgovisualizations.visualization;
 
 import io.github.mcalgovisualizations.visualization.engine.VisualizationController;
+import org.jspecify.annotations.Nullable;
 
 import java.io.*;
 import java.util.*;
 
 public class SnapshotManager {
-    private static SnapshotManager single_instance = null;
+    private static @Nullable SnapshotManager single_instance = null;
 
     // Maps a Player/Session UUID to a List of historical states
     private final Map<UUID, List<byte[]>> history = new HashMap<>();

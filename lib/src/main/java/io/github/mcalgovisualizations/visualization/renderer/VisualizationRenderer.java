@@ -42,7 +42,7 @@ public final class VisualizationRenderer {
         dispatcher.register(Compare.class, new CompareHandler());
         dispatcher.register(Complete.class, new CompleteHandler());
         dispatcher.register(Highlight.class, new HighlightHandler());
-        dispatcher.register(PlayerMessage.class, new MessageHandler());
+        dispatcher.register(MessageEvent.class, new MessageHandler());
         dispatcher.register(Validate.class, new ValidateHandler());
         dispatcher.register(Swap.class, new SwapHandler());
 
