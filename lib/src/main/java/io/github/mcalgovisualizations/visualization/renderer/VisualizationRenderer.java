@@ -87,6 +87,13 @@ public final class VisualizationRenderer {
         return true;
     }
 
+    public void hardReset(Snapshot snapshot) {
+        executor.onCleanup();
+        scene.cleanUp();
+        final var layoutResult = this.layout.compute(snapshot.values(), origin);
+        scene.onStart(layoutResult);
+    }
+
     /**
      * Full teardown. Not resumable.
      * Typical use: application shutdown / leaving visualization.
@@ -108,6 +115,7 @@ public final class VisualizationRenderer {
         // return snapshot.isFirstFrame() || snapshot.isHardReset(); // adapt to your snapshot flags
         return false;
     }
+
     private void requireStarted() { if (!started) throw new IllegalStateException("Renderer not started. Call onStart() first."); }
 
 }

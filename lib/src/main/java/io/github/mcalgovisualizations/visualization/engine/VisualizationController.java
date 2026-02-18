@@ -97,7 +97,7 @@ public class VisualizationController {
     public void randomize() {
         stop();
         final var snapshot = stepper.randomize();
-        renderer.render(snapshot);
+        renderer.hardReset(snapshot);
 
         // TODO : handle history with snapshots
     }

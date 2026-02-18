@@ -4,6 +4,7 @@ import io.github.mcalgovisualizations.visualization.algorithms.IAlgorithmStepper
 import io.github.mcalgovisualizations.visualization.algorithms.StepperFactory;
 import io.github.mcalgovisualizations.visualization.algorithms.events.Message;
 import io.github.mcalgovisualizations.visualization.engine.VisualizationController;
+import io.github.mcalgovisualizations.visualization.layouts.CircleLayout;
 import io.github.mcalgovisualizations.visualization.layouts.FloatingLinearLayout;
 import io.github.mcalgovisualizations.visualization.layouts.Layout;
 import io.github.mcalgovisualizations.visualization.models.DataModel;
