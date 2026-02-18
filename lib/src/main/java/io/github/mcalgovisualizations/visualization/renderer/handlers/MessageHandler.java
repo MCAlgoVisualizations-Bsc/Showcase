@@ -13,6 +13,7 @@ public class MessageHandler implements AnimationHandler<Message>{
         return AnimationPlan.instant(sceneOps -> sceneOps.setStatusText(event.message(), event.type().color()));
     }
 
+
     public static final Component ALGORITHM_COMPLETE = Component.text("Algorithm complete! Use randomize to restart.", Message.MessageType.SUCCESS.color());
     public static final Component VISUALIZATION_STARTED = Component.text("Visualization started!", Message.MessageType.SUCCESS.color());
     public static final Component VISUALIZATION_STOPPED = Component.text("Visualization stopped!", Message.MessageType.ERROR.color());
@@ -23,6 +24,29 @@ public class MessageHandler implements AnimationHandler<Message>{
     public static final Component RETURNED_TO_HUB = Component.text("Returned to hub!", NamedTextColor.LIGHT_PURPLE);
     public static final Component WELCOME = Component.text("Welcome to Algorithm Visualizations!", Message.MessageType.SUCCESS.color());
     public static final Component SELECT_ALGORITHM_HINT = Component.text("Right-click the Nether Star to select an algorithm to visualize!", NamedTextColor.YELLOW);
+
+    public static class Algorithm {
+        public static Message starting() {
+            return new Message("Starting Insertion Sort", Message.MessageType.INFO);
+        }
+
+        public static Message complete() {
+            return new Message("Sorting complete!", Message.MessageType.SUCCESS);
+        }
+
+        public static Message comparing(int i, int j) {
+            return new Message("Comparing indices " + i + " and " + j, Message.MessageType.INFO);
+        }
+
+        public static Message swapped(int i, int j) {
+            return new Message("Swapped " + i + " and " + j, Message.MessageType.INFO);
+        }
+
+        public static Message inPosition() {
+            return new Message("Element in correct position", Message.MessageType.SUCCESS);
+        }
+    }
+
 
     public static void send(CommandSender sender, Component message) {
         sender.sendMessage(message);

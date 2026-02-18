@@ -20,3 +20,4 @@ public record Message(String message, MessageType type) implements AlgorithmEven
         }
     }
 }
+
