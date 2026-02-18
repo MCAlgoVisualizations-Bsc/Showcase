@@ -1,12 +1,11 @@
-package io.github.mcalgovisualizations.visualization;
+package io.github.mcalgovisualizations.visualization.refactor;
 
-import net.kyori.adventure.sound.Sound;
+
+import io.github.mcalgovisualizations.visualization.renderer.BlockDisplay;
 import net.minestom.server.MinecraftServer;
-import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.block.Block;
-import net.minestom.server.sound.SoundEvent;
 import net.minestom.server.timer.Task;
 
 import java.time.Duration;
@@ -19,9 +18,9 @@ import java.util.Random;
  * Abstract base class for all visualizations.
  * Provides common functionality like scheduling, history management, and state tracking.
  */
-public abstract class AbstractVisualization<T extends Comparable<T>> implements Visualization {
+public abstract class AbstractVisualization<T extends Comparable<T>> /* implements Visualization  */{
     protected final String name;
-    protected final Pos origin;
+    protected final net.minestom.server.coordinate.Pos origin;
     protected final InstanceContainer instance;
     protected boolean algorithmComplete = false;
     private final Random random = new Random();
@@ -30,8 +29,8 @@ public abstract class AbstractVisualization<T extends Comparable<T>> implements 
     protected int ticksPerStep = 20; // 1 second default
     protected boolean running = false;
     protected Task runningTask = null;
-    protected List<DisplayValue<T>> values = new ArrayList<>();
-    protected final List<List<DisplayValue<T>>> history = new ArrayList<>();
+    protected List<BlockDisplay> values = new ArrayList<>();
+    protected final List<List<BlockDisplay>> history = new ArrayList<>();
     protected int historyIndex = -1;
 
     // Visual spacing constants
@@ -40,14 +39,14 @@ public abstract class AbstractVisualization<T extends Comparable<T>> implements 
     private static final double HEIGHT_MULTIPLIER = 0.5; // How much height per value unit
 
 
-    public AbstractVisualization(String name,List<DisplayValue<T>> values, Pos origin, InstanceContainer instance) {
+    public AbstractVisualization(String name, List<BlockDisplay> values, net.minestom.server.coordinate.Pos origin, InstanceContainer instance) {
         this.name = name;
         this.origin = origin;
         this.instance = instance;
         this.values = values;
     }
 
-    @Override
+    // @Override
     public void start(Player player) {
         if (running) return;
         running = true;
@@ -58,7 +57,7 @@ public abstract class AbstractVisualization<T extends Comparable<T>> implements 
                 .schedule();
     }
 
-    @Override
+    // @Override
     public void stop() {
         running = false;
         if (runningTask != null) {
@@ -67,7 +66,7 @@ public abstract class AbstractVisualization<T extends Comparable<T>> implements 
         }
     }
 
-    @Override
+    // @Override
     public void setSpeed(int ticksPerStep) {
         this.ticksPerStep = Math.max(1, ticksPerStep);
         // If running, restart with new speed
@@ -82,20 +81,20 @@ public abstract class AbstractVisualization<T extends Comparable<T>> implements 
         }
     }
 
-    @Override
+    // @Override
     public boolean isRunning() {
         return running;
     }
 
-    @Override
+    // @Override
     public String getName() {
         return name;
     }
 
-    @Override
+    // @Override
     public void cleanup() {
         stop();
-        for (DisplayValue entity : values) {
+        for (BlockDisplay entity : values) {
             entity.remove();
         }
         values.clear();
@@ -152,8 +151,8 @@ public abstract class AbstractVisualization<T extends Comparable<T>> implements 
         }
 
         // Save a snapshot of the current values (not the DisplayValue objects themselves)
-        List<DisplayValue<T>> snapshot = new ArrayList<>();
-        for (DisplayValue<T> dv : values) {
+        List<BlockDisplay> snapshot = new ArrayList<>();
+        for (BlockDisplay dv : values) {
             // We only care about the integer value for history
             // The entities stay the same
             snapshot.add(dv);
@@ -182,9 +181,9 @@ public abstract class AbstractVisualization<T extends Comparable<T>> implements 
             // Use teleport or edit position
             MinecraftServer.getSchedulerManager()
                     .buildTask(
-                        () -> {
-                            displayVal.teleport(new Pos(x, y, z));
-                        }
+                            () -> {
+                                displayVal.teleport(new net.minestom.server.coordinate.Pos(x, y, z));
+                            }
                     )
                     .delay(Duration.ofMillis(100))
                     .schedule();
@@ -194,7 +193,7 @@ public abstract class AbstractVisualization<T extends Comparable<T>> implements 
     }
 
     private void clearRenderState() {
-        for (DisplayValue<T> value : values) {
+        for (BlockDisplay value : values) {
             value.setHighlighted(false);
         }
     }
@@ -207,7 +206,7 @@ public abstract class AbstractVisualization<T extends Comparable<T>> implements 
         }
     }
 
-    @Override
+    // @Override
     public void stepBack() {
         if (historyIndex > 0) {
             historyIndex--;

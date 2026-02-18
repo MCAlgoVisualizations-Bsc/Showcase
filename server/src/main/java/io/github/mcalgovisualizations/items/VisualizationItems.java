@@ -6,6 +6,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 
+// could this be serialized?
 /**
  * Factory class for creating control items used to interact with visualizations.
  * Players use these items in their hotbar to control the algorithm playback.
