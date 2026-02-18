@@ -30,7 +30,7 @@ public class VisualizationController {
 
     public void onStart() {
         renderer.onStart();
-        var snapshot = stepper.onStart();
+        var snapshot = stepper.randomize();
         renderer.render(snapshot);
     }
 

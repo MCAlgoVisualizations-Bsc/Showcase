@@ -23,5 +23,6 @@ public interface SceneOps {
 
     // optional extension point
     void playEffect(int slot, String effectId);
+
 }
 

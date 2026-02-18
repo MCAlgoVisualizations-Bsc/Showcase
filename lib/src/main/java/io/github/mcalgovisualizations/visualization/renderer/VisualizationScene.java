@@ -115,32 +115,15 @@ public final class VisualizationScene implements SceneOps {
     @Override
     public void swapSlots(int a, int b) {
         assertStarted();
-
         var da = requireDisplay(a);
         var db = requireDisplay(b);
 
-        displaysBySlot.put(a, db);
-        displaysBySlot.put(b, da);
+        var posA = da.getPos();
+        var posB = db.getPos();
 
-        setHighlighted(a, true);
-        setHighlighted(b, true);
+        da.teleport(posB);
+        db.teleport(posA);
 
-        // Swap highlight state too, so highlights stick to the *logical slot* or the *entity*?
-        // Here we make highlights follow the entity (display), which is usually what you want during swaps.
-        boolean aHighlighted = highlightedSlots.contains(a);
-        boolean bHighlighted = highlightedSlots.contains(b);
-
-
-
-        if (aHighlighted != bHighlighted) {
-            if (aHighlighted) {
-                highlightedSlots.remove(a);
-                highlightedSlots.add(b);
-            } else {
-                highlightedSlots.remove(b);
-                highlightedSlots.add(a);
-            }
-        }
     }
 
     @Override
