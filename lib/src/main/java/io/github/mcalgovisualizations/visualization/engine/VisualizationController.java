@@ -4,6 +4,7 @@ import io.github.mcalgovisualizations.visualization.HistorySnapshot;
 import io.github.mcalgovisualizations.visualization.algorithms.IAlgorithmStepper;
 import io.github.mcalgovisualizations.visualization.algorithms.sorting.AlgorithmStepper;
 import io.github.mcalgovisualizations.visualization.renderer.VisualizationRenderer;
+import io.github.mcalgovisualizations.visualization.renderer.handlers.MessageHandler;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.MinecraftServer;
@@ -37,7 +38,7 @@ public class VisualizationController {
 
     public void start(Player player) {
         if (stepper.isDone()) {
-            player.sendMessage(Component.text("Algorithm complete! Use randomize to restart.", NamedTextColor.YELLOW));
+            MessageHandler.send(player, MessageHandler.ALGORITHM_COMPLETE);
             return;
         }
 
@@ -103,4 +104,3 @@ public class VisualizationController {
     }
 
 }
-
