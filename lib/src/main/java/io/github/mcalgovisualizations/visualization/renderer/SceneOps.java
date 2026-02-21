@@ -1,7 +1,5 @@
 package io.github.mcalgovisualizations.visualization.renderer;
 
-import io.github.mcalgovisualizations.visualization.algorithms.events.Message;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.coordinate.Pos;
 

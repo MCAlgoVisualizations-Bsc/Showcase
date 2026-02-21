@@ -2,18 +2,13 @@ package io.github.mcalgovisualizations.visualization;
 
 import io.github.mcalgovisualizations.visualization.algorithms.IAlgorithmStepper;
 import io.github.mcalgovisualizations.visualization.algorithms.StepperFactory;
-import io.github.mcalgovisualizations.visualization.algorithms.events.Message;
 import io.github.mcalgovisualizations.visualization.engine.VisualizationController;
-import io.github.mcalgovisualizations.visualization.layouts.CircleLayout;
 import io.github.mcalgovisualizations.visualization.layouts.FloatingLinearLayout;
 import io.github.mcalgovisualizations.visualization.layouts.Layout;
 import io.github.mcalgovisualizations.visualization.models.DataModel;
 import io.github.mcalgovisualizations.visualization.models.IntList;
-import io.github.mcalgovisualizations.visualization.refactor.Visualization;
 import io.github.mcalgovisualizations.visualization.renderer.VisualizationRenderer;
 import io.github.mcalgovisualizations.visualization.renderer.dispatch.Dispatcher;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.InstanceContainer;
@@ -28,10 +23,6 @@ import java.util.UUID;
  */
 public class VisualizationManager {
     private static final Map<String, Pos> areaLocations = new HashMap<>();
-    private static final Map<String, Class<? extends Visualization>> visualizations = new HashMap<>();
-    private static final Map<UUID, Visualization> playerVisualizations = new HashMap<>();
-
-    private static final Map<String, Class<? extends IAlgorithmStepper>> steppers = new HashMap<>();
     private static final Map<UUID, VisualizationController> playerSteppers = new HashMap<>();
 
     static {
@@ -59,11 +50,11 @@ public class VisualizationManager {
         final IAlgorithmStepper stepper = StepperFactory.create(type, model);
 
         Layout layout = new FloatingLinearLayout();
-        var origin = new Pos(0, 43, 0);
+        var origin = getAreaLocation("sorting");
 
         var dispatcher = new Dispatcher();
 
-        var renderer = new VisualizationRenderer(instance, origin, layout,  dispatcher);
+        var renderer = new VisualizationRenderer(instance, origin, dispatcher, layout);
         var controller = new VisualizationController(stepper, renderer);
 
         controller.onStart();

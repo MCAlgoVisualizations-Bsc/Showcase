@@ -1,10 +1,9 @@
 package io.github.mcalgovisualizations.visualization.layouts;
 
-import io.github.mcalgovisualizations.visualization.renderer.LayoutEntry;
+import io.github.mcalgovisualizations.visualization.renderer.LayoutResult;
 import net.minestom.server.coordinate.Pos;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,7 +50,7 @@ class FloatingLinearLayoutTest {
         var model = new int[] { 9, 1, 4, 7 };
         var origin = new Pos(10.0, 20.0, 30.0);
 
-        LayoutEntry[] out = layout.compute(model, origin);
+        LayoutResult[] out = layout.compute(model, origin);
 
         assertEquals(model.length, out.length);
 
@@ -87,8 +86,8 @@ class FloatingLinearLayoutTest {
         var model = new int[] { 9, 1, 4, 7, 7, 2 };
         var origin = new Pos(3.0, 4.0, 5.0);
 
-        LayoutEntry[] expected = layout.compute(model, origin);
-        LayoutEntry[] randomized = layout.random(model, origin);
+        LayoutResult[] expected = layout.compute(model, origin);
+        LayoutResult[] randomized = layout.random(model, origin);
 
         assertEquals(expected.length, randomized.length);
 
@@ -110,9 +109,9 @@ class FloatingLinearLayoutTest {
 
     // --- helpers ---
 
-    private static Map<String, Integer> multisetKeyCounts(LayoutEntry[] entries) {
+    private static Map<String, Integer> multisetKeyCounts(LayoutResult[] entries) {
         Map<String, Integer> counts = new HashMap<>();
-        for (LayoutEntry e : entries) {
+        for (LayoutResult e : entries) {
             // Keyed by exact x/y/z/value from this layout implementation.
             // Using String key is fine for tests; avoids needing equals/hashCode on LayoutEntry/Pos.
             String key = e.value() + "@" + e.pos().x() + "," + e.pos().y() + "," + e.pos().z();

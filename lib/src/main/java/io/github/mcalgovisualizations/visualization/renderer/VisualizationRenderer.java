@@ -7,6 +7,7 @@ import io.github.mcalgovisualizations.visualization.renderer.dispatch.Dispatcher
 import io.github.mcalgovisualizations.visualization.renderer.handlers.*;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.instance.Instance;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
@@ -17,23 +18,20 @@ public final class VisualizationRenderer {
     private final Dispatcher dispatcher;
     private final Executor executor;
     private final Pos origin;
-    //private final Object settings;
 
     private boolean started = false;
 
     public VisualizationRenderer(
-            Instance instance,
-            Pos origin, Layout layout,
-            Dispatcher dispatcher
-            //Executor executor // TODO : introduce executor
-            //Object settings // TODO : introduce settings for ease, speed, etc.
+            @NotNull Instance instance,
+            @NotNull Pos origin,
+            @NotNull Dispatcher dispatcher,
+            @NotNull Layout layout
     ) {
         this.scene = new VisualizationScene(instance, origin);
         this.origin = origin;
         this.layout = Objects.requireNonNull(layout, "layout");
         this.dispatcher = Objects.requireNonNull(dispatcher, "dispatcher");
         this.executor = new Executor(scene);
-        //this.settings = settings != null ? settings : RenderSettings.defaults();
     }
 
     public void onStart() {
@@ -58,9 +56,11 @@ public final class VisualizationRenderer {
 
     }
     private boolean test = false;
+
     public void render(Snapshot snapshot) {
         requireStarted();
         Objects.requireNonNull(snapshot, "snapshot");
+
         if (!test) {
             // move to onstart()
             final var layoutResult = this.layout.compute(snapshot.values(), origin);
@@ -74,12 +74,10 @@ public final class VisualizationRenderer {
 
         for (var e : events) {
             var plan = dispatcher.dispatch(e, ctx);
-            System.out.println(plan);
             executor.add(plan);
         }
 
         executor.startIfIdle();
-        scene.clearHighlights();
     }
 
     public boolean isIdle() {
@@ -100,11 +98,14 @@ public final class VisualizationRenderer {
     public void onCleanup() {
         if (!started) return;
 
-        //executor.onCleanup();   // kill tick loop + clear queue
+        executor.onCleanup();   // kill tick loop + clear queue
         scene.cleanUp();   // despawn entities
         started = false;
     }
 
-    private void requireStarted() { if (!started) throw new IllegalStateException("Renderer not started. Call onStart() first."); }
+    private void requireStarted() {
+        if (!started)
+            throw new IllegalStateException("Renderer not started. Call onStart() first.");
+    }
 
 }

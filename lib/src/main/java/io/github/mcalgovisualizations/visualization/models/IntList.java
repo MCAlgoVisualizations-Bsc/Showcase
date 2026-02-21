@@ -25,15 +25,6 @@ public record IntList(int[] data) implements DataModel {
             throw new IllegalArgumentException("data cannot be null");
     }
 
-    /**
-     * Returns the number of elements in this list.
-     *
-     * @return the length of the backing array
-     */
-    @Override
-    public int size() {
-        return data.length;
-    }
 
     /**
      * Sets the value at the specified index.
@@ -46,13 +37,16 @@ public record IntList(int[] data) implements DataModel {
         data[i] = value;
     }
 
+
     /**
+     * Returns the number of elements in this list.
      *
+     * @return the length of the backing array
      */
     public int get(int i) {
         return data[i];
     }
-
+    @Override
     public int length() {
         return data.length;
     }
@@ -79,7 +73,7 @@ public record IntList(int[] data) implements DataModel {
      * @return a copy of the backing array
      */
     public int[] toArray() {
-        return data;
+        return Arrays.copyOf(data, data.length);
     }
 
     /**

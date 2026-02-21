@@ -11,7 +11,7 @@ import java.util.Queue;
 
 public final class Executor {
 
-    private final SceneOps scene; // <- interface type, not concrete
+    private final SceneOps scene;
     private Task runningTask = null;
 
     private final Queue<AnimationPlan> queue = new LinkedList<>();

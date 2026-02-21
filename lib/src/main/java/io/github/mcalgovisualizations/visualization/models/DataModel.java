@@ -16,5 +16,5 @@ public interface DataModel {
      *
      * @return the total number of elements in the model
      */
-    int size();
+    int length();
 }

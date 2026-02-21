@@ -22,7 +22,7 @@ public record MatrixLayout (
 
     // setting the default configs here
     public MatrixLayout() {
-        this(2.0,2,2, 24);
+        this(2.0,10, 10, 24);
     }
     public MatrixLayout(double yOffset, int cols, int rows) {
         this(yOffset, cols, rows, 24);
@@ -55,7 +55,7 @@ public record MatrixLayout (
             );
         }
 
-        Pos[] positions = new Pos[size];
+        var out = new LayoutResult[size];
 
         double y = origin.y() + yOffset;
 
@@ -67,8 +67,8 @@ public record MatrixLayout (
 
         // All cells
         List<Cell> cells = new ArrayList<>(capacity);
-        for (int r = 0; r < rows; r++) {
-            for (int c = 0; c < cols; c++) {
+        for (int c = 0; c < cols; c++) {
+            for (int r = 0; r < rows; r++) {
                 cells.add(new Cell(c, r));
             }
         }
@@ -79,12 +79,12 @@ public record MatrixLayout (
         // First 'size' cells become node positions (node id == index)
         for (int id = 0; id < size; id++) {
             Cell cell = cells.get(id);
-            double x = startX + cell.col * spacing;
-            double z = startZ + cell.row * spacing;
-            positions[id] = new Pos(x, y, z);
+            final double x = startX + cell.col * spacing;
+            final double z = startZ + cell.row * spacing;
+            out[id] = new LayoutResult(id, new Pos(x, y, z));
         }
 
-        return new LayoutResult[0];
+        return out;
     }
 
     private record Cell(int col, int row) { }

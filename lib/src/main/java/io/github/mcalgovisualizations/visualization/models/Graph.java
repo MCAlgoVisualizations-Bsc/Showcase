@@ -38,7 +38,7 @@ public final class Graph implements DataModel {
      * @return total number of vertices
      */
     @Override
-    public int size() {
+    public int length() {
         throw new  UnsupportedOperationException("Not supported yet.");
     }
 

@@ -1,10 +1,10 @@
 package io.github.mcalgovisualizations.visualization.renderer;
 
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.Block;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -38,7 +38,7 @@ public final class VisualizationScene implements SceneOps {
 
     private boolean started = false;
 
-    public VisualizationScene(Instance instance, Pos origin) {
+    public VisualizationScene(@NotNull Instance instance, @NotNull Pos origin) {
         this.instance = instance;
         this.origin = origin;
     }
@@ -103,8 +103,6 @@ public final class VisualizationScene implements SceneOps {
     public void moveSlotTo(int slot, Pos pos) {
         assertStarted();
         var display = requireDisplay(slot);
-
-        // Assumption: teleport / setPosition exists
         display.teleport(pos);
     }
 

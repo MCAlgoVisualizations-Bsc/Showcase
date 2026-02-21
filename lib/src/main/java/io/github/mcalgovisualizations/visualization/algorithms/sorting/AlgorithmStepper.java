@@ -45,11 +45,11 @@ public class AlgorithmStepper implements IAlgorithmStepper {
 
         // calc next step
         state.beginStep();
-        if (state.currentIndex() >= model.size()) {
+        if (state.currentIndex() >= model.length()) {
             ALGORITHM_COMPLETE = true;
             state.addEvent(new Message("Sorting complete!", Message.MessageType.SUCCESS));
             state.addEvent(new Complete());
-            history.add(getHistorySnapshot());
+            var _ = history.add(getHistorySnapshot());
             historyPointer++;
             return history.get(historyPointer);
         }
