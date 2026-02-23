@@ -61,11 +61,11 @@ public class AlgorithmStepper implements IAlgorithmStepper {
         int j = state.compareIndex();
         if (j > 0) {
             state.addEvent(new Compare(j, j - 1));
-            state.addEvent(new Message("Comparing indices " + j + " and " + (j - 1), Message.MessageType.INFO));
+            state.addEvent(new Message("Comparing indices " + j + " and " + (j - 1), Message.MessageType.HINT));
             if (model.data()[j - 1] > model.data()[j]) {
                 model.swap(j, j - 1);
                 state.addEvent(new Swap(j - 1, j));
-                state.addEvent(new Message("Swapped " + j + " and " + (j - 1), Message.MessageType.INFO));
+                state.addEvent(new Message("Swapped " + j + " and " + (j - 1), Message.MessageType.HINT));
                 state.setCompareIndex(j - 1);
             } else {
                 state.addEvent(new Message("Element in correct position", Message.MessageType.SUCCESS));
