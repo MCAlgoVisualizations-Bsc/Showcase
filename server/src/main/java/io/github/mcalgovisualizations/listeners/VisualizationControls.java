@@ -3,10 +3,7 @@ package io.github.mcalgovisualizations.listeners;
 import io.github.mcalgovisualizations.gui.AlgorithmSelectorGUI;
 import io.github.mcalgovisualizations.visualization.VisualizationManager;
 import io.github.mcalgovisualizations.visualization.engine.VisualizationController;
-import io.github.mcalgovisualizations.visualization.renderer.handlers.MessageHandler;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.minestom.server.MinecraftServer;
+import io.github.mcalgovisualizations.visualization.renderer.handlers.SystemMessages;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.GlobalEventHandler;
@@ -31,33 +28,33 @@ public class VisualizationControls {
             // Handle compass (return to hub) - available to everyone
             if (material == Material.COMPASS) {
                 player.teleport(new Pos(0, 42, 0));
-                MessageHandler.send(player, MessageHandler.RETURNED_TO_HUB);
+                SystemMessages.sendTo(player, SystemMessages.RETURNED_TO_HUB);
                 return;
             }
 
             // All other items require an active visualization
             VisualizationController vis = VisualizationManager.getVisualization(player);
             if (vis == null) {
-                MessageHandler.send(player, MessageHandler.NO_VISUALIZATION);
+                SystemMessages.sendTo(player, SystemMessages.NO_VISUALIZATION);
                 return;
             }
 
             if (material == Material.ENDER_PEARL) {
                 event.setCancelled(true); // Prevent teleportation
                 vis.randomize();
-                MessageHandler.send(player, MessageHandler.RANDOMIZED);
+                SystemMessages.sendTo(player, SystemMessages.RANDOMIZED);
             } else if (material == Material.LIME_DYE) {
                 vis.start(player);
-                MessageHandler.send(player, MessageHandler.VISUALIZATION_STARTED);
+                SystemMessages.sendTo(player, SystemMessages.VISUALIZATION_STARTED);
             } else if (material == Material.RED_DYE) {
                 vis.stop();
-                MessageHandler.send(player, MessageHandler.VISUALIZATION_STOPPED);
+                SystemMessages.sendTo(player, SystemMessages.VISUALIZATION_STOPPED);
             } else if (material == Material.ARROW) {
                 vis.step();
-                MessageHandler.send(player, MessageHandler.STEP_FORWARD);
+                SystemMessages.sendTo(player, SystemMessages.STEP_FORWARD);
             } else if (material == Material.SPECTRAL_ARROW) {
                 vis.back();
-                MessageHandler.send(player, MessageHandler.STEP_BACKWARD);
+                SystemMessages.sendTo(player, SystemMessages.STEP_BACKWARD);
             }
         });
     }

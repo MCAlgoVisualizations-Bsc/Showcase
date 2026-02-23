@@ -2,11 +2,8 @@ package io.github.mcalgovisualizations.visualization.engine;
 
 import io.github.mcalgovisualizations.visualization.HistorySnapshot;
 import io.github.mcalgovisualizations.visualization.algorithms.IAlgorithmStepper;
-import io.github.mcalgovisualizations.visualization.algorithms.sorting.AlgorithmStepper;
 import io.github.mcalgovisualizations.visualization.renderer.VisualizationRenderer;
-import io.github.mcalgovisualizations.visualization.renderer.handlers.MessageHandler;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import io.github.mcalgovisualizations.visualization.renderer.handlers.SystemMessages;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.Player;
 import net.minestom.server.timer.Task;
@@ -38,7 +35,7 @@ public class VisualizationController {
 
     public void start(Player player) {
         if (stepper.isDone()) {
-            MessageHandler.send(player, MessageHandler.ALGORITHM_COMPLETE);
+            SystemMessages.sendTo(player, SystemMessages.ALGORITHM_COMPLETE);
             return;
         }
 
