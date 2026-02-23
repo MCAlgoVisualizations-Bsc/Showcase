@@ -10,13 +10,12 @@ To join, open Minecraft Java Edition (Version 1.21 or newer) and use **Direct Co
 
 ### 🚀 Production Server (Official)
 The stable version of the project.
-- **Address:** `123.456.78.90`
-- **Port:** `25565`
+- **Address:** `lukv.dev`
+
 
 ### 🛠️ Development Server (Beta)
 Where we test the latest features. Expect bugs!
-- **Address:** `123.456.78.90:25566`
-- **Port:** `25566`
+- **Address:** `lukv.dev:25566`
 
 ---
 
