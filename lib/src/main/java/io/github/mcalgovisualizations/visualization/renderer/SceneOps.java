@@ -15,7 +15,7 @@ public interface SceneOps {
 
     void setHighlighted(int slot, boolean highlighted);
 
-    void clearHighlights();
+    void clearGlowing();
 
     // movement primitives
     void moveSlotTo(int slot, Pos position);
@@ -27,5 +27,7 @@ public interface SceneOps {
 
     void sendMessage(String message, NamedTextColor color);
     void hoverDisplay(int slot, boolean hover);
+
+    void stopAnimations();
 }
 

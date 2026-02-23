@@ -6,6 +6,7 @@ import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityType;
+import net.minestom.server.entity.Player;
 import net.minestom.server.entity.metadata.display.AbstractDisplayMeta;
 import net.minestom.server.entity.metadata.display.BlockDisplayMeta;
 import net.minestom.server.entity.metadata.display.TextDisplayMeta;
@@ -13,9 +14,9 @@ import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.Block;
 
 public class BlockDisplay implements DisplayValue {
-    private final Instance instance;
-    private final Entity blockEntity;
-    private final Entity textEntity;
+    public final Instance instance;
+    public final Entity blockEntity;
+    public final Entity textEntity;
 
     private static final Vec TEXT_OFFSET = new Vec(1, 2.4, 1);
 
@@ -38,13 +39,6 @@ public class BlockDisplay implements DisplayValue {
 
         setupBlock(block);
         setupText(text);
-
-        // TODO : add such its only a specific client that receives the packets
-
-        // blockEntity.addViewer(Player player);
-
-        // IMPORTANT: do NOT teleport here if your spawn positioning is scheduled after setInstance()
-        // teleport(pos);
     }
 
     public Pos getPos() {
@@ -76,37 +70,35 @@ public class BlockDisplay implements DisplayValue {
         textEntity.setInstance(instance);
     }
 
+    @Override
+    public void addViewer(Player player) {
+        final var _ = this.blockEntity.addViewer(player);
+        final var _ = this.textEntity.addViewer(player);
+    }
+
     public void remove() {
-        blockEntity.remove();
-        textEntity.remove();
+        this.blockEntity.remove();
+        this.textEntity.remove();
     }
 
     public void teleport(Pos pos) {
         this.pos = pos;
-        blockEntity.teleport(pos);
-        textEntity.teleport(pos.add(TEXT_OFFSET));
+        final var _ = this.blockEntity.teleport(pos);
+        final var offset = pos.add(TEXT_OFFSET);
+        final var _ = textEntity.teleport(offset);
     }
 
     public void setValue(int value) {
-        var meta = (TextDisplayMeta) textEntity.getEntityMeta();
+        final var meta = (TextDisplayMeta) textEntity.getEntityMeta();
         meta.setText(Component.text(Integer.toString(value), NamedTextColor.GOLD));
     }
 
-    public void updateBlock(Block block) {
-        if (block == null) return;
-        if (block.equals(this.currentBlock)) return;
-
-        this.currentBlock = block;
-        var meta = (BlockDisplayMeta) blockEntity.getEntityMeta();
-        meta.setBlockState(block);
-    }
-
-    public void setHighlighted(boolean highlighted) {
+    public void setGlowing(boolean highlighted) {
         blockEntity.setGlowing(highlighted);
         textEntity.setGlowing(highlighted);
     }
 
     public boolean isSpawned() {
-        return blockEntity.getInstance() != null || textEntity.getInstance() != null;
+        return blockEntity.isActive() || textEntity.isActive();
     }
 }

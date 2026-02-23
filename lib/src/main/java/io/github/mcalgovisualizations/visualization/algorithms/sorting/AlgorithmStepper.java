@@ -39,7 +39,6 @@ public class AlgorithmStepper implements IAlgorithmStepper {
         // Check if done
         if (ALGORITHM_COMPLETE) {
             state.addEvent(new Complete());
-            System.out.println("Done");
             return history.get(historyPointer);
         }
 
@@ -50,7 +49,7 @@ public class AlgorithmStepper implements IAlgorithmStepper {
             state.addEvent(new Message("Sorting complete!", Message.MessageType.SUCCESS));
             state.addEvent(new Complete());
             var _ = history.add(getHistorySnapshot());
-            historyPointer++;
+            var _ = historyPointer++;
             return history.get(historyPointer);
         }
 
@@ -60,7 +59,6 @@ public class AlgorithmStepper implements IAlgorithmStepper {
 
         int j = state.compareIndex();
         if (j > 0) {
-            state.addEvent(new Compare(j, j - 1));
             state.addEvent(new Message("Comparing indices " + j + " and " + (j - 1), Message.MessageType.INFO));
 
             if (model.data()[j - 1] > model.data()[j]) {

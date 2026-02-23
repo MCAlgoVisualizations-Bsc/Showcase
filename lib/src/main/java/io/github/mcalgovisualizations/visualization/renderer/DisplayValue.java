@@ -1,11 +1,13 @@
 package io.github.mcalgovisualizations.visualization.renderer;
 
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.entity.Player;
 
 public interface DisplayValue {
     void setInstance();
+    void addViewer(Player player);
     void remove();
     void teleport(Pos pos);
-    void setHighlighted(boolean highlighted);
+    void setGlowing(boolean highlighted);
     boolean isSpawned();
 }

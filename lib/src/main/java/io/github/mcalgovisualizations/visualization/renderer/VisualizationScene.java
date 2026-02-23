@@ -1,15 +1,14 @@
 package io.github.mcalgovisualizations.visualization.renderer;
 
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.entity.Player;
 import net.minestom.server.instance.Instance;
-import net.minestom.server.instance.block.Block;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Scene = Minestom world state.
@@ -28,6 +27,7 @@ public final class VisualizationScene implements SceneOps {
 
     private final Instance instance;
     private final Pos origin;
+    public final List<Player> viewers = new ArrayList<>();
 
     // Stable identity mapping (slot -> display wrapper/entity)
     private final Map<Integer, BlockDisplay> displaysBySlot =
@@ -49,7 +49,7 @@ public final class VisualizationScene implements SceneOps {
 
         for(var layout : layoutResults) {
             var pos = layout.pos();
-            var block = Block.GRANITE;
+            var block = net.minestom.server.instance.block.Block.GRANITE;
             var value = Integer.toString(layout.value());
 
             var dv = new BlockDisplay(instance, pos, block, value);
@@ -57,6 +57,9 @@ public final class VisualizationScene implements SceneOps {
             dv.setInstance();
             dv.teleport(pos);
         }
+
+        // only add viewers after all displays have been created
+        displaysBySlot.values().forEach(display -> viewers.forEach(display::addViewer));
     }
 
     @Override
@@ -65,8 +68,8 @@ public final class VisualizationScene implements SceneOps {
         for (var display : displaysBySlot.values()) {
             safeRemove(display);
         }
+        clearGlowing();
         displaysBySlot.clear();
-        highlightedSlots.clear();
         started = false;
     }
 
@@ -82,18 +85,19 @@ public final class VisualizationScene implements SceneOps {
         assertStarted();
         var display = requireDisplay(slot);
 
-        display.setHighlighted(highlighted);
+        highlightedSlots.add(slot);
+        display.setGlowing(highlighted);
     }
 
     @Override
-    public void clearHighlights() {
+    public void clearGlowing() {
         assertStarted();
 
         // Turn off highlight visuals for all currently highlighted slots
         for (int slot : new HashSet<>(highlightedSlots)) {
             var display = displaysBySlot.get(slot);
             if (display != null) {
-                display.setHighlighted(false);
+                display.setGlowing(false);
             }
         }
         highlightedSlots.clear();
@@ -121,15 +125,10 @@ public final class VisualizationScene implements SceneOps {
     @Override
     public void playEffect(int slot, String effectId) {
         assertStarted();
-        // Keep this intentionally thin.
-        // Effects should be implemented as Scene capabilities (particles, sounds, etc.)
-        // and triggered by handlers via SceneOps.
-        //
-        // Example directions:
-        // - instance.playSound(...)
-        // - spawn particle at current display pos
-        //
-        // For now: no-op stub so handlers can call it safely.
+
+        viewers.forEach(viewer -> viewer.playSound(Sound.sound(
+                Key.key("minecraft:block.note_block.pling"), Sound.Source.MASTER, 1.0f, 1.0f
+        )));
     }
 
     public void sendMessage(String message, NamedTextColor color) {
@@ -146,10 +145,16 @@ public final class VisualizationScene implements SceneOps {
         }
     }
 
+    @Override
+    public void stopAnimations() {
+        clearGlowing();
+        viewers.forEach(player -> player.sendMessage("Algorithm complete."));
+    }
+
     private BlockDisplay createDisplay(Pos spawnPos) {
         // Assumption: BlockDisplay is your wrapper and can be constructed this way.
         // If not, adapt this factory.
-        return new BlockDisplay(instance, spawnPos, Block.GLASS, "Hello");
+        return new BlockDisplay(instance, spawnPos, net.minestom.server.instance.block.Block.GLASS, "Hello");
     }
 
     // -------------------------

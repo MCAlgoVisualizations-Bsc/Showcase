@@ -14,23 +14,20 @@ import java.util.Objects;
 public final class VisualizationRenderer {
 
     private final VisualizationScene scene;
-    private final Layout layout;
-    private final Dispatcher dispatcher;
+    private final Dispatcher dispatcher = new Dispatcher();
     private final Executor executor;
     private final Pos origin;
 
+    public Layout layout;
     private boolean started = false;
+    private boolean firstRender = true;
 
     public VisualizationRenderer(
             @NotNull Instance instance,
-            @NotNull Pos origin,
-            @NotNull Dispatcher dispatcher,
-            @NotNull Layout layout
+            @NotNull Pos origin
     ) {
         this.scene = new VisualizationScene(instance, origin);
         this.origin = origin;
-        this.layout = Objects.requireNonNull(layout, "layout");
-        this.dispatcher = Objects.requireNonNull(dispatcher, "dispatcher");
         this.executor = new Executor(scene);
     }
 
@@ -39,7 +36,6 @@ public final class VisualizationRenderer {
         started = true;
         dispatcher.register(Compare.class, new CompareHandler());
         dispatcher.register(Complete.class, new CompleteHandler());
-        dispatcher.register(Highlight.class, new HighlightHandler());
         dispatcher.register(Message.class, new MessageHandler());
         dispatcher.register(Validate.class, new ValidateHandler());
         dispatcher.register(Swap.class, new SwapHandler());
@@ -55,19 +51,17 @@ public final class VisualizationRenderer {
         executor.pause();
 
     }
-    private boolean test = false;
+
 
     public void render(Snapshot snapshot) {
-        requireStarted();
         Objects.requireNonNull(snapshot, "snapshot");
-
-        if (!test) {
-            // move to onstart()
+        if (snapshot.events().contains(new Complete()) || snapshot.events().isEmpty()) return;
+        if (firstRender && layout != null) {
             final var layoutResult = this.layout.compute(snapshot.values(), origin);
             scene.onStart(layoutResult);
-
-            test = true;
+            firstRender = false;
         }
+
 
         final var events = snapshot.events();
         var ctx = new RenderContext(scene, events);
@@ -77,7 +71,9 @@ public final class VisualizationRenderer {
             executor.add(plan);
         }
 
+        executor.setSpeed(2);
         executor.startIfIdle();
+
     }
 
     public boolean isIdle() {
@@ -97,15 +93,8 @@ public final class VisualizationRenderer {
      */
     public void onCleanup() {
         if (!started) return;
-
         executor.onCleanup();   // kill tick loop + clear queue
         scene.cleanUp();   // despawn entities
         started = false;
     }
-
-    private void requireStarted() {
-        if (!started)
-            throw new IllegalStateException("Renderer not started. Call onStart() first.");
-    }
-
 }

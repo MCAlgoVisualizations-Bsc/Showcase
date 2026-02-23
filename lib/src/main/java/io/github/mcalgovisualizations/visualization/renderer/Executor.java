@@ -115,6 +115,7 @@ public final class Executor {
             // If ticksRemaining == 0, we could loop and apply multiple 0-tick steps
             // in one scheduler tick — optional. Keep simple for now.
         }
+
     }
 
     private void finishCurrentPlan() {
@@ -131,7 +132,6 @@ public final class Executor {
             runningTask.cancel();
             runningTask = null;
         }
-        System.out.println(currentPlan.toString());
     }
 
     public void onCleanup() {

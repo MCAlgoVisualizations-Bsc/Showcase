@@ -8,4 +8,5 @@ public interface Snapshot {
     int[] values();
     int[] highlights();
     List<AlgorithmEvent> events();
+    boolean completed();
 }

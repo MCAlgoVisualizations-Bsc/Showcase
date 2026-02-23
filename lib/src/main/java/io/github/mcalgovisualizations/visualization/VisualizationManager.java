@@ -52,10 +52,11 @@ public class VisualizationManager {
         Layout layout = new FloatingLinearLayout();
         var origin = getAreaLocation("sorting");
 
-        var dispatcher = new Dispatcher();
 
-        var renderer = new VisualizationRenderer(instance, origin, dispatcher, layout);
+        var renderer = new VisualizationRenderer(instance, origin);
+        renderer.layout = layout;
         var controller = new VisualizationController(stepper, renderer);
+
 
         controller.onStart();
 

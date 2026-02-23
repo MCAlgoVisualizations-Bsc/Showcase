@@ -19,7 +19,7 @@ class IntListTest {
         int[] a = {1, 2, 3};
         IntList list = new IntList(a);
 
-        assertEquals(3, list.size());
+        assertEquals(3, list.length());
         assertEquals(3, list.length());
     }
 
