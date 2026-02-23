@@ -35,11 +35,11 @@ public class MessageHandler implements AnimationHandler<Message>{
         }
 
         public static Message comparing(int i, int j) {
-            return new Message("Comparing indices " + i + " and " + j, Message.MessageType.INFO);
+            return new Message("Comparing indices " + i + " and " + j, Message.MessageType.HINT);
         }
 
         public static Message swapped(int i, int j) {
-            return new Message("Swapped " + i + " and " + j, Message.MessageType.INFO);
+            return new Message("Swapped " + i + " and " + j, Message.MessageType.HINT);
         }
 
         public static Message inPosition() {
