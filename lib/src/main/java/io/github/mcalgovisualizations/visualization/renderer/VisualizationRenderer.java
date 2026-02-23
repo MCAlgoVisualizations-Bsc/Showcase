@@ -17,6 +17,7 @@ public final class VisualizationRenderer {
     private final Dispatcher dispatcher;
     private final Executor executor;
     private final Pos origin;
+    private final MessageHandler messageHandler;
     //private final Object settings;
 
     private boolean started = false;
@@ -24,7 +25,8 @@ public final class VisualizationRenderer {
     public VisualizationRenderer(
             Instance instance,
             Pos origin, Layout layout,
-            Dispatcher dispatcher
+            Dispatcher dispatcher,
+            MessageHandler messageHandler
             //Executor executor // TODO : introduce executor
             //Object settings // TODO : introduce settings for ease, speed, etc.
     ) {
@@ -32,6 +34,7 @@ public final class VisualizationRenderer {
         this.origin = origin;
         this.layout = Objects.requireNonNull(layout, "layout");
         this.dispatcher = Objects.requireNonNull(dispatcher, "dispatcher");
+        this.messageHandler = Objects.requireNonNull(messageHandler, "messageHandler");
         this.executor = new Executor(scene);
         //this.settings = settings != null ? settings : RenderSettings.defaults();
     }
@@ -42,10 +45,16 @@ public final class VisualizationRenderer {
         dispatcher.register(Compare.class, new CompareHandler());
         dispatcher.register(Complete.class, new CompleteHandler());
         dispatcher.register(Highlight.class, new HighlightHandler());
-        dispatcher.register(Message.class, new MessageHandler());
+        dispatcher.register(Message.class, messageHandler);
         dispatcher.register(Validate.class, new ValidateHandler());
         dispatcher.register(Swap.class, new SwapHandler());
 
+        messageHandler.start();
+    }
+
+    /** Delegate a typed chat message to the player via the MessageHandler. */
+    public void sendMessage(Message.MessageType type, String text) {
+        messageHandler.send(type, text);
     }
 
     /**
@@ -101,6 +110,7 @@ public final class VisualizationRenderer {
     public void onCleanup() {
         if (!started) return;
 
+        messageHandler.cleanup();  // lifecycle
         //executor.onCleanup();   // kill tick loop + clear queue
         scene.cleanUp();   // despawn entities
         started = false;

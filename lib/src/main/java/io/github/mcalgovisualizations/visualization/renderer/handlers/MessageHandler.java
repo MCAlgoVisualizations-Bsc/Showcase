@@ -4,51 +4,60 @@ import io.github.mcalgovisualizations.visualization.algorithms.events.Message;
 import io.github.mcalgovisualizations.visualization.renderer.RenderContext;
 import io.github.mcalgovisualizations.visualization.renderer.dispatch.AnimationPlan;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.minestom.server.command.CommandSender;
+import net.minestom.server.entity.Player;
 
-public class MessageHandler implements AnimationHandler<Message>{
+/**
+ * Per-instance message handler. Created per player/algorithm pair by VisualizationManager.
+ *
+ * Public interface:
+ *   send(MessageType, text)  — send a typed message to the player
+ *   start()                  — called when visualization begins
+ *   cleanup()                — called when visualization ends
+ */
+public class MessageHandler implements AnimationHandler<Message> {
+
+    private final Player player;
+    private final AlgorithmMessages messages;
+
+    public MessageHandler(Player player, AlgorithmMessages messages) {
+        this.player = player;
+        this.messages = messages;
+    }
+
+    // ── Lifecycle ────────────────────────────────────────────────────────────
+
+    /** Called when the visualization is assigned and started. */
+    public void start() {
+        send(Message.MessageType.INFO, messages.onStart());
+    }
+
+    /** Called when the visualization is cleaned up (player leaves, new algo selected). */
+    public void cleanup() {
+        // No hologram to tear down here — VisualizationScene owns the hologram entity.
+        // Extend here if MessageHandler ever owns its own resources.
+    }
+
+    // ── Core send ─────────────────────────────────────────────────────────────
+
+    /**
+     * Send a typed message to the player in chat.
+     *
+     * @param type The message type (controls color via AlgorithmMessages)
+     * @param text The message text
+     */
+    public void send(Message.MessageType type, String text) {
+        player.sendMessage(Component.text(text, messages.colorFor(type)));
+    }
+
+    // ── AnimationHandler (hologram updates via SceneOps) ─────────────────────
+
+    /**
+     * Called by the Dispatcher during animation to update the scene hologram.
+     * Uses AlgorithmMessages for the color, keeping algorithm config in one place.
+     */
     @Override
     public AnimationPlan handle(Message event, RenderContext ctx) {
-        return AnimationPlan.instant(sceneOps -> sceneOps.setStatusText(event.message(), event.type().color()));
-    }
-
-
-    public static final Component ALGORITHM_COMPLETE = Component.text("Algorithm complete! Use randomize to restart.", Message.MessageType.SUCCESS.color());
-    public static final Component VISUALIZATION_STARTED = Component.text("Visualization started!", Message.MessageType.SUCCESS.color());
-    public static final Component VISUALIZATION_STOPPED = Component.text("Visualization stopped!", Message.MessageType.ERROR.color());
-    public static final Component STEP_FORWARD = Component.text("Stepped forward", NamedTextColor.YELLOW);
-    public static final Component STEP_BACKWARD = Component.text("Stepped back", NamedTextColor.GOLD);
-    public static final Component RANDOMIZED = Component.text("Values randomized!", Message.MessageType.HINT.color());
-    public static final Component NO_VISUALIZATION = Component.text("No visualization assigned! Use the Algorithm Selector first.", Message.MessageType.ERROR.color());
-    public static final Component RETURNED_TO_HUB = Component.text("Returned to hub!", NamedTextColor.LIGHT_PURPLE);
-    public static final Component WELCOME = Component.text("Welcome to Algorithm Visualizations!", Message.MessageType.SUCCESS.color());
-    public static final Component SELECT_ALGORITHM_HINT = Component.text("Right-click the Nether Star to select an algorithm to visualize!", NamedTextColor.YELLOW);
-
-    public static class Algorithm {
-        public static Message starting() {
-            return new Message("Starting Insertion Sort", Message.MessageType.INFO);
-        }
-
-        public static Message complete() {
-            return new Message("Sorting complete!", Message.MessageType.SUCCESS);
-        }
-
-        public static Message comparing(int i, int j) {
-            return new Message("Comparing indices " + i + " and " + j, Message.MessageType.HINT);
-        }
-
-        public static Message swapped(int i, int j) {
-            return new Message("Swapped " + i + " and " + j, Message.MessageType.HINT);
-        }
-
-        public static Message inPosition() {
-            return new Message("Element in correct position", Message.MessageType.SUCCESS);
-        }
-    }
-
-
-    public static void send(CommandSender sender, Component message) {
-        sender.sendMessage(message);
+        return AnimationPlan.instant(sceneOps ->
+                sceneOps.setStatusText(event.message(), messages.colorFor(event.type())));
     }
 }

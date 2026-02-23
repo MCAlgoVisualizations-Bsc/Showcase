@@ -6,7 +6,7 @@ import io.github.mcalgovisualizations.commands.Spawn;
 import io.github.mcalgovisualizations.commands.Teleport;
 import io.github.mcalgovisualizations.items.VisualizationItems;
 import io.github.mcalgovisualizations.visualization.VisualizationManager;
-import io.github.mcalgovisualizations.visualization.renderer.handlers.MessageHandler;
+import io.github.mcalgovisualizations.visualization.renderer.handlers.SystemMessages;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.command.CommandManager;
 import net.minestom.server.coordinate.Pos;
@@ -64,8 +64,8 @@ public final class Main {
             player.getInventory().setItemStack(8, VisualizationItems.spawnItem());
 
             // Send welcome message
-            MessageHandler.send(player, MessageHandler.WELCOME);
-            MessageHandler.send(player, MessageHandler.SELECT_ALGORITHM_HINT);
+            SystemMessages.sendTo(player, SystemMessages.WELCOME);
+            SystemMessages.sendTo(player, SystemMessages.SELECT_ALGORITHM_HINT);
         });
 
         // Cleanup visualization when player disconnects
