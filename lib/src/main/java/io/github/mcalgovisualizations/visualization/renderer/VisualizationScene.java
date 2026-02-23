@@ -104,12 +104,6 @@ public final class VisualizationScene implements SceneOps {
         assertStarted();
         var display = requireDisplay(slot);
 
-        if (highlighted) {
-            highlightedSlots.add(slot);
-        } else {
-            highlightedSlots.remove(slot);
-        }
-
         display.setHighlighted(highlighted);
     }
 
@@ -145,9 +139,14 @@ public final class VisualizationScene implements SceneOps {
         var posA = da.getPos();
         var posB = db.getPos();
 
+        setHighlighted(a, true);
+        setHighlighted(b, true);
+
         da.teleport(posB);
         db.teleport(posA);
 
+        setHighlighted(a, false);
+        setHighlighted(b, false);
     }
 
     @Override
