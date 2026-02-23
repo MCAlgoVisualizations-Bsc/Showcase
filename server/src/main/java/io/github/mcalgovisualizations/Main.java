@@ -4,11 +4,9 @@ import io.github.mcalgovisualizations.commands.Gamemode;
 import io.github.mcalgovisualizations.commands.Greet;
 import io.github.mcalgovisualizations.commands.Spawn;
 import io.github.mcalgovisualizations.commands.Teleport;
-import io.github.mcalgovisualizations.graphs.BFSVisualization;
 import io.github.mcalgovisualizations.gui.AlgorithmSelectorGUI;
 import io.github.mcalgovisualizations.items.VisualizationItems;
-import io.github.mcalgovisualizations.sorting.InsertionSortVisualization;
-import io.github.mcalgovisualizations.visualization.Visualization;
+import io.github.mcalgovisualizations.visualization.engine.VisualizationController;
 import io.github.mcalgovisualizations.visualization.VisualizationManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -36,11 +34,13 @@ public final class Main {
         instance.setTimeRate(0);  // Stops time
         instance.setTime(6000);   // Sets time to noon
 
-        VisualizationManager.addVisualization("insertionsort", InsertionSortVisualization.class);
-        VisualizationManager.addVisualization("bfs", BFSVisualization.class);
+        //VisualizationManager.addVisualization("insertionsort", InsertionSortVisualization.class);
+        //VisualizationManager.addVisualization("bfs", BFSVisualization.class);
 
         registerListeners(instance);
         registerCommands(MinecraftServer.getCommandManager());
+
+        visualizationControls(instance); // to be moved?
 
         server.start("0.0.0.0", 25565);
     }
@@ -65,7 +65,7 @@ public final class Main {
             player.setAllowFlying(true);
 
             // Give only the algorithm selector and spawn item by default
-            player.getInventory().setItemStack(4, VisualizationItems.algorithmSelectorItem());
+            player.getInventory().setItemStack(0, VisualizationItems.algorithmSelectorItem());
             player.getInventory().setItemStack(8, VisualizationItems.spawnItem());
 
             // Send welcome message
@@ -73,6 +73,15 @@ public final class Main {
             player.sendMessage(Component.text("Right-click the Nether Star to select an algorithm to visualize!", NamedTextColor.YELLOW));
         });
 
+        // Cleanup visualization when player disconnects
+        globalEventHandler.addListener(PlayerDisconnectEvent.class, event -> {
+            VisualizationManager.removeVisualization(event.getPlayer());
+        });
+
+    }
+
+    private static void visualizationControls(InstanceContainer instance) {
+        final var globalEventHandler = MinecraftServer.getGlobalEventHandler();
         // Handle item right-clicks for visualization control
         globalEventHandler.addListener(PlayerUseItemEvent.class, event -> {
             Player player = event.getPlayer();
@@ -92,7 +101,7 @@ public final class Main {
             }
 
             // All other items require an active visualization
-            Visualization vis = VisualizationManager.getVisualization(player);
+            VisualizationController vis = VisualizationManager.getVisualization(player);
             if (vis == null) {
                 player.sendMessage(Component.text("No visualization assigned! Use the Algorithm Selector first.", NamedTextColor.RED));
                 return;
@@ -103,23 +112,18 @@ public final class Main {
                 vis.randomize();
                 player.sendMessage(Component.text("Values randomized!", NamedTextColor.AQUA));
             } else if (material == Material.LIME_DYE) {
-                vis.start(player);
+                vis.start(player); // TODO : look into if messages can be sent through another channel?
                 player.sendMessage(Component.text("Visualization started!", NamedTextColor.GREEN));
             } else if (material == Material.RED_DYE) {
                 vis.stop();
                 player.sendMessage(Component.text("Visualization stopped!", NamedTextColor.RED));
             } else if (material == Material.ARROW) {
-                vis.stepForward();
+                vis.step();
                 player.sendMessage(Component.text("Stepped forward", NamedTextColor.YELLOW));
             } else if (material == Material.SPECTRAL_ARROW) {
-                vis.stepBack();
+                vis.back();
                 player.sendMessage(Component.text("Stepped back", NamedTextColor.GOLD));
             }
-        });
-
-        // Cleanup visualization when player disconnects
-        globalEventHandler.addListener(PlayerDisconnectEvent.class, event -> {
-            VisualizationManager.removeVisualization(event.getPlayer());
         });
     }
 

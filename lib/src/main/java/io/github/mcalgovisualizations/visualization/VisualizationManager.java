@@ -1,11 +1,22 @@
 package io.github.mcalgovisualizations.visualization;
 
-
+import io.github.mcalgovisualizations.visualization.algorithms.IAlgorithmStepper;
+import io.github.mcalgovisualizations.visualization.algorithms.StepperFactory;
+import io.github.mcalgovisualizations.visualization.algorithms.events.Message;
+import io.github.mcalgovisualizations.visualization.engine.VisualizationController;
+import io.github.mcalgovisualizations.visualization.layouts.CircleLayout;
+import io.github.mcalgovisualizations.visualization.layouts.FloatingLinearLayout;
+import io.github.mcalgovisualizations.visualization.layouts.Layout;
+import io.github.mcalgovisualizations.visualization.models.DataModel;
+import io.github.mcalgovisualizations.visualization.models.IntList;
+import io.github.mcalgovisualizations.visualization.refactor.Visualization;
+import io.github.mcalgovisualizations.visualization.renderer.VisualizationRenderer;
+import io.github.mcalgovisualizations.visualization.renderer.dispatch.Dispatcher;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.InstanceContainer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,9 +27,12 @@ import java.util.UUID;
  * Each player can have their own active visualization instance.
  */
 public class VisualizationManager {
-    private static final Map<UUID, Visualization> playerVisualizations = new HashMap<>();
     private static final Map<String, Pos> areaLocations = new HashMap<>();
     private static final Map<String, Class<? extends Visualization>> visualizations = new HashMap<>();
+    private static final Map<UUID, Visualization> playerVisualizations = new HashMap<>();
+
+    private static final Map<String, Class<? extends IAlgorithmStepper>> steppers = new HashMap<>();
+    private static final Map<UUID, VisualizationController> playerSteppers = new HashMap<>();
 
     static {
         // Define area locations for different visualization types
@@ -40,56 +54,21 @@ public class VisualizationManager {
         // Clean up existing visualization
         removeVisualization(player);
 
-        // Calculate origin position for this player's visualization
-        // Offset each player's visualization to avoid overlap
-        Pos baseOrigin = areaLocations.getOrDefault(type.toLowerCase(), new Pos(0, 42, 0));
-        int playerOffset = playerVisualizations.size() * 20; // 20 blocks apart
-        Pos origin = baseOrigin.add(0, 0, playerOffset);
+        // TODO : Let players control Layout and model's size n!
+        final DataModel model = createModelFor(type, player, 10);
+        final IAlgorithmStepper stepper = StepperFactory.create(type, model);
 
-        if (visualizations.containsKey(type.toLowerCase())) {
-            Visualization vis = null;
-            try {
-                // 1. You must tell Java the CLASS TYPES of the parameters first
-                vis = visualizations.get(type.toLowerCase())
-                        .getDeclaredConstructor(Pos.class, InstanceContainer.class)
-                        .newInstance(origin, instance); // 2. Then pass the actual values
+        Layout layout = new FloatingLinearLayout();
+        var origin = new Pos(0, 43, 0);
 
-                playerVisualizations.put(player.getUuid(), vis);
-            } catch (NoSuchMethodException e) {
-                System.out.println("Error: The class for " + type + " does not have a (Pos, InstanceContainer) constructor.");
-            } catch (Exception e) {
-                System.out.println("test");
-                e.printStackTrace();
-            }
-            // TODO: fix this
-            /*
-            catch (InvocationTargetException e) {
-                throw new RuntimeException(e);
-            } catch (InstantiationException e) {
-                throw new RuntimeException(e);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            } catch (NoSuchMethodException e) {
-                throw new RuntimeException(e);
-            }
-            */
-            playerVisualizations.put(player.getUuid(), vis);
-        }
-        /*
-        Visualization vis = switch () {
-            case "sorting", "insertionsort" -> new InsertionSortVisualization(origin, instance, 8);
-            // Future visualizations:
-            // case "bubblesort" -> new BubbleSortVisualization(origin, instance, 8);
-            // case "pathfinding", "astar" -> new AStarVisualization(origin, instance);
-            // case "bfs" -> new BFSVisualization(origin, instance);
-            // case "tree", "bst" -> new BinarySearchTreeVisualization(origin, instance);
-            default -> null;
-        };
-        */
-    }
+        var dispatcher = new Dispatcher();
 
-    public static void addVisualization(String name, Class<? extends Visualization> vis) {
-        visualizations.put(name.toLowerCase(), vis);
+        var renderer = new VisualizationRenderer(instance, origin, layout,  dispatcher);
+        var controller = new VisualizationController(stepper, renderer);
+
+        controller.onStart();
+
+        playerSteppers.put(player.getUuid(), controller);
     }
 
     /**
@@ -98,8 +77,8 @@ public class VisualizationManager {
      * @param player The player
      * @return The visualization, or null if none assigned
      */
-    public static Visualization getVisualization(Player player) {
-        return playerVisualizations.get(player.getUuid());
+    public static VisualizationController getVisualization(Player player) {
+        return playerSteppers.get(player.getUuid());
     }
 
     /**
@@ -108,7 +87,7 @@ public class VisualizationManager {
      * @param player The player
      */
     public static void removeVisualization(Player player) {
-        Visualization vis = playerVisualizations.remove(player.getUuid());
+        VisualizationController vis = playerSteppers.remove(player.getUuid());
         if (vis != null) {
             vis.cleanup();
         }
@@ -123,4 +102,23 @@ public class VisualizationManager {
     public static Pos getAreaLocation(String area) {
         return areaLocations.get(area.toLowerCase());
     }
+
+    // TODO : this can potentially take a parameter for the size of a list -> player can choose the size in hotbar?
+    private static DataModel createModelFor(String type, Player player, int n) {
+        return switch (type.toLowerCase()) {
+            case "sorting", "insertionsort", "insertion" -> {
+                var out = new IntList(new int[n]);
+
+                for (int i = 0; i < out.length(); i++) {
+                    out.set(i, i);
+                }
+
+                yield out;
+
+            }
+            // case "bfs" -> new Graph(...);  // if Graph implements DataModel
+            default -> new IntList(new int[10]); // or throw if unknown
+        };
+    }
+
 }

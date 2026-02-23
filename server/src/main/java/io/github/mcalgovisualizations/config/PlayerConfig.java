@@ -6,6 +6,7 @@ import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
 import net.minestom.server.instance.InstanceContainer;
 import java.util.function.Consumer;
 
+// Can this be serialized and saved 🧐
 public class PlayerConfig implements Consumer<AsyncPlayerConfigurationEvent> {
     private final InstanceContainer _spawnInstance;
 
