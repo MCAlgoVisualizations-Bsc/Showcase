@@ -1,6 +1,6 @@
 package io.github.mcalgovisualizations.visualization.renderer.dispatch;
 
-import io.github.mcalgovisualizations.visualization.renderer.SceneOps;
+import io.github.mcalgovisualizations.visualization.renderer.ISceneOps;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,16 +12,16 @@ public final class AnimationPlan {
 
     public static final class Step {
         private final int ticks; // how long to wait AFTER running the op (can be 0)
-        private final Consumer<SceneOps> op;
+        private final Consumer<ISceneOps> op;
 
-        Step(int ticks, Consumer<SceneOps> op) {
+        Step(int ticks, Consumer<ISceneOps> op) {
             if (ticks < 0) throw new IllegalArgumentException("ticks must be >= 0");
             this.ticks = ticks;
             this.op = Objects.requireNonNull(op, "op");
         }
 
         public int ticks() { return ticks; }
-        public Consumer<SceneOps> op() { return op; }
+        public Consumer<ISceneOps> op() { return op; }
     }
 
     private final List<Step> steps;
@@ -42,7 +42,7 @@ public final class AnimationPlan {
         return new Builder();
     }
 
-    public static AnimationPlan instant(Consumer<SceneOps> op) {
+    public static AnimationPlan instant(Consumer<ISceneOps> op) {
         return builder().step(0, op).build();
     }
 
@@ -52,7 +52,7 @@ public final class AnimationPlan {
         /**
          * Runs {@code op} once, then waits {@code ticks} executor ticks before the next step.
          */
-        public Builder step(int ticks, Consumer<SceneOps> op) {
+        public Builder step(int ticks, Consumer<ISceneOps> op) {
             steps.add(new Step(ticks, op));
             return this;
         }

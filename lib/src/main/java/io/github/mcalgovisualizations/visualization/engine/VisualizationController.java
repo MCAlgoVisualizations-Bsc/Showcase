@@ -1,6 +1,7 @@
 package io.github.mcalgovisualizations.visualization.engine;
 
 import io.github.mcalgovisualizations.visualization.HistorySnapshot;
+import io.github.mcalgovisualizations.visualization.SnapshotManager;
 import io.github.mcalgovisualizations.visualization.algorithms.IAlgorithmStepper;
 import io.github.mcalgovisualizations.visualization.renderer.VisualizationRenderer;
 import io.github.mcalgovisualizations.visualization.renderer.handlers.SystemMessages;
@@ -28,9 +29,8 @@ public class VisualizationController {
     }
 
     public void onStart() {
-        renderer.onStart();
         var snapshot = stepper.randomize();
-        renderer.render(snapshot);
+        renderer.onStart(snapshot);
     }
 
     public void start(Player player) {
@@ -61,7 +61,7 @@ public class VisualizationController {
         final var snapshot = (HistorySnapshot) stepper.step();
 
         renderer.render(snapshot);
-        // TODO : handle history with snapshots
+
     }
 
     public void back() {
@@ -69,7 +69,6 @@ public class VisualizationController {
 
         renderer.render(snapshot);
 
-        // TODO : handle history with snapshots
     }
 
     public void setSpeed(int ticksPerStep) {
@@ -95,8 +94,6 @@ public class VisualizationController {
         stop();
         final var snapshot = stepper.randomize();
         renderer.hardReset(snapshot);
-
-        // TODO : handle history with snapshots
     }
 
 }

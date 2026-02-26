@@ -4,7 +4,7 @@ import io.github.mcalgovisualizations.visualization.algorithms.events.Compare;
 import io.github.mcalgovisualizations.visualization.renderer.RenderContext;
 import io.github.mcalgovisualizations.visualization.renderer.dispatch.AnimationPlan;
 
-public final class CompareHandler implements AnimationHandler<Compare> {
+public final class CompareHandler implements IAnimationHandler<Compare> {
 
     @Override
     public AnimationPlan handle(Compare event, RenderContext ctx) {

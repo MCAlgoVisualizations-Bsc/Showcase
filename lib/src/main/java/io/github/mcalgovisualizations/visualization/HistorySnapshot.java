@@ -1,16 +1,16 @@
 package io.github.mcalgovisualizations.visualization;
 
-import io.github.mcalgovisualizations.visualization.algorithms.events.AlgorithmEvent;
+import io.github.mcalgovisualizations.visualization.algorithms.events.IAlgorithmEvent;
 
 import java.util.List;
 
 public record HistorySnapshot(
         int[] values,
         int[] highlights,
-        List<AlgorithmEvent> events,
+        List<IAlgorithmEvent> events,
         int currentIndex,
         int compareIndex,
         boolean completed
-) implements Snapshot {
+) implements ISnapshot {
 
 }

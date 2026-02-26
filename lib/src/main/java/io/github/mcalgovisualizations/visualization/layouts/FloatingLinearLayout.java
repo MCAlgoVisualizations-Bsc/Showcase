@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 /**
- * A {@link Layout} implementation that arranges elements in a straight
+ * A {@link ILayout} implementation that arranges elements in a straight
  * horizontal line along the positive X-axis.
  * <p>
  * All elements share a constant Y-coordinate ("floating"), meaning their
@@ -24,7 +24,7 @@ public record FloatingLinearLayout(
         double spacing,
         double yOffset,
         double zOffset
-) implements Layout {
+) implements ILayout {
 
     /**
      * Creates a floating linear layout with default configuration:

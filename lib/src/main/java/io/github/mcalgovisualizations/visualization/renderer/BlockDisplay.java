@@ -13,7 +13,7 @@ import net.minestom.server.entity.metadata.display.TextDisplayMeta;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.Block;
 
-public class BlockDisplay implements DisplayValue {
+public class BlockDisplay implements IDisplayValue {
     public final Instance instance;
     public final Entity blockEntity;
     public final Entity textEntity;
@@ -85,7 +85,7 @@ public class BlockDisplay implements DisplayValue {
         this.pos = pos;
         final var _ = this.blockEntity.teleport(pos);
         final var offset = pos.add(TEXT_OFFSET);
-        final var _ = textEntity.teleport(offset);
+        final var _ = this.textEntity.teleport(offset);
     }
 
     public void setValue(int value) {

@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Random;
 
 /**
- * A mutable wrapper around an {@code int[]} that implements {@link DataModel}.
+ * A mutable wrapper around an {@code int[]} that implements {@link IDataModel}.
  * <p>
  * This model represents a list of integer values and provides basic
  * mutation utilities such as setting and swapping elements.
@@ -13,7 +13,7 @@ import java.util.Random;
  *
  * @param data the backing array storing the integer values
  */
-public record IntList(int[] data) implements DataModel {
+public record IntList(int[] data) implements IDataModel {
 
     /**
      * Compact constructor with validation.

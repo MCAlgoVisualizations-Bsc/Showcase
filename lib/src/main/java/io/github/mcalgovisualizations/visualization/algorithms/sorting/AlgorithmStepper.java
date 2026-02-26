@@ -1,7 +1,7 @@
 package io.github.mcalgovisualizations.visualization.algorithms.sorting;
 
 import io.github.mcalgovisualizations.visualization.HistorySnapshot;
-import io.github.mcalgovisualizations.visualization.Snapshot;
+import io.github.mcalgovisualizations.visualization.ISnapshot;
 import io.github.mcalgovisualizations.visualization.algorithms.IAlgorithmStepper;
 import io.github.mcalgovisualizations.visualization.algorithms.events.*;
 import io.github.mcalgovisualizations.visualization.models.IntList;
@@ -22,14 +22,14 @@ public class AlgorithmStepper implements IAlgorithmStepper {
         this.model = model;
     }
 
-    public Snapshot onStart() {
+    public ISnapshot onStart() {
         state.addEvent(new Message("Starting Insertion Sort", Message.MessageType.INFO));
         history.add(getHistorySnapshot());
         return history.get(historyPointer);
     }
 
     @Override
-    public Snapshot step() {
+    public ISnapshot step() {
         // Check if step is old
         if ((historyPointer + 1) < history.size()) {
             historyPointer++;
@@ -48,8 +48,8 @@ public class AlgorithmStepper implements IAlgorithmStepper {
             ALGORITHM_COMPLETE = true;
             state.addEvent(new Message("Sorting complete!", Message.MessageType.SUCCESS));
             state.addEvent(new Complete());
-            var _ = history.add(getHistorySnapshot());
-            var _ = historyPointer++;
+            history.add(getHistorySnapshot());
+            historyPointer++;
             return history.get(historyPointer);
         }
 
@@ -82,7 +82,7 @@ public class AlgorithmStepper implements IAlgorithmStepper {
     }
 
     @Override
-    public @Nullable Snapshot back() {
+    public @Nullable ISnapshot back() {
         if ((historyPointer - 1) < 0) return null;
         historyPointer--;
         return history.get(historyPointer);
@@ -100,7 +100,7 @@ public class AlgorithmStepper implements IAlgorithmStepper {
     }
 
     @Override
-    public Snapshot randomize() {
+    public ISnapshot randomize() {
         // Fisher–Yates shuffle
         int[] data = model.data();
 

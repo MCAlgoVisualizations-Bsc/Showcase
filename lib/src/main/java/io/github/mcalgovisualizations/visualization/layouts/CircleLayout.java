@@ -3,7 +3,7 @@ package io.github.mcalgovisualizations.visualization.layouts;
 import io.github.mcalgovisualizations.visualization.renderer.LayoutResult;
 import net.minestom.server.coordinate.Pos;
 
-public record CircleLayout(double radius, double yOffset) implements Layout {
+public record CircleLayout(double radius, double yOffset) implements ILayout {
     public CircleLayout() {
         this(2.0, 2.0);
     }

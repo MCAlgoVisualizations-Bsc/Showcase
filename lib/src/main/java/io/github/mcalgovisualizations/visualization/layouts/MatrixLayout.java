@@ -18,7 +18,7 @@ public record MatrixLayout (
     int     rows,
     double  spacing,
     long    seed
-) implements Layout {
+) implements ILayout {
 
     // setting the default configs here
     public MatrixLayout() {

@@ -1,8 +1,8 @@
 package io.github.mcalgovisualizations.visualization.renderer.dispatch;
 
-import io.github.mcalgovisualizations.visualization.algorithms.events.AlgorithmEvent;
+import io.github.mcalgovisualizations.visualization.algorithms.events.IAlgorithmEvent;
 import io.github.mcalgovisualizations.visualization.renderer.RenderContext;
-import io.github.mcalgovisualizations.visualization.renderer.handlers.AnimationHandler;
+import io.github.mcalgovisualizations.visualization.renderer.handlers.IAnimationHandler;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,16 +10,16 @@ import java.util.Objects;
 
 public final class Dispatcher {
 
-    private final Map<Class<? extends AlgorithmEvent>, AnimationHandler<?>> handlers = new HashMap<>();
+    private final Map<Class<? extends IAlgorithmEvent>, IAnimationHandler<?>> handlers = new HashMap<>();
 
-    public <E extends AlgorithmEvent> void register(Class<E> eventType, AnimationHandler<E> handler) {
+    public <E extends IAlgorithmEvent> void register(Class<E> eventType, IAnimationHandler<E> handler) {
         Objects.requireNonNull(eventType, "eventType");
         Objects.requireNonNull(handler, "handler");
         handlers.put(eventType, handler);
     }
 
 
-    public AnimationPlan dispatch(AlgorithmEvent event, RenderContext ctx) {
+    public AnimationPlan dispatch(IAlgorithmEvent event, RenderContext ctx) {
         Objects.requireNonNull(event, "event");
         Objects.requireNonNull(ctx, "ctx");
 
@@ -29,12 +29,12 @@ public final class Dispatcher {
     }
 
     @SuppressWarnings("unchecked")
-    private static <E extends AlgorithmEvent> AnimationPlan invokeUnchecked(
-            AnimationHandler<?> raw,
-            AlgorithmEvent event,
+    private static <E extends IAlgorithmEvent> AnimationPlan invokeUnchecked(
+            IAnimationHandler<?> raw,
+            IAlgorithmEvent event,
             RenderContext ctx
     ) {
-        return ((AnimationHandler<E>) raw).handle((E) event, ctx);
+        return ((IAnimationHandler<E>) raw).handle((E) event, ctx);
     }
 }
 

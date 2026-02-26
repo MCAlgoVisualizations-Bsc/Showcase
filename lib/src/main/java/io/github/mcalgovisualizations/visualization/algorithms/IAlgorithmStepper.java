@@ -1,22 +1,22 @@
 package io.github.mcalgovisualizations.visualization.algorithms;
 
-import io.github.mcalgovisualizations.visualization.Snapshot;
+import io.github.mcalgovisualizations.visualization.ISnapshot;
 
 public interface IAlgorithmStepper {
 
     /**
      * Execute one step forward in the algorithm.
      */
-    Snapshot step();
+    ISnapshot step();
 
     /**
      * Go back one step in the algorithm history.
      */
-    Snapshot back();
+    ISnapshot back();
 
-    Snapshot randomize();
+    ISnapshot randomize();
 
     boolean isDone();
 
-    Snapshot onStart();
+    ISnapshot onStart();
 }

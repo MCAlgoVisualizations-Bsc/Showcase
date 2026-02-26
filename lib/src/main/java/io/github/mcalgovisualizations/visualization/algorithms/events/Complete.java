@@ -1,4 +1,4 @@
 package io.github.mcalgovisualizations.visualization.algorithms.events;
 
-public record Complete() implements AlgorithmEvent {
+public record Complete() implements IAlgorithmEvent {
 }

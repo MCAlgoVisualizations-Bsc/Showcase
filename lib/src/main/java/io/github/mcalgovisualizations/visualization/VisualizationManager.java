@@ -4,11 +4,10 @@ import io.github.mcalgovisualizations.visualization.algorithms.IAlgorithmStepper
 import io.github.mcalgovisualizations.visualization.algorithms.StepperFactory;
 import io.github.mcalgovisualizations.visualization.engine.VisualizationController;
 import io.github.mcalgovisualizations.visualization.layouts.FloatingLinearLayout;
-import io.github.mcalgovisualizations.visualization.layouts.Layout;
-import io.github.mcalgovisualizations.visualization.models.DataModel;
+import io.github.mcalgovisualizations.visualization.layouts.ILayout;
+import io.github.mcalgovisualizations.visualization.models.IDataModel;
 import io.github.mcalgovisualizations.visualization.models.IntList;
 import io.github.mcalgovisualizations.visualization.renderer.VisualizationRenderer;
-import io.github.mcalgovisualizations.visualization.renderer.dispatch.Dispatcher;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.InstanceContainer;
@@ -46,15 +45,14 @@ public class VisualizationManager {
         removeVisualization(player);
 
         // TODO : Let players control Layout and model's size n!
-        final DataModel model = createModelFor(type, player, 10);
+        final IDataModel model = createModelFor(type, player, 10);
         final IAlgorithmStepper stepper = StepperFactory.create(type, model);
 
-        Layout layout = new FloatingLinearLayout();
+        ILayout layout = new FloatingLinearLayout();
         var origin = getAreaLocation("sorting");
 
 
-        var renderer = new VisualizationRenderer(instance, origin);
-        renderer.layout = layout;
+        var renderer = new VisualizationRenderer(instance, origin, layout);
         var controller = new VisualizationController(stepper, renderer);
 
 
@@ -96,7 +94,7 @@ public class VisualizationManager {
     }
 
     // TODO : this can potentially take a parameter for the size of a list -> player can choose the size in hotbar?
-    private static DataModel createModelFor(String type, Player player, int n) {
+    private static IDataModel createModelFor(String type, Player player, int n) {
         return switch (type.toLowerCase()) {
             case "sorting", "insertionsort", "insertion" -> {
                 var out = new IntList(new int[n]);

@@ -4,9 +4,7 @@ import io.github.mcalgovisualizations.visualization.algorithms.events.Swap;
 import io.github.mcalgovisualizations.visualization.renderer.RenderContext;
 import io.github.mcalgovisualizations.visualization.renderer.dispatch.AnimationPlan;
 
-import java.time.Duration;
-
-public final class SwapHandler implements AnimationHandler<Swap> {
+public final class SwapHandler implements IAnimationHandler<Swap> {
     @Override
     public AnimationPlan handle(Swap event, RenderContext ctx) {
         return AnimationPlan.builder()

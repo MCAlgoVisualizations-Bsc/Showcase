@@ -7,12 +7,12 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.command.CommandSender;
 
-public class MessageHandler implements AnimationHandler<Message>{
+public class MessageHandler implements IAnimationHandler<Message> {
     @Override
     public AnimationPlan handle(Message event, RenderContext ctx) {
-        return AnimationPlan.instant(sceneOps -> sceneOps.setStatusText(event.message(), event.type().color()));
+        // AnimationPlan.instant(sceneOps -> sceneOps.setStatusText(event.message(), event.type().color()));
+        return null;
     }
-
 
     public static final Component ALGORITHM_COMPLETE = Component.text("Algorithm complete! Use randomize to restart.", Message.MessageType.SUCCESS.color());
     public static final Component VISUALIZATION_STARTED = Component.text("Visualization started!", Message.MessageType.SUCCESS.color());

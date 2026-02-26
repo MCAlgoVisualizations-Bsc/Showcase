@@ -1,7 +1,7 @@
 package io.github.mcalgovisualizations.visualization.algorithms;
 
 import io.github.mcalgovisualizations.visualization.algorithms.sorting.AlgorithmStepper;
-import io.github.mcalgovisualizations.visualization.models.DataModel;
+import io.github.mcalgovisualizations.visualization.models.IDataModel;
 import io.github.mcalgovisualizations.visualization.models.IntList;
 
 import java.util.HashMap;
@@ -12,20 +12,20 @@ public final class StepperFactory {
     private StepperFactory() {}
 
     private record Entry(
-            Class<? extends DataModel> modelType,
-            Function<? super DataModel, ? extends IAlgorithmStepper> ctor
+            Class<? extends IDataModel> modelType,
+            Function<? super IDataModel, ? extends IAlgorithmStepper> ctor
     ) {}
 
     private static final Map<String, Entry> registry = new HashMap<>();
 
-    public static <M extends DataModel> void register(
+    public static <M extends IDataModel> void register(
             String key,
             Class<M> modelType,
             Function<? super M, ? extends IAlgorithmStepper> ctor
     ) {
         registry.put(key.toLowerCase(), new Entry(
                 modelType,
-                (DataModel m) -> ctor.apply(modelType.cast(m))
+                (IDataModel m) -> ctor.apply(modelType.cast(m))
         ));
     }
 
@@ -34,7 +34,7 @@ public final class StepperFactory {
         register("insertionsort", IntList.class, AlgorithmStepper::new);
     }
 
-    public static IAlgorithmStepper create(String key, DataModel model) {
+    public static IAlgorithmStepper create(String key, IDataModel model) {
         Entry e = registry.get(key.toLowerCase());
         if (e == null) throw new IllegalArgumentException("No stepper registered for key: " + key);
 

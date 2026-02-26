@@ -3,7 +3,7 @@ package io.github.mcalgovisualizations.visualization.renderer;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
 
-public interface DisplayValue {
+public interface IDisplayValue {
     void setInstance();
     void addViewer(Player player);
     void remove();

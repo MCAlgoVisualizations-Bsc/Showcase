@@ -1,8 +1,8 @@
 package io.github.mcalgovisualizations.visualization.renderer;
 
-import io.github.mcalgovisualizations.visualization.Snapshot;
+import io.github.mcalgovisualizations.visualization.ISnapshot;
 import io.github.mcalgovisualizations.visualization.algorithms.events.*;
-import io.github.mcalgovisualizations.visualization.layouts.Layout;
+import io.github.mcalgovisualizations.visualization.layouts.ILayout;
 import io.github.mcalgovisualizations.visualization.renderer.dispatch.Dispatcher;
 import io.github.mcalgovisualizations.visualization.renderer.handlers.*;
 import net.minestom.server.coordinate.Pos;
@@ -17,21 +17,24 @@ public final class VisualizationRenderer {
     private final Dispatcher dispatcher = new Dispatcher();
     private final Executor executor;
     private final Pos origin;
+    private final ILayout layout;
 
-    public Layout layout;
     private boolean started = false;
     private boolean firstRender = true;
 
     public VisualizationRenderer(
             @NotNull Instance instance,
-            @NotNull Pos origin
+            @NotNull Pos origin,
+            @NotNull ILayout layout
     ) {
+
         this.scene = new VisualizationScene(instance, origin);
+        this.layout = layout;
         this.origin = origin;
         this.executor = new Executor(scene);
     }
 
-    public void onStart() {
+    public void onStart(ISnapshot snapshot) {
         if (started) return;
         started = true;
         dispatcher.register(Compare.class, new CompareHandler());
@@ -39,7 +42,9 @@ public final class VisualizationRenderer {
         dispatcher.register(Message.class, new MessageHandler());
         dispatcher.register(Validate.class, new ValidateHandler());
         dispatcher.register(Swap.class, new SwapHandler());
-
+        final var layoutResult = this.layout.compute(snapshot.values(), origin);
+        scene.onStart(layoutResult);
+        firstRender = false;
     }
 
     /**
@@ -52,16 +57,9 @@ public final class VisualizationRenderer {
 
     }
 
-
-    public void render(Snapshot snapshot) {
+    public void render(ISnapshot snapshot) {
         Objects.requireNonNull(snapshot, "snapshot");
         if (snapshot.events().contains(new Complete()) || snapshot.events().isEmpty()) return;
-        if (firstRender && layout != null) {
-            final var layoutResult = this.layout.compute(snapshot.values(), origin);
-            scene.onStart(layoutResult);
-            firstRender = false;
-        }
-
 
         final var events = snapshot.events();
         var ctx = new RenderContext(scene, events);
@@ -80,7 +78,7 @@ public final class VisualizationRenderer {
         return true;
     }
 
-    public void hardReset(Snapshot snapshot) {
+    public void hardReset(ISnapshot snapshot) {
         executor.onCleanup();
         scene.cleanUp();
         final var layoutResult = this.layout.compute(snapshot.values(), origin);

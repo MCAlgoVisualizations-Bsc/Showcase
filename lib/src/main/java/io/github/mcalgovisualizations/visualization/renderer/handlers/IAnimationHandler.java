@@ -1,10 +1,10 @@
 package io.github.mcalgovisualizations.visualization.renderer.handlers;
 
-import io.github.mcalgovisualizations.visualization.algorithms.events.AlgorithmEvent;
+import io.github.mcalgovisualizations.visualization.algorithms.events.IAlgorithmEvent;
 import io.github.mcalgovisualizations.visualization.renderer.RenderContext;
 import io.github.mcalgovisualizations.visualization.renderer.dispatch.AnimationPlan;
 
 @FunctionalInterface
-public interface AnimationHandler<E extends AlgorithmEvent> {
+public interface IAnimationHandler<E extends IAlgorithmEvent> {
     AnimationPlan handle(E event, RenderContext ctx);
 }

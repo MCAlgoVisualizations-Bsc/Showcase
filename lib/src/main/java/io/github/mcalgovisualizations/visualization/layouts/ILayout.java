@@ -1,16 +1,16 @@
 package io.github.mcalgovisualizations.visualization.layouts;
 
-import io.github.mcalgovisualizations.visualization.models.DataModel;
+import io.github.mcalgovisualizations.visualization.models.IDataModel;
 import io.github.mcalgovisualizations.visualization.renderer.LayoutResult;
 import net.minestom.server.coordinate.Pos;
 
 /**
- * Defines a strategy for positioning visual elements based on a {@link DataModel}.
+ * Defines a strategy for positioning visual elements based on a {@link IDataModel}.
  * <p>
  * Implementations determine how elements are spatially arranged relative to
  * a given origin point.
  */
-public interface Layout {
+public interface ILayout {
     /**
      * Computes the positions and visual representations for the given data model.
      *
@@ -20,7 +20,7 @@ public interface Layout {
     LayoutResult[] compute(int[] model, Pos origin);
 
     /**
-     * Computes a randomized layout for the given {@link DataModel}.
+     * Computes a randomized layout for the given {@link IDataModel}.
      * <p>
      * Implementations may use randomness to determine element positions,
      * typically relative to the provided origin.

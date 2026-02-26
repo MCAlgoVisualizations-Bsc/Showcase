@@ -15,7 +15,7 @@ import java.util.Random;
  * This implementation does not enforce immutability of the inner arrays.
  * Defensive copies are returned where appropriate.
  */
-public final class Graph implements DataModel {
+public final class Graph implements IDataModel {
 
     private final int[][] adj;
 

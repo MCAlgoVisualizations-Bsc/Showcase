@@ -3,7 +3,7 @@ package io.github.mcalgovisualizations.visualization.renderer;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.coordinate.Pos;
 
-public interface SceneOps {
+public interface ISceneOps {
 
     // lifecycle
     void onStart(LayoutResult[] model);

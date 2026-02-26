@@ -23,7 +23,7 @@ import java.util.*;
  *  - algorithm events
  *  - scheduling/tick loop
  */
-public final class VisualizationScene implements SceneOps {
+public final class VisualizationScene implements ISceneOps {
 
     private final Instance instance;
     private final Pos origin;
