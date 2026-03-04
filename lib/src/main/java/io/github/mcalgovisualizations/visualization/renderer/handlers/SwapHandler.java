@@ -10,7 +10,7 @@ public final class SwapHandler implements IAnimationHandler<Swap> {
     @Override
     public AnimationPlan handle(Swap event, RenderContext ctx) {
         return AnimationPlan.builder()
-                .step(0, sceneOps -> {
+                .step(2, sceneOps -> {
                     sceneOps.showHologram(Component.text(
                             "↕ Swapping [" + event.x() + "] ↔ [" + event.y() + "]",
                             NamedTextColor.YELLOW));

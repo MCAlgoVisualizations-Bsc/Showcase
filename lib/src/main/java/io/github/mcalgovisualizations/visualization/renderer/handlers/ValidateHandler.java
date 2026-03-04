@@ -10,9 +10,9 @@ public class ValidateHandler implements IAnimationHandler<Validate> {
     @Override
     public AnimationPlan handle(Validate event, RenderContext ctx) {
         return AnimationPlan.builder()
-                .step(0, sceneOps -> sceneOps.showHologram(Component.text(
+                .step(2, sceneOps -> sceneOps.showHologram(Component.text(
                         "✔ Already in place!", NamedTextColor.GREEN)))
-                .step(10, sceneOps -> sceneOps.clearHologram())
+                .step(15, sceneOps -> sceneOps.clearHologram())
                 .build();
     }
 }

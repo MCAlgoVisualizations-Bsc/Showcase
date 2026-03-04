@@ -1,5 +1,6 @@
 package io.github.mcalgovisualizations.visualization.renderer;
 
+import io.github.mcalgovisualizations.visualization.renderer.handlers.SystemMessages;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
@@ -176,7 +177,7 @@ public final class VisualizationScene implements ISceneOps {
     public void stopAnimations() {
         clearGlowing();
         clearHologram();
-        audience.sendMessage(Component.text("Algorithm complete."));
+        SystemMessages.sendTo(audience, SystemMessages.ALGORITHM_COMPLETE);
     }
 
 

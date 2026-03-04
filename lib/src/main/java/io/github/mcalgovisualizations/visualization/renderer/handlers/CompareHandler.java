@@ -11,7 +11,7 @@ public final class CompareHandler implements IAnimationHandler<Compare> {
     @Override
     public AnimationPlan handle(Compare event, RenderContext ctx) {
         return AnimationPlan.builder()
-                .step(0, sceneOps -> {
+                .step(2, sceneOps -> {
                     sceneOps.showHologram(Component.text(
                             "⚖ Comparing [" + event.x() + "] vs [" + event.y() + "]",
                             NamedTextColor.AQUA));
