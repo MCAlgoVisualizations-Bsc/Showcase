@@ -1,10 +1,11 @@
 package io.github.mcalgovisualizations.visualization.renderer;
 
-import io.github.mcalgovisualizations.visualization.ISnapshot;
+import io.github.mcalgovisualizations.visualization.algorithms.ISnapshot;
 import io.github.mcalgovisualizations.visualization.algorithms.events.*;
 import io.github.mcalgovisualizations.visualization.layouts.ILayout;
 import io.github.mcalgovisualizations.visualization.renderer.dispatch.Dispatcher;
 import io.github.mcalgovisualizations.visualization.renderer.handlers.*;
+import net.kyori.adventure.audience.Audience;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.instance.Instance;
 import org.jetbrains.annotations.NotNull;
@@ -18,7 +19,6 @@ public final class VisualizationRenderer {
     private final Executor executor;
     private final Pos origin;
     private final ILayout layout;
-
     private boolean started = false;
     private boolean firstRender = true;
 
@@ -94,5 +94,9 @@ public final class VisualizationRenderer {
         executor.onCleanup();   // kill tick loop + clear queue
         scene.cleanUp();   // despawn entities
         started = false;
+    }
+
+    public void setAudience(Audience audience) {
+        scene.setAudience(audience);
     }
 }

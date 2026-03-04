@@ -1,11 +1,11 @@
 package io.github.mcalgovisualizations;
 
-import io.github.mcalgovisualizations.commands.Gamemode;
-import io.github.mcalgovisualizations.commands.Greet;
-import io.github.mcalgovisualizations.commands.Spawn;
-import io.github.mcalgovisualizations.commands.Teleport;
+import io.github.mcalgovisualizations.commands.*;
 import io.github.mcalgovisualizations.items.VisualizationItems;
+import io.github.mcalgovisualizations.visualization.AlgoCraft;
 import io.github.mcalgovisualizations.visualization.VisualizationManager;
+import io.github.mcalgovisualizations.visualization.algorithms.sorting.AlgorithmStepper;
+import io.github.mcalgovisualizations.visualization.models.IntList;
 import io.github.mcalgovisualizations.visualization.renderer.handlers.SystemMessages;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.command.CommandManager;
@@ -19,6 +19,8 @@ import static io.github.mcalgovisualizations.config.WorldConfig.createMainInstan
 
 
 public final class Main {
+    private static AlgoCraft algo = null;
+
     public static void main(String[] args) {
         MinecraftServer server = MinecraftServer.init();
 
@@ -27,6 +29,10 @@ public final class Main {
         // Sets the game time
         instance.setTimeRate(0);  // Stops time
         instance.setTime(6000);   // Sets time to noon
+
+        algo = new AlgoCraft(instance);
+
+        algo.registerAlgorithm("Insertion Sort", IntList.class, AlgorithmStepper.class);
 
         //VisualizationManager.addVisualization("insertionsort", InsertionSortVisualization.class);
         //VisualizationManager.addVisualization("bfs", BFSVisualization.class);
@@ -70,7 +76,7 @@ public final class Main {
 
         // Cleanup visualization when player disconnects
         globalEventHandler.addListener(PlayerDisconnectEvent.class, event -> {
-            VisualizationManager.removeVisualization(event.getPlayer());
+            // VisualizationManager.removeVisualization(event.getPlayer());
         });
 
     }
@@ -82,5 +88,6 @@ public final class Main {
         cm.register(new Teleport());
         cm.register(new Gamemode());
         cm.register(new Spawn());
+        cm.register(new testCommand(algo));
     }
 }

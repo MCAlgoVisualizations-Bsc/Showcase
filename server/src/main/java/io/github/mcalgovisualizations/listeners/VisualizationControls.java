@@ -1,6 +1,6 @@
 package io.github.mcalgovisualizations.listeners;
 
-import io.github.mcalgovisualizations.gui.AlgorithmSelectorGUI;
+import io.github.mcalgovisualizations.gui.AlgorithmUIGUI;
 import io.github.mcalgovisualizations.visualization.VisualizationManager;
 import io.github.mcalgovisualizations.visualization.engine.VisualizationController;
 import io.github.mcalgovisualizations.visualization.renderer.handlers.SystemMessages;
@@ -21,7 +21,7 @@ public class VisualizationControls {
 
             // Handle algorithm selector (Nether Star) - available to everyone
             if (material == Material.NETHER_STAR) {
-                AlgorithmSelectorGUI.openSelector(player, instance);
+                AlgorithmUIGUI.openSelector(player, instance);
                 return;
             }
 
@@ -33,7 +33,7 @@ public class VisualizationControls {
             }
 
             // All other items require an active visualization
-            VisualizationController vis = VisualizationManager.getVisualization(player);
+            VisualizationController vis = null; // VisualizationManager.getVisualization(player);
             if (vis == null) {
                 SystemMessages.sendTo(player, SystemMessages.NO_VISUALIZATION);
                 return;
@@ -44,7 +44,7 @@ public class VisualizationControls {
                 vis.randomize();
                 SystemMessages.sendTo(player, SystemMessages.RANDOMIZED);
             } else if (material == Material.LIME_DYE) {
-                vis.start(player);
+                vis.start();
                 SystemMessages.sendTo(player, SystemMessages.VISUALIZATION_STARTED);
             } else if (material == Material.RED_DYE) {
                 vis.stop();
@@ -59,3 +59,4 @@ public class VisualizationControls {
         });
     }
 }
+

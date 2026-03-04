@@ -1,8 +1,10 @@
 package io.github.mcalgovisualizations.visualization.renderer;
 
+import io.github.mcalgovisualizations.visualization.renderer.handlers.SystemMessages;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
-import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.Component;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.Instance;
@@ -28,10 +30,18 @@ public final class VisualizationScene implements ISceneOps {
     private final Instance instance;
     private final Pos origin;
     public final List<Player> viewers = new ArrayList<>();
+    private Audience audience = Audience.empty();
+
+    public void setAudience(Audience audience) {
+        this.audience = Objects.requireNonNullElse(audience, Audience.empty());
+    }
 
     // Stable identity mapping (slot -> display wrapper/entity)
     private final Map<Integer, BlockDisplay> displaysBySlot =
             new HashMap<>();
+
+    // Floating hologram above the visualization
+    private HologramDisplay hologram;
 
     // Visual state
     private final Set<Integer> highlightedSlots = new HashSet<>();
@@ -58,8 +68,12 @@ public final class VisualizationScene implements ISceneOps {
             dv.teleport(pos);
         }
 
-        // only add viewers after all displays have been created
+        // Create hologram floating 6 blocks above the origin
+        hologram = new HologramDisplay(instance, origin.add(10, 5, 0));
+
+        // Add viewers after all displays have been created
         displaysBySlot.values().forEach(display -> viewers.forEach(display::addViewer));
+        viewers.forEach(hologram::addViewer);
     }
 
     @Override
@@ -67,6 +81,10 @@ public final class VisualizationScene implements ISceneOps {
         // Despawn/remove everything owned by this Scene
         for (var display : displaysBySlot.values()) {
             safeRemove(display);
+        }
+        if (hologram != null) {
+            hologram.remove();
+            hologram = null;
         }
         clearGlowing();
         displaysBySlot.clear();
@@ -131,8 +149,18 @@ public final class VisualizationScene implements ISceneOps {
         )));
     }
 
-    public void sendMessage(String message, NamedTextColor color) {
-        // player.sendMessage(Component.text(msg.message(), color));
+
+    @Override
+    public void sendMessage(Component message) {
+        audience.sendMessage(message);
+    }
+
+    @Override
+    public void showHologram(Component text) {
+        assertStarted();
+        if (hologram != null) {
+            hologram.setText(text);
+        }
     }
 
     public void hoverDisplay(int slot, boolean hover) {
@@ -148,14 +176,10 @@ public final class VisualizationScene implements ISceneOps {
     @Override
     public void stopAnimations() {
         clearGlowing();
-        viewers.forEach(player -> player.sendMessage("Algorithm complete."));
+        clearHologram();
+        SystemMessages.sendTo(audience, SystemMessages.ALGORITHM_COMPLETE);
     }
 
-    private BlockDisplay createDisplay(Pos spawnPos) {
-        // Assumption: BlockDisplay is your wrapper and can be constructed this way.
-        // If not, adapt this factory.
-        return new BlockDisplay(instance, spawnPos, net.minestom.server.instance.block.Block.GLASS, "Hello");
-    }
 
     // -------------------------
     // Internals
