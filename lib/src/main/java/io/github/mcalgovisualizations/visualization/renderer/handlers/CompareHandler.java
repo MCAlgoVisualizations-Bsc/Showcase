@@ -3,13 +3,18 @@ package io.github.mcalgovisualizations.visualization.renderer.handlers;
 import io.github.mcalgovisualizations.visualization.algorithms.events.Compare;
 import io.github.mcalgovisualizations.visualization.renderer.RenderContext;
 import io.github.mcalgovisualizations.visualization.renderer.dispatch.AnimationPlan;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 
 public final class CompareHandler implements IAnimationHandler<Compare> {
 
     @Override
     public AnimationPlan handle(Compare event, RenderContext ctx) {
         return AnimationPlan.builder()
-                .step(5, sceneOps -> {
+                .step(0, sceneOps -> {
+                    sceneOps.showHologram(Component.text(
+                            "⚖ Comparing [" + event.x() + "] vs [" + event.y() + "]",
+                            NamedTextColor.AQUA));
                     sceneOps.setHighlighted(event.x(), true);
                     sceneOps.setHighlighted(event.y(), true);
                 })
@@ -21,10 +26,13 @@ public final class CompareHandler implements IAnimationHandler<Compare> {
                     sceneOps.hoverDisplay(event.x(), false);
                     sceneOps.hoverDisplay(event.y(), false);
                 })
-                .step(5, sceneOps ->{
+                .step(5, sceneOps -> {
                     sceneOps.setHighlighted(event.x(), false);
                     sceneOps.setHighlighted(event.y(), false);
+                    sceneOps.clearHologram();
                 })
                 .build();
     }
 }
+
+

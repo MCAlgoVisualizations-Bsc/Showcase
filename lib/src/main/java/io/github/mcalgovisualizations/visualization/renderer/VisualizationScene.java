@@ -39,6 +39,9 @@ public final class VisualizationScene implements ISceneOps {
     private final Map<Integer, BlockDisplay> displaysBySlot =
             new HashMap<>();
 
+    // Floating hologram above the visualization
+    private HologramDisplay hologram;
+
     // Visual state
     private final Set<Integer> highlightedSlots = new HashSet<>();
 
@@ -64,8 +67,12 @@ public final class VisualizationScene implements ISceneOps {
             dv.teleport(pos);
         }
 
-        // only add viewers after all displays have been created
+        // Create hologram floating 6 blocks above the origin
+        hologram = new HologramDisplay(instance, origin.add(10, 5, 0));
+
+        // Add viewers after all displays have been created
         displaysBySlot.values().forEach(display -> viewers.forEach(display::addViewer));
+        viewers.forEach(hologram::addViewer);
     }
 
     @Override
@@ -73,6 +80,10 @@ public final class VisualizationScene implements ISceneOps {
         // Despawn/remove everything owned by this Scene
         for (var display : displaysBySlot.values()) {
             safeRemove(display);
+        }
+        if (hologram != null) {
+            hologram.remove();
+            hologram = null;
         }
         clearGlowing();
         displaysBySlot.clear();
@@ -143,6 +154,14 @@ public final class VisualizationScene implements ISceneOps {
         audience.sendMessage(message);
     }
 
+    @Override
+    public void showHologram(Component text) {
+        assertStarted();
+        if (hologram != null) {
+            hologram.setText(text);
+        }
+    }
+
     public void hoverDisplay(int slot, boolean hover) {
         assertStarted();
         var dv = requireDisplay(slot);
@@ -156,14 +175,10 @@ public final class VisualizationScene implements ISceneOps {
     @Override
     public void stopAnimations() {
         clearGlowing();
+        clearHologram();
         audience.sendMessage(Component.text("Algorithm complete."));
     }
 
-    private BlockDisplay createDisplay(Pos spawnPos) {
-        // Assumption: BlockDisplay is your wrapper and can be constructed this way.
-        // If not, adapt this factory.
-        return new BlockDisplay(instance, spawnPos, net.minestom.server.instance.block.Block.GLASS, "Hello");
-    }
 
     // -------------------------
     // Internals

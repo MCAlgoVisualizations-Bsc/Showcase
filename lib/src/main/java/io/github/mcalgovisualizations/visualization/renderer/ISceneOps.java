@@ -30,6 +30,17 @@ public interface ISceneOps {
 
     void hoverDisplay(int slot, boolean hover);
 
+    /**
+     * Show a floating hologram text above the visualization.
+     * Pass {@code Component.empty()} to clear it.
+     */
+    void showHologram(Component text);
+
+    /** Clear the hologram text. */
+    default void clearHologram() {
+        showHologram(Component.empty());
+    }
+
     void stopAnimations();
 }
 
