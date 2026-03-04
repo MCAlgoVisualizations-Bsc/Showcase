@@ -23,7 +23,7 @@ public final class PlayerAlgorithmFactory {
     ) {
         registry.put(key, new Entry(
                 modelType,
-                (IDataModel m) -> ctor.apply(modelType.cast(m))
+                (IDataModel p) -> ctor.apply(modelType.cast(p))
         ));
     }
 

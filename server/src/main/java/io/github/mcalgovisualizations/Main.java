@@ -33,7 +33,7 @@ public final class Main {
 
         algo = new AlgoCraft(instance);
 
-        algo.registerAlgorithm("Insertion Sort", IntList.class, PlayerInsertion.class);
+        algo.registerAlgorithm("insertion sort", IntList.class, PlayerInsertion::new);
 
         //VisualizationManager.addVisualization("insertionsort", InsertionSortVisualization.class);
         //VisualizationManager.addVisualization("bfs", BFSVisualization.class);

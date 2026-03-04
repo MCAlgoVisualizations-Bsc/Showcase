@@ -1,9 +1,6 @@
 package io.github.mcalgovisualizations.visualization.algorithms.sorting;
 
-import io.github.mcalgovisualizations.visualization.algorithms.HistorySnapshot;
-import io.github.mcalgovisualizations.visualization.algorithms.ISnapshot;
-import io.github.mcalgovisualizations.visualization.algorithms.IAlgorithmStepper;
-import io.github.mcalgovisualizations.visualization.algorithms.SortingCollection;
+import io.github.mcalgovisualizations.visualization.algorithms.*;
 import io.github.mcalgovisualizations.visualization.algorithms.events.*;
 import org.jspecify.annotations.Nullable;
 
@@ -15,12 +12,16 @@ public class AlgorithmStepper implements IAlgorithmStepper {
     private final ArrayList<HistorySnapshot> history = new ArrayList<>();
     private int historyPointer = 0;
     private final SortingState state = new SortingState();
+    private final IPlayerSort algorithm;
     //private boolean ALGORITHM_COMPLETE = false;
-
-    public AlgorithmStepper() {}
+    
+    public AlgorithmStepper(IPlayerSort algorithm) {
+        this.algorithm = algorithm;
+    }
 
     public ISnapshot onStart() {
         history.add(getHistorySnapshot());
+
         return history.get(historyPointer);
     }
 

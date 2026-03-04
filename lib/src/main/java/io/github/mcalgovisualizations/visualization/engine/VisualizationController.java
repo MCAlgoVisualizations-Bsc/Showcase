@@ -18,28 +18,21 @@ import java.time.Duration;
  */
 public class VisualizationController {
 
-    private final IAlgorithmStepper stepper = new AlgorithmStepper();
-    private final SortingCollection<Integer> collection = new SortingCollection<>();
-
+    private final IAlgorithmStepper stepper;
     private final VisualizationRenderer renderer;
-    private final IPlayerSort algorithm;
 
     private int ticksPerStep = 20;
     private boolean IS_RUNNING = false;
     private Task runningTask = null;
 
     public VisualizationController(IPlayerSort algorithm, VisualizationRenderer renderer) {
-        this.algorithm = algorithm;
+        this.stepper = new AlgorithmStepper(algorithm);
         this.renderer = renderer;
     }
 
     public void onStart() {
         var snapshot = stepper.onStart();
         renderer.onStart(snapshot);
-        // sort the collection
-        algorithm.sort(collection);
-        // the collection is now sorted
-        System.out.println(collection);
     }
 
     public void start() {

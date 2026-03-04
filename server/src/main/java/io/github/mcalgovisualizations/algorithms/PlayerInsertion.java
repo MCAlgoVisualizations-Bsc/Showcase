@@ -13,8 +13,9 @@ public class PlayerInsertion extends AbstractAlgorithm {
         super(data);
     }
 
-    public void sort(SortingCollection<?> values) {
+    public SortingCollection<?> sort(SortingCollection<?> values) {
         System.out.println(values.size());
+
 
         int n = values.size();
         for (int i = 0; i < n - 1; i++) {
@@ -40,13 +41,14 @@ public class PlayerInsertion extends AbstractAlgorithm {
         }
 
         values.events.forEach(System.out::println);
+        return values;
     }
 
 
     static void main(String[] args) {
         var data = new IntList(new int[]{1231, 39, 0, -1, 478, 56, 20});
         var algorithm = new PlayerInsertion(data);
-        var collection = new SortingCollection<>();
+        var collection = new SortingCollection<>(data);
 
         algorithm.sort(collection);
 

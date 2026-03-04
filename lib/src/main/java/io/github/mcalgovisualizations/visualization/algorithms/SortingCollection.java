@@ -3,6 +3,7 @@ package io.github.mcalgovisualizations.visualization.algorithms;
 import io.github.mcalgovisualizations.visualization.algorithms.events.Compare;
 import io.github.mcalgovisualizations.visualization.algorithms.events.IAlgorithmEvent;
 import io.github.mcalgovisualizations.visualization.algorithms.events.Swap;
+import io.github.mcalgovisualizations.visualization.models.IDataModel;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.AbstractCollection;
@@ -13,6 +14,12 @@ import java.util.List;
 public class SortingCollection<T extends Comparable<T>> extends AbstractCollection<T> implements ISort<T> {
     private final List<T> list = new ArrayList<>();
     public final List<IAlgorithmEvent> events = new ArrayList<>();
+
+    private final IDataModel data;
+
+    public SortingCollection(IDataModel data) {
+        this.data = data;
+    }
 
     public boolean add(T e) {
         return list.add(e);

@@ -22,11 +22,11 @@ import static io.github.mcalgovisualizations.visualization.Tags.ALGO_ID_TAG;
 import java.util.HashMap;
 
 import java.util.Map;
+import java.util.function.Function;
 
 public class AlgoCraft {
     private IAlgorithmUI ui = new AlgorithmUI();
 
-    private final Map<String , Class<? extends IPlayerSort>> algorithms = new HashMap<>();
 
     private final VisualizationManager visualizationManager = new VisualizationManager();
 
@@ -35,9 +35,15 @@ public class AlgoCraft {
         this.instanceContainer = instanceContainer;
     }
 
-    public void registerAlgorithm(String id, Class<? extends IDataModel> modelType, Class<? extends IPlayerSort> algorithm) {
-        this.algorithms.put(id, algorithm);
-        PlayerAlgorithmFactory.register(id, modelType, algorithm::cast);
+    private final Map<String, Function<? super IDataModel, ? extends IPlayerSort>> algorithms = new HashMap<>();
+
+    public <M extends IDataModel> void registerAlgorithm(
+            String id,
+            Class<M> modelType,
+            java.util.function.Function<? super M, ? extends IPlayerSort> ctor
+    ) {
+        algorithms.put(id, (IDataModel m) -> ctor.apply(modelType.cast(m)));
+        PlayerAlgorithmFactory.register(id, modelType, ctor);
     }
 
     public void defineWorkArea(String algorithmType, Pos pos) {
