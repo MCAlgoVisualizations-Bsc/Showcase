@@ -1,7 +1,5 @@
 package io.github.mcalgovisualizations.visualization.algorithms;
 
-import io.github.mcalgovisualizations.visualization.ISnapshot;
-
 public interface IAlgorithmStepper {
 
     /**

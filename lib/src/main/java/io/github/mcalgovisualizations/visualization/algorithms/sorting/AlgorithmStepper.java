@@ -1,7 +1,7 @@
 package io.github.mcalgovisualizations.visualization.algorithms.sorting;
 
-import io.github.mcalgovisualizations.visualization.HistorySnapshot;
-import io.github.mcalgovisualizations.visualization.ISnapshot;
+import io.github.mcalgovisualizations.visualization.algorithms.HistorySnapshot;
+import io.github.mcalgovisualizations.visualization.algorithms.ISnapshot;
 import io.github.mcalgovisualizations.visualization.algorithms.IAlgorithmStepper;
 import io.github.mcalgovisualizations.visualization.algorithms.events.*;
 import io.github.mcalgovisualizations.visualization.models.IntList;

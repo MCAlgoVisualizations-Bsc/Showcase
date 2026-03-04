@@ -29,11 +29,6 @@ public final class StepperFactory {
         ));
     }
 
-    // register the algorithms here with their model
-    static {
-        register("insertionsort", IntList.class, AlgorithmStepper::new);
-    }
-
     public static IAlgorithmStepper create(String key, IDataModel model) {
         Entry e = registry.get(key.toLowerCase());
         if (e == null) throw new IllegalArgumentException("No stepper registered for key: " + key);

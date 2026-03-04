@@ -1,6 +1,6 @@
 package io.github.mcalgovisualizations.visualization.engine;
 
-import io.github.mcalgovisualizations.visualization.HistorySnapshot;
+import io.github.mcalgovisualizations.visualization.algorithms.HistorySnapshot;
 import io.github.mcalgovisualizations.visualization.algorithms.IAlgorithmStepper;
 import io.github.mcalgovisualizations.visualization.renderer.VisualizationRenderer;
 import io.github.mcalgovisualizations.visualization.renderer.handlers.SystemMessages;

@@ -1,7 +1,6 @@
 package io.github.mcalgovisualizations.gui;
 
 import io.github.mcalgovisualizations.items.VisualizationItems;
-import io.github.mcalgovisualizations.visualization.VisualizationManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -21,7 +20,7 @@ import java.util.Map;
  * GUI for selecting which algorithm visualization to view.
  * Displays available algorithms in a chest inventory interface.
  */
-public class AlgorithmSelectorGUI {
+public class AlgorithmUIGUI {
     private static final Map<String, AlgorithmInfo> ALGORITHMS = new HashMap<>();
 
     static {
@@ -128,7 +127,7 @@ public class AlgorithmSelectorGUI {
      */
     private static void selectAlgorithm(Player player, String algorithmKey, InstanceContainer instance) {
         // Assign the visualization
-        VisualizationManager.assignVisualization(player, algorithmKey, instance);
+        // VisualizationManager.assignVisualization(player, algorithmKey, instance);
 
         // Clear inventory and give control items
         player.getInventory().clear();
@@ -150,7 +149,7 @@ public class AlgorithmSelectorGUI {
      * Clears the player's visualization and inventory.
      */
     private static void clearPlayerVisualization(Player player) {
-        VisualizationManager.removeVisualization(player);
+        // VisualizationManager.removeVisualization(player);
         player.getInventory().clear();
         player.getInventory().setItemStack(4, VisualizationItems.algorithmSelectorItem());
         player.getInventory().setItemStack(8, VisualizationItems.spawnItem());
@@ -163,15 +162,4 @@ public class AlgorithmSelectorGUI {
                                         String desc1, String desc2, String complexity) {
         ALGORITHMS.put(key.toLowerCase(), new AlgorithmInfo(displayName, icon, desc1, desc2, complexity));
     }
-
-    /**
-     * Record to store algorithm display information.
-     */
-    private record AlgorithmInfo(
-            String displayName,
-            Material material,
-            String description1,
-            String description2,
-            String complexity
-    ) {}
 }
