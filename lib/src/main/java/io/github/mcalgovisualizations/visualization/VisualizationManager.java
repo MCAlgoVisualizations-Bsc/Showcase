@@ -1,7 +1,7 @@
 package io.github.mcalgovisualizations.visualization;
 
-import io.github.mcalgovisualizations.visualization.algorithms.IAlgorithmStepper;
-import io.github.mcalgovisualizations.visualization.algorithms.StepperFactory;
+import io.github.mcalgovisualizations.visualization.algorithms.IPlayerSort;
+import io.github.mcalgovisualizations.visualization.algorithms.PlayerAlgorithmFactory;
 import io.github.mcalgovisualizations.visualization.engine.VisualizationController;
 import io.github.mcalgovisualizations.visualization.layouts.FloatingLinearLayout;
 import io.github.mcalgovisualizations.visualization.layouts.ILayout;
@@ -50,14 +50,13 @@ public class VisualizationManager {
 
         // TODO : Let players control Layout and model's size n!
         final IDataModel model = createModelFor(type, player, 10);
-        final IAlgorithmStepper stepper = StepperFactory.create(type, model);
+        final IPlayerSort playerAlgorithm = PlayerAlgorithmFactory.create(type, model);
 
-        ILayout layout = new FloatingLinearLayout();
-        var origin = getAreaLocation("sorting");
+        final ILayout layout = new FloatingLinearLayout();
+        final var origin = getAreaLocation("sorting");
 
-
-        var renderer = new VisualizationRenderer(instance, origin, layout);
-        var controller = new VisualizationController(stepper, renderer);
+        final var renderer = new VisualizationRenderer(instance, origin, layout);
+        final var controller = new VisualizationController(playerAlgorithm, renderer);
 
 
         controller.onStart();
@@ -101,11 +100,12 @@ public class VisualizationManager {
     private IDataModel createModelFor(String type, Player player, int n) {
         return switch (type.toLowerCase()) {
             case "sorting", "insertion sort", "insertion" -> {
-                var out = new IntList(new int[n]);
+                final var out = new IntList(new int[n]);
 
                 for (int i = 0; i < out.length(); i++) {
                     out.set(i, i);
                 }
+
 
                 yield out;
 

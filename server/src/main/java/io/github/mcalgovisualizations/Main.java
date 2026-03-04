@@ -1,5 +1,6 @@
 package io.github.mcalgovisualizations;
 
+import io.github.mcalgovisualizations.algorithms.PlayerInsertion;
 import io.github.mcalgovisualizations.commands.*;
 import io.github.mcalgovisualizations.items.VisualizationItems;
 import io.github.mcalgovisualizations.visualization.AlgoCraft;
@@ -32,7 +33,7 @@ public final class Main {
 
         algo = new AlgoCraft(instance);
 
-        algo.registerAlgorithm("Insertion Sort", IntList.class, AlgorithmStepper.class);
+        algo.registerAlgorithm("Insertion Sort", IntList.class, PlayerInsertion.class);
 
         //VisualizationManager.addVisualization("insertionsort", InsertionSortVisualization.class);
         //VisualizationManager.addVisualization("bfs", BFSVisualization.class);

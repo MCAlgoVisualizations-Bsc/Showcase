@@ -2,6 +2,9 @@ package io.github.mcalgovisualizations.visualization.engine;
 
 import io.github.mcalgovisualizations.visualization.algorithms.HistorySnapshot;
 import io.github.mcalgovisualizations.visualization.algorithms.IAlgorithmStepper;
+import io.github.mcalgovisualizations.visualization.algorithms.IPlayerSort;
+import io.github.mcalgovisualizations.visualization.algorithms.SortingCollection;
+import io.github.mcalgovisualizations.visualization.algorithms.sorting.AlgorithmStepper;
 import io.github.mcalgovisualizations.visualization.renderer.VisualizationRenderer;
 import io.github.mcalgovisualizations.visualization.renderer.handlers.SystemMessages;
 import net.minestom.server.MinecraftServer;
@@ -15,29 +18,31 @@ import java.time.Duration;
  */
 public class VisualizationController {
 
-    private final IAlgorithmStepper stepper;
+    private final IAlgorithmStepper stepper = new AlgorithmStepper();
+    private final SortingCollection<Integer> collection = new SortingCollection<>();
+
     private final VisualizationRenderer renderer;
+    private final IPlayerSort algorithm;
 
     private int ticksPerStep = 20;
     private boolean IS_RUNNING = false;
     private Task runningTask = null;
 
-    public VisualizationController(IAlgorithmStepper stepper, VisualizationRenderer renderer) {
-        this.stepper = stepper;
+    public VisualizationController(IPlayerSort algorithm, VisualizationRenderer renderer) {
+        this.algorithm = algorithm;
         this.renderer = renderer;
     }
 
     public void onStart() {
-        var snapshot = stepper.randomize();
+        var snapshot = stepper.onStart();
         renderer.onStart(snapshot);
+        // sort the collection
+        algorithm.sort(collection);
+        // the collection is now sorted
+        System.out.println(collection);
     }
 
-    public void start(Player player) {
-        if (stepper.isDone()) {
-            SystemMessages.sendTo(player, SystemMessages.ALGORITHM_COMPLETE);
-            return;
-        }
-
+    public void start() {
         if(IS_RUNNING) return;
         IS_RUNNING = true;
 
@@ -90,9 +95,9 @@ public class VisualizationController {
     }
 
     public void randomize() {
-        stop();
-        final var snapshot = stepper.randomize();
-        renderer.hardReset(snapshot);
+//        stop();
+//        final var snapshot = stepper.randomize();
+//        renderer.hardReset(snapshot);
     }
 
 }
