@@ -54,7 +54,7 @@ public class VisualizationManager {
 
         var renderer = new VisualizationRenderer(instance, origin, layout);
         var controller = new VisualizationController(stepper, renderer);
-
+        controller.setAudience(player);
 
         controller.onStart();
 

@@ -1,8 +1,9 @@
 package io.github.mcalgovisualizations.visualization.renderer;
 
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
-import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.Component;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.Instance;
@@ -28,6 +29,11 @@ public final class VisualizationScene implements ISceneOps {
     private final Instance instance;
     private final Pos origin;
     public final List<Player> viewers = new ArrayList<>();
+    private Audience audience = Audience.empty();
+
+    public void setAudience(Audience audience) {
+        this.audience = Objects.requireNonNullElse(audience, Audience.empty());
+    }
 
     // Stable identity mapping (slot -> display wrapper/entity)
     private final Map<Integer, BlockDisplay> displaysBySlot =
@@ -131,8 +137,10 @@ public final class VisualizationScene implements ISceneOps {
         )));
     }
 
-    public void sendMessage(String message, NamedTextColor color) {
-        // player.sendMessage(Component.text(msg.message(), color));
+
+    @Override
+    public void sendMessage(Component message) {
+        audience.sendMessage(message);
     }
 
     public void hoverDisplay(int slot, boolean hover) {
@@ -148,7 +156,7 @@ public final class VisualizationScene implements ISceneOps {
     @Override
     public void stopAnimations() {
         clearGlowing();
-        viewers.forEach(player -> player.sendMessage("Algorithm complete."));
+        audience.sendMessage(Component.text("Algorithm complete."));
     }
 
     private BlockDisplay createDisplay(Pos spawnPos) {

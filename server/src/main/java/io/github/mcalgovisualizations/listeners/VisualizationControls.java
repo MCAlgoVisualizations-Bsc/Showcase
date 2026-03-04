@@ -44,7 +44,7 @@ public class VisualizationControls {
                 vis.randomize();
                 SystemMessages.sendTo(player, SystemMessages.RANDOMIZED);
             } else if (material == Material.LIME_DYE) {
-                vis.start(player);
+                vis.start();
                 SystemMessages.sendTo(player, SystemMessages.VISUALIZATION_STARTED);
             } else if (material == Material.RED_DYE) {
                 vis.stop();
@@ -59,3 +59,4 @@ public class VisualizationControls {
         });
     }
 }
+

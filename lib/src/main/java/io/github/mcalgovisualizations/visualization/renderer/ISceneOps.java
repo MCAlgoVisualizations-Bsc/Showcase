@@ -1,5 +1,6 @@
 package io.github.mcalgovisualizations.visualization.renderer;
 
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.coordinate.Pos;
 
@@ -25,7 +26,8 @@ public interface ISceneOps {
     // optional extension point
     void playEffect(int slot, String effectId);
 
-    void sendMessage(String message, NamedTextColor color);
+    void sendMessage(Component message);
+
     void hoverDisplay(int slot, boolean hover);
 
     void stopAnimations();
