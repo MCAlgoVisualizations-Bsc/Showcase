@@ -1,4 +1,4 @@
-package io.github.mcalgovisualizations.visualization;
+package io.github.mcalgovisualizations.visualization.algorithms;
 
 import io.github.mcalgovisualizations.visualization.algorithms.events.IAlgorithmEvent;
 
