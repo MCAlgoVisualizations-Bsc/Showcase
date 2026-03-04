@@ -56,7 +56,7 @@ public class VisualizationManager {
         final var origin = getAreaLocation("sorting");
 
         final var renderer = new VisualizationRenderer(instance, origin, layout);
-        final var controller = new VisualizationController(stepper, renderer);
+        final var controller = new VisualizationController(playerAlgorithm, renderer);
         controller.setAudience(player);
 
         controller.onStart();

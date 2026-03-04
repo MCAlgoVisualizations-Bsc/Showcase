@@ -2,20 +2,26 @@ package io.github.mcalgovisualizations;
 
 import io.github.mcalgovisualizations.algorithms.PlayerInsertion;
 import io.github.mcalgovisualizations.commands.*;
+import io.github.mcalgovisualizations.gui.AlgorithmUIGUI;
 import io.github.mcalgovisualizations.items.VisualizationItems;
 import io.github.mcalgovisualizations.visualization.AlgoCraft;
 import io.github.mcalgovisualizations.visualization.VisualizationManager;
 import io.github.mcalgovisualizations.visualization.algorithms.sorting.AlgorithmStepper;
+import io.github.mcalgovisualizations.visualization.engine.VisualizationController;
 import io.github.mcalgovisualizations.visualization.models.IntList;
 import io.github.mcalgovisualizations.visualization.renderer.handlers.SystemMessages;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.command.CommandManager;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
+import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
 import net.minestom.server.event.player.PlayerDisconnectEvent;
 import net.minestom.server.event.player.PlayerSpawnEvent;
+import net.minestom.server.event.player.PlayerUseItemEvent;
 import net.minestom.server.instance.InstanceContainer;
+import net.minestom.server.item.Material;
+
 import static io.github.mcalgovisualizations.config.WorldConfig.createMainInstance;
 
 
@@ -38,13 +44,60 @@ public final class Main {
         //VisualizationManager.addVisualization("insertionsort", InsertionSortVisualization.class);
         //VisualizationManager.addVisualization("bfs", BFSVisualization.class);
 
+        // Register visualization control listeners (item interactions)
         registerListeners(instance);
+        registerControls(instance, algo.visualizationManager);
         registerCommands(MinecraftServer.getCommandManager());
 
-        // Register visualization control listeners (item interactions)
-        io.github.mcalgovisualizations.listeners.VisualizationControls.register(MinecraftServer.getGlobalEventHandler(), instance);
-
         server.start("0.0.0.0", 25565);
+    }
+
+    public static void registerControls(InstanceContainer instance, VisualizationManager manager) {
+        final var globalEventHandler = MinecraftServer.getGlobalEventHandler();
+        // Handle item right-clicks for visualization control
+        globalEventHandler.addListener(PlayerUseItemEvent.class, event -> {
+            Player player = event.getPlayer();
+            Material material = event.getItemStack().material();
+
+            // Handle algorithm selector (Nether Star) - available to everyone
+            if (material == Material.NETHER_STAR) {
+                AlgorithmUIGUI.openSelector(player, instance);
+                return;
+            }
+
+            // Handle compass (return to hub) - available to everyone
+            if (material == Material.COMPASS) {
+                player.teleport(new Pos(0, 42, 0));
+                SystemMessages.sendTo(player, SystemMessages.RETURNED_TO_HUB);
+                return;
+            }
+
+            // All other items require an active visualization
+            VisualizationController vis =  manager.getVisualization(player);
+
+            if (vis == null) {
+                SystemMessages.sendTo(player, SystemMessages.NO_VISUALIZATION);
+                return;
+            }
+
+            if (material == Material.ENDER_PEARL) {
+                event.setCancelled(true); // Prevent teleportation
+                vis.randomize();
+                SystemMessages.sendTo(player, SystemMessages.RANDOMIZED);
+            } else if (material == Material.LIME_DYE) {
+                vis.start();
+                SystemMessages.sendTo(player, SystemMessages.VISUALIZATION_STARTED);
+            } else if (material == Material.RED_DYE) {
+                vis.stop();
+                SystemMessages.sendTo(player, SystemMessages.VISUALIZATION_STOPPED);
+            } else if (material == Material.ARROW) {
+                vis.step();
+                SystemMessages.sendTo(player, SystemMessages.STEP_FORWARD);
+            } else if (material == Material.SPECTRAL_ARROW) {
+                vis.back();
+                SystemMessages.sendTo(player, SystemMessages.STEP_BACKWARD);
+            }
+        });
     }
 
     private static void registerListeners(InstanceContainer instance) {

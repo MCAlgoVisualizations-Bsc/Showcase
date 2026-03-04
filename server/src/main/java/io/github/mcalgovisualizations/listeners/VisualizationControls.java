@@ -33,7 +33,7 @@ public class VisualizationControls {
             }
 
             // All other items require an active visualization
-            VisualizationController vis = VisualizationManager.getVisualization(player);
+            VisualizationController vis = null; // VisualizationManager.getVisualization(player);
 
             if (vis == null) {
                 SystemMessages.sendTo(player, SystemMessages.NO_VISUALIZATION);

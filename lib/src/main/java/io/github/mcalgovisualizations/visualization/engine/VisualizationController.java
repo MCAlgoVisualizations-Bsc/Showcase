@@ -2,10 +2,14 @@ package io.github.mcalgovisualizations.visualization.engine;
 
 import io.github.mcalgovisualizations.visualization.algorithms.HistorySnapshot;
 import io.github.mcalgovisualizations.visualization.algorithms.IAlgorithmStepper;
+import io.github.mcalgovisualizations.visualization.algorithms.IPlayerSort;
+import io.github.mcalgovisualizations.visualization.algorithms.SortingCollection;
+import io.github.mcalgovisualizations.visualization.algorithms.sorting.AlgorithmStepper;
 import io.github.mcalgovisualizations.visualization.renderer.VisualizationRenderer;
 import io.github.mcalgovisualizations.visualization.renderer.handlers.SystemMessages;
 import net.kyori.adventure.audience.Audience;
 import net.minestom.server.MinecraftServer;
+import net.minestom.server.entity.Player;
 import net.minestom.server.timer.Task;
 
 import java.time.Duration;
@@ -18,14 +22,14 @@ public class VisualizationController {
 
     private final IAlgorithmStepper stepper;
     private final VisualizationRenderer renderer;
-    private Audience audience = Audience.empty();
 
+    private Audience audience = Audience.empty();
     private int ticksPerStep = 20;
     private boolean IS_RUNNING = false;
     private Task runningTask = null;
 
-    public VisualizationController(IAlgorithmStepper stepper, VisualizationRenderer renderer) {
-        this.stepper = stepper;
+    public VisualizationController(IPlayerSort algorithm, VisualizationRenderer renderer) {
+        this.stepper = new AlgorithmStepper(algorithm);
         this.renderer = renderer;
     }
 
@@ -34,19 +38,23 @@ public class VisualizationController {
         renderer.setAudience(audience);  // propagate down
     }
 
+
+
+
+
     public void onStart() {
-        var snapshot = stepper.randomize();
+        var snapshot = stepper.onStart();
         renderer.onStart(snapshot);
     }
 
     public void start() {
-        if (stepper.isDone()) {
-            SystemMessages.sendTo(audience, SystemMessages.ALGORITHM_COMPLETE);
-            return;
-        }
-
         if(IS_RUNNING) return;
         IS_RUNNING = true;
+
+//        if (stepper.isDone()) {
+//            SystemMessages.sendTo(audience, SystemMessages.ALGORITHM_COMPLETE);
+//            return;
+//        }
 
         runningTask = MinecraftServer.getSchedulerManager()
                 .buildTask(this::step)
@@ -97,9 +105,9 @@ public class VisualizationController {
     }
 
     public void randomize() {
-        stop();
-        final var snapshot = stepper.randomize();
-        renderer.hardReset(snapshot);
+//        stop();
+//        final var snapshot = stepper.randomize();
+//        renderer.hardReset(snapshot);
     }
 
 }

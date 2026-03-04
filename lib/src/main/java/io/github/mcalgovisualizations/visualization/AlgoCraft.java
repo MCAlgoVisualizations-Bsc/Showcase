@@ -27,8 +27,7 @@ import java.util.function.Function;
 public class AlgoCraft {
     private IAlgorithmUI ui = new AlgorithmUI();
 
-
-    private final VisualizationManager visualizationManager = new VisualizationManager();
+    public final VisualizationManager visualizationManager = new VisualizationManager();
 
     private final InstanceContainer instanceContainer;
     public AlgoCraft(InstanceContainer instanceContainer) {
