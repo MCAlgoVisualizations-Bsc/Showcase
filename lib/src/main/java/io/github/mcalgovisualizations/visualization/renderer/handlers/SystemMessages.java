@@ -1,9 +1,9 @@
 package io.github.mcalgovisualizations.visualization.renderer.handlers;
 
 import io.github.mcalgovisualizations.visualization.algorithms.events.Message;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.minestom.server.entity.Player;
 
 /**
  * Static system/UI messages that are not tied to any specific algorithm.
@@ -47,9 +47,9 @@ public final class SystemMessages {
 
     // ── Utility ───────────────────────────────────────────────────────────────
 
-    /** Send a system message component to a player. */
-    public static void sendTo(Player player, Component message) {
-        player.sendMessage(message);
+    /** Send a system message component to an audience. */
+    public static void sendTo(Audience audience, Component message) {
+        audience.sendMessage(message);
     }
 
     private SystemMessages() {}
