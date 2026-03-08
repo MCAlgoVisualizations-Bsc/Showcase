@@ -43,7 +43,7 @@ public final class Main {
 
         algo = new AlgoCraft(instance);
 
-        var collection = new ArrayList<>(Arrays.asList(
+        var integerCollection1 = new ArrayList<>(Arrays.asList(
                 new Data<>(3),
                 new Data<>(7),
                 new Data<>(8),
@@ -55,16 +55,28 @@ public final class Main {
                 new Data<>(2)
         ));
 
-        var sortingCollection = new SortingCollection(collection);
-        var sorter = new PlayerInsertion();
-        sorter.sort(sortingCollection);
+        var integerCollection2 = new ArrayList<>(Arrays.asList(
+                new Data<>(8),
+                new Data<>(3),
+                new Data<>(1),
+                new Data<>(5),
+                new Data<>(2)
+        ));
 
+        var stringCollection1 = new ArrayList<>(Arrays.asList(
+                new Data<>("a"),
+                new Data<>("b"),
+                new Data<>("k"),
+                new Data<>("x"),
+                new Data<>("d"),
+                new Data<>("h"),
+                new Data<>("a"),
+                new Data<>("b"),
+                new Data<>("e")
+        ));
 
-        System.out.println("Original data ::\n " + collection);
-        System.out.println("Sorted data ::\n" + sortingCollection.data());
-        System.out.println("Events::\n" + sortingCollection.events());
-
-        algo.registerAlgorithm("insertion sort", PlayerInsertion::new, collection);
+        algo.registerAlgorithm("insertion sort", PlayerInsertion::new, integerCollection1);
+        algo.registerAlgorithm("insertion sort 2", PlayerInsertion::new, stringCollection1);
 
         //VisualizationManager.addVisualization("insertionsort", InsertionSortVisualization.class);
         //VisualizationManager.addVisualization("bfs", BFSVisualization.class);

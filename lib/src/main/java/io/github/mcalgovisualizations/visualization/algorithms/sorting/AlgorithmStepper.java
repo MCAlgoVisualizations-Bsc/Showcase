@@ -23,6 +23,7 @@ public class AlgorithmStepper<T extends Comparable<T>> implements IAlgorithmStep
         this.collection = collection;
     }
 
+    @SuppressWarnings("unchecked")
     public ISnapshot<T> onStart() {
         var values = collection.data().toArray(Data[]::new);
 
@@ -44,6 +45,7 @@ public class AlgorithmStepper<T extends Comparable<T>> implements IAlgorithmStep
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public ISnapshot<T> step() {
 
         // Check if step is old
@@ -69,6 +71,7 @@ public class AlgorithmStepper<T extends Comparable<T>> implements IAlgorithmStep
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public HistorySnapshot<T> back() {
         if ((historyPointer - 1) < 0) return null;
         historyPointer--;
@@ -78,7 +81,7 @@ public class AlgorithmStepper<T extends Comparable<T>> implements IAlgorithmStep
     private HistorySnapshot<T> getHistorySnapshot() {
         return new HistorySnapshot<>(
                 null, // only used for onStart()
-                collection.events(), // TODO : Fix this so each step produces a subset of the events
+                collection.events(), // TODO : Fix this so each step produces a subset 
                 state.highlights(),
                 state.currentIndex(),
                 state.compareIndex(),

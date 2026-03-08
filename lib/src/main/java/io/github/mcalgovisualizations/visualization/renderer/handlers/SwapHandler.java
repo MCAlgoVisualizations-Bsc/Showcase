@@ -12,7 +12,7 @@ public final class SwapHandler implements IAnimationHandler<Swap> {
         return AnimationPlan.builder()
                 .step(2, sceneOps -> {
                     sceneOps.showHologram(Component.text(
-                            "↕ Swapping [" + event.x() + "] ↔ [" + event.y() + "]",
+                            "↕ Swapping [" + event.xValue() + "] ↔ [" + event.yValue() + "]",
                             NamedTextColor.YELLOW));
                     sceneOps.setHighlighted(event.x(), true);
                     sceneOps.setHighlighted(event.y(), true);

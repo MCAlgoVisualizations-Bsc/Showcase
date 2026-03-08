@@ -7,6 +7,6 @@ import org.jetbrains.annotations.NotNull;
 public record LayoutResult<T extends Comparable<T>>(Data<T> value, Pos pos) {
     @Override
     public @NotNull String toString() {
-        return "LayoutEntry{" + "pos=" + pos + ", idx=" + value + '}';
+        return "LayoutEntry{" + "pos=" + pos + ", idx=" + value.value() + '}';
     }
 }

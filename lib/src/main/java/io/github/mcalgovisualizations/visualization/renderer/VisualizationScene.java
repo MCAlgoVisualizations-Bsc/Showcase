@@ -59,10 +59,9 @@ public final class VisualizationScene implements ISceneOps {
         this.started = true;
 
         for(int i = 0; i < layoutResults.length; i++) {
-            var layout = layoutResults[i];
-            var pos = layout.pos();
+            var pos = layoutResults[i].pos();
             var block = net.minestom.server.instance.block.Block.GRANITE;
-            var value = layout.value();
+            var value = layoutResults[i].value();
 
             // TODO : Move the creation of IDisplayValue somewhere else
 
@@ -137,11 +136,19 @@ public final class VisualizationScene implements ISceneOps {
     @Override
     public void swapSlots(int a, int b) {
         assertStarted();
+
         var da = requireDisplay(a);
         var db = requireDisplay(b);
 
+        displaysBySlot.put(a, db);
+        displaysBySlot.put(b, da);
+
+
         var posA = da.getPos();
         var posB = db.getPos();
+
+
+
         da.teleport(posB);
         db.teleport(posA);
     }

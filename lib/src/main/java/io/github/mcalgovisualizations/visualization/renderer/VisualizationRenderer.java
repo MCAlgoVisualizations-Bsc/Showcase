@@ -21,7 +21,6 @@ public final class VisualizationRenderer {
     private final Pos origin;
     private final ILayout layout;
     private boolean started = false;
-    private boolean firstRender = true;
 
     public VisualizationRenderer(
             @NotNull Instance instance,
@@ -35,19 +34,18 @@ public final class VisualizationRenderer {
         this.executor = new Executor(scene);
     }
 
+    @SuppressWarnings("unchecked")
     public void onStart(ISnapshot<?> snapshot) {
         if (started) return;
         started = true;
         dispatcher.register(Compare.class, new CompareHandler());
+        dispatcher.register(Swap.class, new SwapHandler());
         dispatcher.register(Complete.class, new CompleteHandler());
         dispatcher.register(Message.class, new MessageHandler());
         dispatcher.register(Validate.class, new ValidateHandler());
-        dispatcher.register(Swap.class, new SwapHandler());
-
 
         final var layoutResult = this.layout.compute(snapshot.values(), origin);
         scene.onStart(layoutResult);
-        firstRender = false;
     }
 
     /**
@@ -67,8 +65,6 @@ public final class VisualizationRenderer {
         final var events = snapshot.events();
         final var ctx = new RenderContext(scene, events);
 
-        System.out.print(events);
-
         for (final var e : events) {
             final var plan = dispatcher.dispatch(e, ctx);
             executor.add(plan);
@@ -80,7 +76,8 @@ public final class VisualizationRenderer {
         return true;
     }
 
-    public void hardReset(ISnapshot snapshot) {
+    @SuppressWarnings("unchecked")
+    public void hardReset(ISnapshot<?> snapshot) {
         executor.onCleanup();
         scene.cleanUp();
         final var layoutResult = this.layout.compute(snapshot.values(), origin);

@@ -18,7 +18,6 @@ public final class Dispatcher {
         handlers.put(eventType, handler);
     }
 
-
     public AnimationPlan dispatch(IAlgorithmEvent event, RenderContext ctx) {
         Objects.requireNonNull(event, "event");
         Objects.requireNonNull(ctx, "ctx");

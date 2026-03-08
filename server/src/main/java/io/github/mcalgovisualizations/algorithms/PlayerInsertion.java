@@ -1,15 +1,9 @@
 package io.github.mcalgovisualizations.algorithms;
 
-import io.github.mcalgovisualizations.visualization.algorithms.AbstractAlgorithm;
 import io.github.mcalgovisualizations.visualization.algorithms.IPlayerSort;
-import io.github.mcalgovisualizations.visualization.models.Data;
 import io.github.mcalgovisualizations.visualization.models.SortingCollection;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 public class PlayerInsertion implements IPlayerSort {
-
 
     @Override
     public <T extends Comparable<T>> void sort(SortingCollection<T> values) {
