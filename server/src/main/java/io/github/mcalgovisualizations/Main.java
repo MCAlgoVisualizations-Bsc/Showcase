@@ -73,8 +73,8 @@ public final class Main {
                 new Data<>("e")
         ));
 
-        algo.registerAlgorithm("insertion sort", PlayerInsertion::new, integerCollection2);
-        // TODO : I cannot add multiple insertion sorts at a time
+        algo.registerAlgorithm("insertion sort", PlayerInsertion::new, stringCollection1);
+        // TODO : I cannot add multiple insertion sorts at in the instance, with different collections.
 
         //VisualizationManager.addVisualization("insertionsort", InsertionSortVisualization.class);
         //VisualizationManager.addVisualization("bfs", BFSVisualization.class);

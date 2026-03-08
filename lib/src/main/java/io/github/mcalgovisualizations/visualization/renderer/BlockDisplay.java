@@ -21,7 +21,6 @@ public class BlockDisplay implements IDisplayValue {
     private static final Vec TEXT_OFFSET = new Vec(1, 2.4, 1);
 
     private Pos pos;
-    private Block currentBlock;
 
     public BlockDisplay(Instance instance, Pos pos, Block block, String text) {
         if (block == null) throw new NullPointerException("block cannot be null");
@@ -34,8 +33,6 @@ public class BlockDisplay implements IDisplayValue {
         this.textEntity = new Entity(EntityType.TEXT_DISPLAY);
 
         this.pos = pos;
-        this.currentBlock = block;
-
 
         setupBlock(block);
         setupText(text);
@@ -72,8 +69,8 @@ public class BlockDisplay implements IDisplayValue {
 
     @Override
     public void addViewer(Player player) {
-        final var _ = this.blockEntity.addViewer(player);
-        final var _ = this.textEntity.addViewer(player);
+        this.blockEntity.addViewer(player);
+        this.textEntity.addViewer(player);
     }
 
     public void remove() {
@@ -83,9 +80,9 @@ public class BlockDisplay implements IDisplayValue {
 
     public void teleport(Pos pos) {
         this.pos = pos;
-        final var _ = this.blockEntity.teleport(pos);
+        this.blockEntity.teleport(pos);
         final var offset = pos.add(TEXT_OFFSET);
-        final var _ = this.textEntity.teleport(offset);
+        this.textEntity.teleport(offset);
     }
 
     public void setValue(int value) {

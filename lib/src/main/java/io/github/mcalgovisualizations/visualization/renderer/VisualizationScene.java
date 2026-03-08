@@ -202,8 +202,7 @@ public final class VisualizationScene implements ISceneOps {
     private BlockDisplay requireDisplay(int slot) {
         var display = displaysBySlot.get(slot);
         if (display == null) {
-            // This is a usage bug: renderer should have called ensureSize first
-            throw new IllegalStateException("No display for slot " + slot + ". Did you forget ensureSize(n)?");
+            throw new IllegalStateException("No display for slot " + slot + ".");
         }
         return display;
     }
