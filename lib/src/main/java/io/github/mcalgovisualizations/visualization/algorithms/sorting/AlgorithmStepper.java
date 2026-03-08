@@ -1,6 +1,7 @@
 package io.github.mcalgovisualizations.visualization.algorithms.sorting;
 
 import io.github.mcalgovisualizations.visualization.algorithms.*;
+import io.github.mcalgovisualizations.visualization.algorithms.events.Complete;
 import io.github.mcalgovisualizations.visualization.models.Data;
 import io.github.mcalgovisualizations.visualization.models.SortingCollection;
 
@@ -25,19 +26,24 @@ public class AlgorithmStepper<T extends Comparable<T>> implements IAlgorithmStep
 
     @SuppressWarnings("unchecked")
     public ISnapshot<T> onStart() {
-        var values = collection.data().toArray(Data[]::new);
+        final var values = collection.data().toArray(Data[]::new);
+        final var events = new ArrayList<>(collection.events());
+
+
+        algorithm.sort(collection);
+        // make sure to send a message that the algorithm is complete
+        events.add(new Complete(values.length));
 
         var firstSnapshot = new HistorySnapshot<T>(
                 values,
-                collection.events(),
+                null,
                 state.highlights(),
                 state.currentIndex(),
-                state.compareIndex(),
-                false
+                state.compareIndex()
 
         );
 
-        algorithm.sort(collection);
+
 
         this.firstSnapshot = firstSnapshot;
         history.add(firstSnapshot);
@@ -79,13 +85,15 @@ public class AlgorithmStepper<T extends Comparable<T>> implements IAlgorithmStep
     }
 
     private HistorySnapshot<T> getHistorySnapshot() {
+        final var events = new ArrayList<>(collection.events());
+        events.add(new Complete(collection.data().size()));
+
         return new HistorySnapshot<>(
                 null, // only used for onStart()
-                collection.events(), // TODO : Fix this so each step produces a subset 
+                events,
                 state.highlights(),
                 state.currentIndex(),
-                state.compareIndex(),
-                false
+                state.compareIndex()
         );
     }
 

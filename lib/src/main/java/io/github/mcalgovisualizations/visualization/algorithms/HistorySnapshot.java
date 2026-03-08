@@ -12,8 +12,9 @@ public record HistorySnapshot<T extends Comparable<T>>(
         @Nullable List<IAlgorithmEvent> events,
         int[] highlights,
         int currentIndex,
-        int compareIndex,
-        boolean completed
+        int compareIndex
 ) implements ISnapshot<T> {
-
+    @SuppressWarnings("unchecked")
+    public Data<T>[] values() { return values == null ? new Data[0] : values; }
+    public List<IAlgorithmEvent> events() { return events == null ? List.of() : List.copyOf(events); }
 }

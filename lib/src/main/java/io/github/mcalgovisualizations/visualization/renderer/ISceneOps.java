@@ -42,5 +42,6 @@ public interface ISceneOps {
     }
 
     void stopAnimations();
+
 }
 

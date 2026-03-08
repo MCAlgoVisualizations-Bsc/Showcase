@@ -58,9 +58,7 @@ public final class Main {
         var integerCollection2 = new ArrayList<>(Arrays.asList(
                 new Data<>(8),
                 new Data<>(3),
-                new Data<>(1),
-                new Data<>(5),
-                new Data<>(2)
+                new Data<>(1)
         ));
 
         var stringCollection1 = new ArrayList<>(Arrays.asList(
@@ -75,8 +73,8 @@ public final class Main {
                 new Data<>("e")
         ));
 
-        algo.registerAlgorithm("insertion sort", PlayerInsertion::new, integerCollection1);
-        algo.registerAlgorithm("insertion sort 2", PlayerInsertion::new, stringCollection1);
+        algo.registerAlgorithm("insertion sort", PlayerInsertion::new, integerCollection2);
+        // TODO : I cannot add multiple insertion sorts at a time
 
         //VisualizationManager.addVisualization("insertionsort", InsertionSortVisualization.class);
         //VisualizationManager.addVisualization("bfs", BFSVisualization.class);

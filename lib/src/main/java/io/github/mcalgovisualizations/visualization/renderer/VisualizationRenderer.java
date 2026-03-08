@@ -58,11 +58,12 @@ public final class VisualizationRenderer {
 
     }
 
-    public void  render(ISnapshot<?> snapshot) {
+    public void render(ISnapshot<?> snapshot) {
         Objects.requireNonNull(snapshot, "snapshot");
-        if (snapshot.events().contains(new Complete()) || snapshot.events().isEmpty()) return;
+        if (snapshot.events().isEmpty()) return;
 
         final var events = snapshot.events();
+
         final var ctx = new RenderContext(scene, events);
 
         for (final var e : events) {

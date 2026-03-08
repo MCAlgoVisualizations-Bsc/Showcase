@@ -41,6 +41,8 @@ public final class VisualizationScene implements ISceneOps {
     private final Map<Integer, BlockDisplay> displaysBySlot =
             new HashMap<>();
 
+    private final Set<Integer> getHighlightedSlots = new HashSet<>();
+
     // Floating hologram above the visualization
     private HologramDisplay hologram;
 
@@ -64,7 +66,6 @@ public final class VisualizationScene implements ISceneOps {
             var value = layoutResults[i].value();
 
             // TODO : Move the creation of IDisplayValue somewhere else
-
             var dv = new BlockDisplay(instance, pos, block, value.value().toString());
 
             displaysBySlot.put(i, dv);
@@ -178,6 +179,7 @@ public final class VisualizationScene implements ISceneOps {
 
     public void hoverDisplay(int slot, boolean hover) {
         assertStarted();
+
         var dv = requireDisplay(slot);
         if (hover) {
             dv.teleport(dv.getPos().add(0, 1, 0));
@@ -192,7 +194,6 @@ public final class VisualizationScene implements ISceneOps {
         clearHologram();
         SystemMessages.sendTo(audience, SystemMessages.ALGORITHM_COMPLETE);
     }
-
 
     // -------------------------
     // Internals

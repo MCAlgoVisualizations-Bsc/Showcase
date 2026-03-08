@@ -8,9 +8,22 @@ import io.github.mcalgovisualizations.visualization.renderer.dispatch.AnimationP
 public class CompleteHandler implements IAnimationHandler<Complete> {
     @Override
     public AnimationPlan handle(Complete event, RenderContext ctx) {
-        return AnimationPlan.builder()
+        var plan = AnimationPlan.builder()
                 .step(0, ISceneOps::stopAnimations)
-                .step(0, sceneOps -> sceneOps.playEffect(2, "SUCCESS"))
-                .build();
+                .step(0, sceneOps -> sceneOps.playEffect(2, "SUCCESS"));
+
+        // hover each element with a small delay
+        for (var i = 0; i < event.size(); i++) {
+            final var idx = i;
+            plan.step(1, sceneOps -> sceneOps.hoverDisplay(idx, true));
+        }
+
+        // hover each element with a small delay
+        for (var i = 0; i < event.size(); i++) {
+            final var idx = i;
+            plan.step(1, sceneOps -> sceneOps.hoverDisplay(idx, false));
+        }
+
+        return plan.build();
     }
 }
