@@ -1,32 +1,50 @@
 package io.github.mcalgovisualizations.visualization.algorithms.sorting;
 
 import io.github.mcalgovisualizations.visualization.algorithms.*;
-import io.github.mcalgovisualizations.visualization.algorithms.events.*;
-import org.jspecify.annotations.Nullable;
+import io.github.mcalgovisualizations.visualization.models.Data;
+import io.github.mcalgovisualizations.visualization.models.SortingCollection;
 
 import java.util.ArrayList;
 
 
 // TODO: remove insertion sort from AlgorithmStepper
-public class AlgorithmStepper implements IAlgorithmStepper {
+public class AlgorithmStepper<T extends Comparable<T>> implements IAlgorithmStepper {
     private final ArrayList<HistorySnapshot> history = new ArrayList<>();
     private int historyPointer = 0;
     private final SortingState state = new SortingState();
-    private final IPlayerSort algorithm;
+    private HistorySnapshot firstSnapshot;
     //private boolean ALGORITHM_COMPLETE = false;
-    
-    public AlgorithmStepper(IPlayerSort algorithm) {
+
+    private final SortingCollection<T> collection;
+    private final IPlayerSort algorithm;
+
+    public AlgorithmStepper(IPlayerSort algorithm, SortingCollection<T> collection) {
         this.algorithm = algorithm;
+        this.collection = collection;
     }
 
-    public ISnapshot onStart() {
-        history.add(getHistorySnapshot());
+    public ISnapshot<T> onStart() {
+        var values = collection.data().toArray(Data[]::new);
 
-        return history.get(historyPointer);
+        var firstSnapshot = new HistorySnapshot<T>(
+                values,
+                collection.events(),
+                state.highlights(),
+                state.currentIndex(),
+                state.compareIndex(),
+                false
+
+        );
+
+        algorithm.sort(collection);
+
+        this.firstSnapshot = firstSnapshot;
+        history.add(firstSnapshot);
+        return firstSnapshot;
     }
 
     @Override
-    public ISnapshot step() {
+    public ISnapshot<T> step() {
 
         // Check if step is old
         if ((historyPointer + 1) < history.size()) {
@@ -51,17 +69,17 @@ public class AlgorithmStepper implements IAlgorithmStepper {
     }
 
     @Override
-    public @Nullable ISnapshot back() {
+    public HistorySnapshot<T> back() {
         if ((historyPointer - 1) < 0) return null;
         historyPointer--;
         return history.get(historyPointer);
     }
 
-    private HistorySnapshot getHistorySnapshot() {
-        return new HistorySnapshot(
-                null,
+    private HistorySnapshot<T> getHistorySnapshot() {
+        return new HistorySnapshot<>(
+                null, // only used for onStart()
+                collection.events(), // TODO : Fix this so each step produces a subset of the events
                 state.highlights(),
-                new ArrayList<>(),// collection.events,
                 state.currentIndex(),
                 state.compareIndex(),
                 false

@@ -17,4 +17,6 @@ public interface IDataModel {
      * @return the total number of elements in the model
      */
     int length();
+    int[] toArray();
+
 }

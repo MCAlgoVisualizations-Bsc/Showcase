@@ -6,15 +6,14 @@ import io.github.mcalgovisualizations.gui.AlgorithmUIGUI;
 import io.github.mcalgovisualizations.items.VisualizationItems;
 import io.github.mcalgovisualizations.visualization.AlgoCraft;
 import io.github.mcalgovisualizations.visualization.VisualizationManager;
-import io.github.mcalgovisualizations.visualization.algorithms.sorting.AlgorithmStepper;
 import io.github.mcalgovisualizations.visualization.engine.VisualizationController;
-import io.github.mcalgovisualizations.visualization.models.IntList;
+import io.github.mcalgovisualizations.visualization.models.Data;
+import io.github.mcalgovisualizations.visualization.models.SortingCollection;
 import io.github.mcalgovisualizations.visualization.renderer.handlers.SystemMessages;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.command.CommandManager;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
-import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
 import net.minestom.server.event.player.PlayerDisconnectEvent;
 import net.minestom.server.event.player.PlayerSpawnEvent;
@@ -22,13 +21,18 @@ import net.minestom.server.event.player.PlayerUseItemEvent;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.item.Material;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import static io.github.mcalgovisualizations.config.WorldConfig.createMainInstance;
 
 
 public final class Main {
     private static AlgoCraft algo = null;
 
-    public static void main(String[] args) {
+    static void main(String[] args) {
         MinecraftServer server = MinecraftServer.init();
 
         InstanceContainer instance = createMainInstance();
@@ -39,7 +43,28 @@ public final class Main {
 
         algo = new AlgoCraft(instance);
 
-        algo.registerAlgorithm("insertion sort", IntList.class, PlayerInsertion::new);
+        var collection = new ArrayList<>(Arrays.asList(
+                new Data<>(3),
+                new Data<>(7),
+                new Data<>(8),
+                new Data<>(1),
+                new Data<>(6),
+                new Data<>(4),
+                new Data<>(9),
+                new Data<>(5),
+                new Data<>(2)
+        ));
+
+        var sortingCollection = new SortingCollection(collection);
+        var sorter = new PlayerInsertion();
+        sorter.sort(sortingCollection);
+
+
+        System.out.println("Original data ::\n " + collection);
+        System.out.println("Sorted data ::\n" + sortingCollection.data());
+        System.out.println("Events::\n" + sortingCollection.events());
+
+        algo.registerAlgorithm("insertion sort", PlayerInsertion::new, collection);
 
         //VisualizationManager.addVisualization("insertionsort", InsertionSortVisualization.class);
         //VisualizationManager.addVisualization("bfs", BFSVisualization.class);
@@ -52,7 +77,7 @@ public final class Main {
         server.start("0.0.0.0", 25565);
     }
 
-    public static void registerControls(InstanceContainer instance, VisualizationManager manager) {
+    static void registerControls(InstanceContainer instance, VisualizationManager manager) {
         final var globalEventHandler = MinecraftServer.getGlobalEventHandler();
         // Handle item right-clicks for visualization control
         globalEventHandler.addListener(PlayerUseItemEvent.class, event -> {
@@ -100,7 +125,7 @@ public final class Main {
         });
     }
 
-    private static void registerListeners(InstanceContainer instance) {
+    static void registerListeners(InstanceContainer instance) {
         final var globalEventHandler = MinecraftServer.getGlobalEventHandler();
 
         // Player configuration - set spawn instance and respawn point
@@ -137,7 +162,7 @@ public final class Main {
 
 
 
-    private static void registerCommands(CommandManager cm) {
+    static void registerCommands(CommandManager cm) {
         cm.register(new Greet());
         cm.register(new Teleport());
         cm.register(new Gamemode());

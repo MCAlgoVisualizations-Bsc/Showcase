@@ -1,5 +1,6 @@
 package io.github.mcalgovisualizations.visualization.renderer;
 
+import io.github.mcalgovisualizations.visualization.models.Data;
 import io.github.mcalgovisualizations.visualization.renderer.handlers.SystemMessages;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
@@ -54,16 +55,21 @@ public final class VisualizationScene implements ISceneOps {
     }
 
     @Override
-    public void onStart(LayoutResult[] layoutResults) {
+    public <T extends Comparable<T>> void onStart(LayoutResult<T>[] layoutResults) {
         this.started = true;
 
-        for(var layout : layoutResults) {
+        for(int i = 0; i < layoutResults.length; i++) {
+            var layout = layoutResults[i];
             var pos = layout.pos();
             var block = net.minestom.server.instance.block.Block.GRANITE;
-            var value = Integer.toString(layout.value());
+            var value = layout.value();
 
-            var dv = new BlockDisplay(instance, pos, block, value);
-            displaysBySlot.put(layout.value(), dv);
+            // TODO : Move the creation of IDisplayValue somewhere else
+
+            var dv = new BlockDisplay(instance, pos, block, value.value().toString());
+
+            displaysBySlot.put(i, dv);
+
             dv.setInstance();
             dv.teleport(pos);
         }

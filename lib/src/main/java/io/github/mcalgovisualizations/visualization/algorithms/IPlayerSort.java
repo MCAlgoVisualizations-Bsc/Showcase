@@ -1,6 +1,7 @@
 package io.github.mcalgovisualizations.visualization.algorithms;
 
-@FunctionalInterface
+import io.github.mcalgovisualizations.visualization.models.SortingCollection;
+
 public interface IPlayerSort {
-    SortingCollection<?> sort(SortingCollection<?> values);
+    <T extends Comparable<T>> void sort(SortingCollection<T> values);
 }

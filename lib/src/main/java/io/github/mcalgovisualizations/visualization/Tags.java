@@ -9,5 +9,4 @@ public class Tags {
     public static final Tag<String> ALGO_STOP_TAG = Tag.String("algo_stop");
     public static final Tag<String> ALGO_STEP_TAG = Tag.String("algo_step");
     public static final Tag<String> ALGO_RANDOMIZE_TAG = Tag.String("algo_randomize");
-
 }

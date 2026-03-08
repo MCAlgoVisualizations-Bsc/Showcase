@@ -2,8 +2,8 @@ package io.github.mcalgovisualizations.visualization;
 
 
 import io.github.mcalgovisualizations.visualization.algorithms.IPlayerSort;
-import io.github.mcalgovisualizations.visualization.algorithms.PlayerAlgorithmFactory;
-import io.github.mcalgovisualizations.visualization.models.IDataModel;
+import io.github.mcalgovisualizations.visualization.models.Data;
+import io.github.mcalgovisualizations.visualization.models.SortingCollection;
 import io.github.mcalgovisualizations.visualization.ui.AlgorithmUI;
 import io.github.mcalgovisualizations.visualization.ui.IAlgorithmUI;
 
@@ -21,10 +21,14 @@ import static io.github.mcalgovisualizations.visualization.Tags.ALGO_ID_TAG;
 
 import java.util.HashMap;
 
+import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.Objects;
+import java.util.function.Supplier;
 
 public class AlgoCraft {
+
+    private record AlgorithmEntry(IPlayerSort algorithm, SortingCollection<?> collection) { }
     private IAlgorithmUI ui = new AlgorithmUI();
 
     public final VisualizationManager visualizationManager = new VisualizationManager();
@@ -34,15 +38,19 @@ public class AlgoCraft {
         this.instanceContainer = instanceContainer;
     }
 
-    private final Map<String, Function<? super IDataModel, ? extends IPlayerSort>> algorithms = new HashMap<>();
 
-    public <M extends IDataModel> void registerAlgorithm(
+    private final Map<String, AlgorithmEntry> algorithms = new HashMap<>();
+
+    public <T extends Comparable<T>> void registerAlgorithm(
             String id,
-            Class<M> modelType,
-            java.util.function.Function<? super M, ? extends IPlayerSort> ctor
+            Supplier<? extends IPlayerSort> ctor,
+            List<Data<T>> lst
     ) {
-        algorithms.put(id, (IDataModel m) -> ctor.apply(modelType.cast(m)));
-        PlayerAlgorithmFactory.register(id, modelType, ctor);
+        Objects.requireNonNull(id, "id");
+        Objects.requireNonNull(ctor, "ctor");
+
+        algorithms.put(id, new AlgorithmEntry(ctor.get(), new SortingCollection<>(lst)));
+
     }
 
     public void defineWorkArea(String algorithmType, Pos pos) {
@@ -71,12 +79,13 @@ public class AlgoCraft {
                 return;
             }
 
+
             // Find which algorithm was clicked
             for (String algorithm : algorithms.keySet()) {
                 var algo_id = clickedItem.getTag(ALGO_ID_TAG);
                 if (algo_id == null) continue;
                 if (algo_id.equals(algorithm)) {
-                    visualizationManager.assignVisualization(player, algo_id, instanceContainer);
+                    visualizationManager.assignVisualization(player, algo_id, instanceContainer, algorithms.get(algorithm).collection, algorithms.get(algorithm).algorithm);
                     ui.applyRunningLayout(player);
                     player.closeInventory();
                     return;
@@ -86,4 +95,4 @@ public class AlgoCraft {
         player.openInventory(inventory);
     }
 
-} 
+}

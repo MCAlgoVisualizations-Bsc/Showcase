@@ -10,6 +10,7 @@ import net.minestom.server.coordinate.Pos;
 import net.minestom.server.instance.Instance;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 public final class VisualizationRenderer {
@@ -34,7 +35,7 @@ public final class VisualizationRenderer {
         this.executor = new Executor(scene);
     }
 
-    public void onStart(ISnapshot snapshot) {
+    public void onStart(ISnapshot<?> snapshot) {
         if (started) return;
         started = true;
         dispatcher.register(Compare.class, new CompareHandler());
@@ -42,6 +43,10 @@ public final class VisualizationRenderer {
         dispatcher.register(Message.class, new MessageHandler());
         dispatcher.register(Validate.class, new ValidateHandler());
         dispatcher.register(Swap.class, new SwapHandler());
+
+        System.out.println("Render Data-set :: " + Arrays.toString(snapshot.values()));
+        System.out.println("Render Events :: " + snapshot.events());
+
         final var layoutResult = this.layout.compute(snapshot.values(), origin);
         scene.onStart(layoutResult);
         firstRender = false;
@@ -57,21 +62,20 @@ public final class VisualizationRenderer {
 
     }
 
-    public void render(ISnapshot snapshot) {
+    public void  render(ISnapshot<?> snapshot) {
         Objects.requireNonNull(snapshot, "snapshot");
         if (snapshot.events().contains(new Complete()) || snapshot.events().isEmpty()) return;
 
         final var events = snapshot.events();
-        var ctx = new RenderContext(scene, events);
+        final var ctx = new RenderContext(scene, events);
 
-        for (var e : events) {
-            var plan = dispatcher.dispatch(e, ctx);
+        System.out.print(events);
+
+        for (final var e : events) {
+            final var plan = dispatcher.dispatch(e, ctx);
             executor.add(plan);
         }
-
-        executor.setSpeed(2);
         executor.startIfIdle();
-
     }
 
     public boolean isIdle() {

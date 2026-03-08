@@ -3,17 +3,14 @@ package io.github.mcalgovisualizations.visualization.engine;
 import io.github.mcalgovisualizations.visualization.algorithms.HistorySnapshot;
 import io.github.mcalgovisualizations.visualization.algorithms.IAlgorithmStepper;
 import io.github.mcalgovisualizations.visualization.algorithms.IPlayerSort;
-import io.github.mcalgovisualizations.visualization.algorithms.SortingCollection;
 import io.github.mcalgovisualizations.visualization.algorithms.sorting.AlgorithmStepper;
+import io.github.mcalgovisualizations.visualization.models.SortingCollection;
 import io.github.mcalgovisualizations.visualization.renderer.VisualizationRenderer;
-import io.github.mcalgovisualizations.visualization.renderer.handlers.SystemMessages;
 import net.kyori.adventure.audience.Audience;
 import net.minestom.server.MinecraftServer;
-import net.minestom.server.entity.Player;
 import net.minestom.server.timer.Task;
 
 import java.time.Duration;
-import java.util.Objects;
 
 /**
  * A controller of time so forwards, back, adjusting speed belongs here.
@@ -23,24 +20,22 @@ public class VisualizationController {
     private final IAlgorithmStepper stepper;
     private final VisualizationRenderer renderer;
 
-    private Audience audience = Audience.empty();
     private int ticksPerStep = 20;
     private boolean IS_RUNNING = false;
     private Task runningTask = null;
 
-    public VisualizationController(IPlayerSort algorithm, VisualizationRenderer renderer) {
-        this.stepper = new AlgorithmStepper(algorithm);
+    public <T extends Comparable<T>> VisualizationController(
+            IPlayerSort algorithm,
+            VisualizationRenderer renderer,
+            SortingCollection<T> collection
+    ) {
+        this.stepper = new AlgorithmStepper<>(algorithm, collection);
         this.renderer = renderer;
     }
 
     public void setAudience(Audience audience) {
-        this.audience = Objects.requireNonNullElse(audience, Audience.empty());
-        renderer.setAudience(audience);  // propagate down
+        renderer.setAudience(audience);
     }
-
-
-
-
 
     public void onStart() {
         var snapshot = stepper.onStart();
@@ -72,14 +67,12 @@ public class VisualizationController {
     }
 
     public void step() {
-        final var snapshot = (HistorySnapshot) stepper.step();
-
+        final var snapshot = (HistorySnapshot<?>) stepper.step();
         renderer.render(snapshot);
-
     }
 
     public void back() {
-        final var snapshot = (HistorySnapshot) stepper.back();
+        final var snapshot = (HistorySnapshot<?>) stepper.back();
 
         renderer.render(snapshot);
 
