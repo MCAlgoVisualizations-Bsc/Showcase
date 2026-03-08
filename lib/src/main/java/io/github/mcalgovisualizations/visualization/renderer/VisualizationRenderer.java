@@ -44,8 +44,6 @@ public final class VisualizationRenderer {
         dispatcher.register(Validate.class, new ValidateHandler());
         dispatcher.register(Swap.class, new SwapHandler());
 
-        System.out.println("Render Data-set :: " + Arrays.toString(snapshot.values()));
-        System.out.println("Render Events :: " + snapshot.events());
 
         final var layoutResult = this.layout.compute(snapshot.values(), origin);
         scene.onStart(layoutResult);
