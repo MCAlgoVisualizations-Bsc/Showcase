@@ -1,4 +1,9 @@
 package io.github.mcalgovisualizations.visualization;
 
-public enum interaction_type {
+public enum InteractionType {
+    RANDOMIZE,
+    START,
+    STOP,
+    FORWARD,
+    BACKWARD,
 }

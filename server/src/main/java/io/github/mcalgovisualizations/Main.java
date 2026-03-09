@@ -33,6 +33,7 @@ public final class Main {
         algo = new AlgoCraft(instance);
 
         algo.registerAlgorithm("Insertion Sort", IntList.class, AlgorithmStepper.class);
+        algo.addListeners(MinecraftServer.getGlobalEventHandler());
 
         //VisualizationManager.addVisualization("insertionsort", InsertionSortVisualization.class);
         //VisualizationManager.addVisualization("bfs", BFSVisualization.class);
@@ -41,7 +42,7 @@ public final class Main {
         registerCommands(MinecraftServer.getCommandManager());
 
         // Register visualization control listeners (item interactions)
-        io.github.mcalgovisualizations.listeners.VisualizationControls.register(MinecraftServer.getGlobalEventHandler(), instance);
+        // io.github.mcalgovisualizations.listeners.VisualizationControls.register(MinecraftServer.getGlobalEventHandler(), instance);
 
         server.start("0.0.0.0", 25565);
     }
