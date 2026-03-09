@@ -2,42 +2,65 @@ package io.github.mcalgovisualizations.visualization;
 
 
 import io.github.mcalgovisualizations.visualization.algorithms.IPlayerSort;
+import io.github.mcalgovisualizations.visualization.engine.VisualizationController;
 import io.github.mcalgovisualizations.visualization.models.Data;
 import io.github.mcalgovisualizations.visualization.models.SortingCollection;
 import io.github.mcalgovisualizations.visualization.ui.AlgorithmUI;
 import io.github.mcalgovisualizations.visualization.ui.IAlgorithmUI;
-
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
+import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.event.inventory.InventoryPreClickEvent;
+import net.minestom.server.event.player.PlayerUseItemEvent;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.item.ItemStack;
 
-import static io.github.mcalgovisualizations.visualization.Tags.ALGO_CLEAR_TAG;
-import static io.github.mcalgovisualizations.visualization.Tags.ALGO_ID_TAG;
-
 import java.util.HashMap;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+import static io.github.mcalgovisualizations.visualization.Tags.*;
+
+
 public class AlgoCraft {
 
-    private record AlgorithmEntry(IPlayerSort algorithm, SortingCollection<?> collection) { }
+    private record AlgorithmEntry(IPlayerSort algorithm, SortingCollection<?> collection) {
+    }
+
     private IAlgorithmUI ui = new AlgorithmUI();
 
     public final VisualizationManager visualizationManager = new VisualizationManager();
 
     private final InstanceContainer instanceContainer;
+
     public AlgoCraft(InstanceContainer instanceContainer) {
         this.instanceContainer = instanceContainer;
     }
 
+    public void addListeners(GlobalEventHandler handler) {
+        handler.addListener(PlayerUseItemEvent.class, event -> {
+            Player player = event.getPlayer();
+            VisualizationController vis = visualizationManager.getVisualization(player);
+            ItemStack itemStack = event.getItemStack();
+            event.setCancelled(true); // Prevent teleportation
+            if (itemStack.hasTag(ALGO_SELECTOR_TAG)) {
+                selectAlgorithm(player);
+                return;
+            }
+
+            if (itemStack.hasTag(ALGO_INTERACTION_TAG))
+                switch (itemStack.getTag(ALGO_INTERACTION_TAG)) {
+                    case RANDOMIZE -> vis.randomize();
+                    case START -> vis.start();
+                    case STOP -> vis.stop();
+                    case FORWARD -> vis.step();
+                    case BACKWARD -> vis.back();
+                }
+        });
+    }
 
     private final Map<String, AlgorithmEntry> algorithms = new HashMap<>();
 
@@ -73,12 +96,13 @@ public class AlgoCraft {
             if (clickedItem.isAir()) return;
 
             // Handle clear option
-            if (clickedItem.getTag(ALGO_CLEAR_TAG) != null) {
+            /*
+            if (clickedItem.getTag(ALGO_INTERACTION_TAG)) {
                 player.closeInventory();
                 player.sendMessage(Component.text("Visualization cleared!", NamedTextColor.YELLOW));
                 return;
             }
-
+            */
 
             // Find which algorithm was clicked
             for (String algorithm : algorithms.keySet()) {

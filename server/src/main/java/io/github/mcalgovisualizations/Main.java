@@ -41,6 +41,8 @@ public final class Main {
         instance.setTimeRate(0);  // Stops time
         instance.setTime(6000);   // Sets time to noon
 
+
+
         algo = new AlgoCraft(instance);
 
         var integerCollection1 = new ArrayList<>(Arrays.asList(
@@ -73,66 +75,18 @@ public final class Main {
                 new Data<>("e")
         ));
 
-        algo.registerAlgorithm("insertion sort", PlayerInsertion::new, integerCollection1);
+        algo.registerAlgorithm("insertion sort", PlayerInsertion::new, stringCollection1);
+        algo.registerAlgorithm("insertion sort123", PlayerInsertion::new, stringCollection1);
+        algo.addListeners(MinecraftServer.getGlobalEventHandler());
         // TODO : I cannot add multiple insertion sorts at in the instance, with different collections.
 
-        //VisualizationManager.addVisualization("insertionsort", InsertionSortVisualization.class);
-        //VisualizationManager.addVisualization("bfs", BFSVisualization.class);
 
         // Register visualization control listeners (item interactions)
         registerListeners(instance);
-        registerControls(instance, algo.visualizationManager);
+        // registerControls(instance, algo.visualizationManager);
         registerCommands(MinecraftServer.getCommandManager());
 
         server.start("0.0.0.0", 25565);
-    }
-
-    static void registerControls(InstanceContainer instance, VisualizationManager manager) {
-        final var globalEventHandler = MinecraftServer.getGlobalEventHandler();
-        // Handle item right-clicks for visualization control
-        globalEventHandler.addListener(PlayerUseItemEvent.class, event -> {
-            Player player = event.getPlayer();
-            Material material = event.getItemStack().material();
-
-            // Handle algorithm selector (Nether Star) - available to everyone
-            if (material == Material.NETHER_STAR) {
-                AlgorithmUIGUI.openSelector(player, instance);
-                return;
-            }
-
-            // Handle compass (return to hub) - available to everyone
-            if (material == Material.COMPASS) {
-                player.teleport(new Pos(0, 42, 0));
-                SystemMessages.sendTo(player, SystemMessages.RETURNED_TO_HUB);
-                return;
-            }
-
-            // All other items require an active visualization
-            VisualizationController vis =  manager.getVisualization(player);
-
-            if (vis == null) {
-                SystemMessages.sendTo(player, SystemMessages.NO_VISUALIZATION);
-                return;
-            }
-
-            if (material == Material.ENDER_PEARL) {
-                event.setCancelled(true); // Prevent teleportation
-                vis.randomize();
-                SystemMessages.sendTo(player, SystemMessages.RANDOMIZED);
-            } else if (material == Material.LIME_DYE) {
-                vis.start();
-                SystemMessages.sendTo(player, SystemMessages.VISUALIZATION_STARTED);
-            } else if (material == Material.RED_DYE) {
-                vis.stop();
-                SystemMessages.sendTo(player, SystemMessages.VISUALIZATION_STOPPED);
-            } else if (material == Material.ARROW) {
-                vis.step();
-                SystemMessages.sendTo(player, SystemMessages.STEP_FORWARD);
-            } else if (material == Material.SPECTRAL_ARROW) {
-                vis.back();
-                SystemMessages.sendTo(player, SystemMessages.STEP_BACKWARD);
-            }
-        });
     }
 
     static void registerListeners(InstanceContainer instance) {

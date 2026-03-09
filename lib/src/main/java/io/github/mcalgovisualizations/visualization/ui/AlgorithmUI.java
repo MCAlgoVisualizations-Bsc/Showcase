@@ -1,5 +1,6 @@
 package io.github.mcalgovisualizations.visualization.ui;
 
+import io.github.mcalgovisualizations.visualization.InteractionType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -30,8 +31,10 @@ public class AlgorithmUI implements IAlgorithmUI {
                     .set(ALGO_ID_TAG, algorithm)
                     .build();
             inventory.setItemStack(i, item);
+            i++;
         }
 
+        /*
         ItemStack clearItem = ItemStack.builder(Material.BARRIER)
                 .customName(Component.text("Clear Visualization", NamedTextColor.RED)
                         .decoration(TextDecoration.ITALIC, false))
@@ -40,9 +43,10 @@ public class AlgorithmUI implements IAlgorithmUI {
                                 .decoration(TextDecoration.ITALIC, false),
                         Component.text("and clear your hotbar.", NamedTextColor.GRAY)
                                 .decoration(TextDecoration.ITALIC, false)
-                ).set(ALGO_CLEAR_TAG, "clear")
+                ).set(ALGO_INTERACTION_TAG, "clear")
                 .build();
         inventory.setItemStack(26, clearItem);
+        */
 
         return inventory;
     }
@@ -55,31 +59,31 @@ public class AlgorithmUI implements IAlgorithmUI {
         inv.setItemStack(0,
                 ItemStack.builder(Material.ENDER_PEARL)
                         .customName(Component.text("Randomize"))
-                        .set(ALGO_RANDOMIZE_TAG, "randomize")
+                        .set(ALGO_INTERACTION_TAG, InteractionType.RANDOMIZE)
                         .build()
         );
         inv.setItemStack(1,
                 ItemStack.builder(Material.GREEN_DYE)
                 .customName(Component.text("Start"))
-                .set(ALGO_START_TAG, "start")
+                .set(ALGO_INTERACTION_TAG, InteractionType.START)
                 .build()
         );
         inv.setItemStack(2,
                 ItemStack.builder(Material.RED_DYE)
                         .customName(Component.text("Stop"))
-                        .set(ALGO_STOP_TAG, "stop")
+                        .set(ALGO_INTERACTION_TAG, InteractionType.STOP)
                         .build()
         );
         inv.setItemStack(3,
                 ItemStack.builder(Material.ARROW)
                         .customName(Component.text("Step Forward"))
-                        .set(ALGO_STEP_TAG, "forward")
+                        .set(ALGO_INTERACTION_TAG, InteractionType.FORWARD)
                         .build()
         );
         inv.setItemStack(4,
                 ItemStack.builder(Material.SPECTRAL_ARROW)
                         .customName(Component.text("Step Back"))
-                        .set(ALGO_STEP_TAG, "back")
+                        .set(ALGO_INTERACTION_TAG, InteractionType.BACKWARD)
                         .build()
         );
     }
