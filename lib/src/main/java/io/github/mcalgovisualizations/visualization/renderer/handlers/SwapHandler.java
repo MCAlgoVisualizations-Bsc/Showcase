@@ -3,12 +3,17 @@ package io.github.mcalgovisualizations.visualization.renderer.handlers;
 import io.github.mcalgovisualizations.visualization.algorithms.events.Swap;
 import io.github.mcalgovisualizations.visualization.renderer.RenderContext;
 import io.github.mcalgovisualizations.visualization.renderer.dispatch.AnimationPlan;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 
 public final class SwapHandler implements IAnimationHandler<Swap> {
     @Override
     public AnimationPlan handle(Swap event, RenderContext ctx) {
         return AnimationPlan.builder()
-                .step(0, sceneOps ->{
+                .step(2, sceneOps -> {
+                    sceneOps.showHologram(Component.text(
+                            "↕ Swapping [" + event.xValue() + "] ↔ [" + event.yValue() + "]",
+                            NamedTextColor.YELLOW));
                     sceneOps.setHighlighted(event.x(), true);
                     sceneOps.setHighlighted(event.y(), true);
                 })
@@ -24,7 +29,10 @@ public final class SwapHandler implements IAnimationHandler<Swap> {
                 .step(5, sceneOps -> {
                     sceneOps.setHighlighted(event.x(), false);
                     sceneOps.setHighlighted(event.y(), false);
+                    sceneOps.clearHologram();
                 })
                 .build();
     }
 }
+
+

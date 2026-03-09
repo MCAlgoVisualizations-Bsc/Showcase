@@ -1,20 +1,17 @@
 package io.github.mcalgovisualizations.visualization;
 
-import io.github.mcalgovisualizations.visualization.algorithms.IAlgorithmStepper;
-import io.github.mcalgovisualizations.visualization.algorithms.StepperFactory;
+import io.github.mcalgovisualizations.visualization.algorithms.IPlayerSort;
 import io.github.mcalgovisualizations.visualization.engine.VisualizationController;
 import io.github.mcalgovisualizations.visualization.layouts.FloatingLinearLayout;
 import io.github.mcalgovisualizations.visualization.layouts.ILayout;
-import io.github.mcalgovisualizations.visualization.models.IDataModel;
-import io.github.mcalgovisualizations.visualization.models.IntList;
+import io.github.mcalgovisualizations.visualization.models.Data;
+import io.github.mcalgovisualizations.visualization.models.SortingCollection;
 import io.github.mcalgovisualizations.visualization.renderer.VisualizationRenderer;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.InstanceContainer;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Manages visualizations for all players.
@@ -44,21 +41,22 @@ public class VisualizationManager {
      * @param type     The type of visualization (e.g., "sorting", "insertionsort")
      * @param instance The game instance
      */
-    public void assignVisualization(Player player, String type, InstanceContainer instance) {
+    public void assignVisualization(
+            Player player,
+            String type, // Todo - fix this so that it's not a string and either determined by the lib or the user.
+            InstanceContainer instance,
+            SortingCollection<?> collection,
+            IPlayerSort playerAlgorithm
+    ) {
         // Clean up existing visualization
         removeVisualization(player);
 
-        // TODO : Let players control Layout and model's size n!
-        final IDataModel model = createModelFor(type, player, 10);
-        final IAlgorithmStepper stepper = StepperFactory.create(type, model);
+        final ILayout layout = new FloatingLinearLayout();
+        final var origin = getAreaLocation("sorting");
 
-        ILayout layout = new FloatingLinearLayout();
-        var origin = getAreaLocation("sorting");
-
-
-        var renderer = new VisualizationRenderer(instance, origin, layout);
-        var controller = new VisualizationController(stepper, renderer);
-
+        final var renderer = new VisualizationRenderer(instance, origin, layout);
+        final var controller = new VisualizationController(playerAlgorithm, renderer, collection);
+        controller.setAudience(player);
 
         controller.onStart();
 
@@ -95,23 +93,5 @@ public class VisualizationManager {
      */
     public Pos getAreaLocation(String area) {
         return areaLocations.get(area.toLowerCase());
-    }
-
-    // TODO : this can potentially take a parameter for the size of a list -> player can choose the size in hotbar?
-    private IDataModel createModelFor(String type, Player player, int n) {
-        return switch (type.toLowerCase()) {
-            case "sorting", "insertion sort", "insertion" -> {
-                var out = new IntList(new int[n]);
-
-                for (int i = 0; i < out.length(); i++) {
-                    out.set(i, i);
-                }
-
-                yield out;
-
-            }
-            // case "bfs" -> new Graph(...);  // if Graph implements DataModel
-            default -> new IntList(new int[10]); // or throw if unknown
-        };
     }
 }

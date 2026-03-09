@@ -1,11 +1,8 @@
 package io.github.mcalgovisualizations.visualization.layouts;
 
+import io.github.mcalgovisualizations.visualization.models.Data;
 import io.github.mcalgovisualizations.visualization.renderer.LayoutResult;
 import net.minestom.server.coordinate.Pos;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 
 /**
  * A {@link ILayout} implementation that arranges elements in a straight
@@ -54,8 +51,9 @@ public record FloatingLinearLayout(
      * @param origin starting position of the layout
      * @return array of {@link Pos} positions in a straight line
      */
+    @SuppressWarnings("unchecked")
     @Override
-    public LayoutResult[] compute(int[] model, Pos origin) {
+    public <T extends Comparable<T>> LayoutResult<T>[] compute(Data<T>[] model, Pos origin) {
         if(model == null || model.length == 0) {
             return new LayoutResult[0];
         }
@@ -70,18 +68,9 @@ public record FloatingLinearLayout(
             final double x = origin.x() + (i * spacing);
             final var pos = new Pos(x, y, z);
 
-            out[i] = new LayoutResult(model[i], pos);
+            out[i] = new LayoutResult<>(model[i], pos);
         }
 
         return out;
-    }
-
-    @Override
-    public LayoutResult[] random(int[] model, Pos origin) {
-        var layout = compute(model, origin);
-        var layoutList = new ArrayList<>(Arrays.asList(layout));
-        Collections.shuffle(layoutList);
-
-        return layoutList.toArray(new LayoutResult[0]);
     }
 }

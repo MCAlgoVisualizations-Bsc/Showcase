@@ -31,6 +31,7 @@ public class AlgorithmUI implements IAlgorithmUI {
                     .set(ALGO_ID_TAG, algorithm)
                     .build();
             inventory.setItemStack(i, item);
+            i++;
         }
 
         /*

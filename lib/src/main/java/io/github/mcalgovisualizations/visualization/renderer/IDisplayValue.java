@@ -4,6 +4,7 @@ import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
 
 public interface IDisplayValue {
+
     void setInstance();
     void addViewer(Player player);
     void remove();

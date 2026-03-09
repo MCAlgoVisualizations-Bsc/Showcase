@@ -1,79 +1,74 @@
 package io.github.mcalgovisualizations.visualization.algorithms.sorting;
 
-import io.github.mcalgovisualizations.visualization.algorithms.HistorySnapshot;
-import io.github.mcalgovisualizations.visualization.algorithms.ISnapshot;
-import io.github.mcalgovisualizations.visualization.algorithms.IAlgorithmStepper;
-import io.github.mcalgovisualizations.visualization.algorithms.events.*;
-import io.github.mcalgovisualizations.visualization.models.IntList;
-import org.jspecify.annotations.Nullable;
+import io.github.mcalgovisualizations.visualization.algorithms.*;
+import io.github.mcalgovisualizations.visualization.algorithms.events.Complete;
+import io.github.mcalgovisualizations.visualization.models.Data;
+import io.github.mcalgovisualizations.visualization.models.SortingCollection;
 
 import java.util.ArrayList;
 
 
 // TODO: remove insertion sort from AlgorithmStepper
-public class AlgorithmStepper implements IAlgorithmStepper {
+public class AlgorithmStepper<T extends Comparable<T>> implements IAlgorithmStepper {
     private final ArrayList<HistorySnapshot> history = new ArrayList<>();
     private int historyPointer = 0;
-    private final IntList model;
     private final SortingState state = new SortingState();
-    private boolean ALGORITHM_COMPLETE = false;
+    private HistorySnapshot firstSnapshot;
+    //private boolean ALGORITHM_COMPLETE = false;
 
-    public AlgorithmStepper(IntList model) {
-        this.model = model;
+    private final SortingCollection<T> collection;
+    private final IPlayerSort algorithm;
+
+    public AlgorithmStepper(IPlayerSort algorithm, SortingCollection<T> collection) {
+        this.algorithm = algorithm;
+        this.collection = collection;
     }
 
-    public ISnapshot onStart() {
-        state.addEvent(new Message("Starting Insertion Sort", Message.MessageType.INFO));
-        history.add(getHistorySnapshot());
-        return history.get(historyPointer);
+    @SuppressWarnings("unchecked")
+    public ISnapshot<T> onStart() {
+        final var values = collection.data().toArray(Data[]::new);
+        final var events = new ArrayList<>(collection.events());
+
+
+        algorithm.sort(collection);
+        // make sure to send a message that the algorithm is complete
+        events.add(new Complete(values.length));
+
+        var firstSnapshot = new HistorySnapshot<T>(
+                values,
+                null,
+                state.highlights(),
+                state.currentIndex(),
+                state.compareIndex()
+
+        );
+
+
+
+        this.firstSnapshot = firstSnapshot;
+        history.add(firstSnapshot);
+        return firstSnapshot;
     }
 
     @Override
-    public ISnapshot step() {
+    @SuppressWarnings("unchecked")
+    public ISnapshot<T> step() {
+
         // Check if step is old
         if ((historyPointer + 1) < history.size()) {
             historyPointer++;
             return history.get(historyPointer);
         }
 
-        // Check if done
-        if (ALGORITHM_COMPLETE) {
-            state.addEvent(new Complete());
-            return history.get(historyPointer);
-        }
 
-        // calc next step
-        state.beginStep();
-        if (state.currentIndex() >= model.length()) {
-            ALGORITHM_COMPLETE = true;
-            state.addEvent(new Message("Sorting complete!", Message.MessageType.SUCCESS));
-            state.addEvent(new Complete());
-            history.add(getHistorySnapshot());
-            historyPointer++;
-            return history.get(historyPointer);
-        }
+//        // Check if done
+//        if (ALGORITHM_COMPLETE) {
+//            state.addEvent(new Complete());
+//            return history.get(historyPointer);
+//        }
 
         if (state.compareIndex() == -1) {
             state.setCompareIndex(state.currentIndex());
-        }
-
-        int j = state.compareIndex();
-        if (j > 0) {
-            state.addEvent(new Message("Comparing indices " + j + " and " + (j - 1), Message.MessageType.INFO));
-
-            if (model.data()[j - 1] > model.data()[j]) {
-                model.swap(j, j - 1);
-                state.addEvent(new Swap(j - 1, j));
-                state.addEvent(new Message("Swapped " + j + " and " + (j - 1), Message.MessageType.INFO));
-                state.setCompareIndex(j - 1);
-            } else {
-                state.addEvent(new Message("Element in correct position", Message.MessageType.SUCCESS));
-                state.incrementCurrentIndex();
-                state.setCompareIndex(-1);
-            }
-        } else {
-            state.incrementCurrentIndex();
-            state.setCompareIndex(-1);
         }
 
         history.add(getHistorySnapshot());
@@ -82,45 +77,26 @@ public class AlgorithmStepper implements IAlgorithmStepper {
     }
 
     @Override
-    public @Nullable ISnapshot back() {
+    @SuppressWarnings("unchecked")
+    public HistorySnapshot<T> back() {
         if ((historyPointer - 1) < 0) return null;
         historyPointer--;
         return history.get(historyPointer);
     }
 
-    private HistorySnapshot getHistorySnapshot() {
-        return new HistorySnapshot(
-                model.toArray(),
+    private HistorySnapshot<T> getHistorySnapshot() {
+        final var events = new ArrayList<>(collection.events());
+        events.add(new Complete(collection.data().size()));
+
+        return new HistorySnapshot<>(
+                null, // only used for onStart()
+                events,
                 state.highlights(),
-                state.events(),
                 state.currentIndex(),
-                state.compareIndex(),
-                ALGORITHM_COMPLETE
+                state.compareIndex()
         );
     }
 
-    @Override
-    public ISnapshot randomize() {
-        // Fisher–Yates shuffle
-        int[] data = model.data();
-
-        for (int i = data.length - 1; i > 0; i--) {
-            int j = (int) (Math.random() * (i + 1));
-
-            int temp = data[i];
-            data[i] = data[j];
-            data[j] = temp;
-        }
-
-        state.reset();
-        ALGORITHM_COMPLETE = false;
-
-        history.clear();
-        history.add(getHistorySnapshot());
-        historyPointer = 0;
-        return history.get(historyPointer);
-    }
 
 
-    public boolean isDone() { return ALGORITHM_COMPLETE; }
 }

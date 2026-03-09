@@ -1,17 +1,12 @@
 package io.github.mcalgovisualizations.visualization;
 
 
-import io.github.mcalgovisualizations.visualization.algorithms.IAlgorithmStepper;
-
-import io.github.mcalgovisualizations.visualization.algorithms.StepperFactory;
+import io.github.mcalgovisualizations.visualization.algorithms.IPlayerSort;
 import io.github.mcalgovisualizations.visualization.engine.VisualizationController;
-import io.github.mcalgovisualizations.visualization.models.IDataModel;
-import io.github.mcalgovisualizations.visualization.models.IntList;
+import io.github.mcalgovisualizations.visualization.models.Data;
+import io.github.mcalgovisualizations.visualization.models.SortingCollection;
 import io.github.mcalgovisualizations.visualization.ui.AlgorithmUI;
 import io.github.mcalgovisualizations.visualization.ui.IAlgorithmUI;
-
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
@@ -22,19 +17,25 @@ import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.item.ItemStack;
 
 import java.util.HashMap;
-
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.Supplier;
 
 import static io.github.mcalgovisualizations.visualization.Tags.*;
 
 
 public class AlgoCraft {
+
+    private record AlgorithmEntry(IPlayerSort algorithm, SortingCollection<?> collection) {
+    }
+
     private IAlgorithmUI ui = new AlgorithmUI();
 
-    private final Map<String , Class<? extends IAlgorithmStepper>> algorithms = new HashMap<>();
-    private final VisualizationManager visualizationManager = new VisualizationManager();
+    public final VisualizationManager visualizationManager = new VisualizationManager();
 
     private final InstanceContainer instanceContainer;
+
     public AlgoCraft(InstanceContainer instanceContainer) {
         this.instanceContainer = instanceContainer;
     }
@@ -53,7 +54,7 @@ public class AlgoCraft {
             if (itemStack.hasTag(ALGO_INTERACTION_TAG))
                 switch (itemStack.getTag(ALGO_INTERACTION_TAG)) {
                     case RANDOMIZE -> vis.randomize();
-                    case START -> vis.start(player);
+                    case START -> vis.start();
                     case STOP -> vis.stop();
                     case FORWARD -> vis.step();
                     case BACKWARD -> vis.back();
@@ -61,16 +62,18 @@ public class AlgoCraft {
         });
     }
 
-    public void registerAlgorithm(String id, Class<? extends IDataModel> modelType, Class<? extends IAlgorithmStepper> algorithm) {
-        this.algorithms.put(id, algorithm);
-        StepperFactory.register(id, modelType, (model) -> {
-            try {
-                return algorithm.getDeclaredConstructor(IntList.class).newInstance(model);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        });
+    private final Map<String, AlgorithmEntry> algorithms = new HashMap<>();
+
+    public <T extends Comparable<T>> void registerAlgorithm(
+            String id,
+            Supplier<? extends IPlayerSort> ctor,
+            List<Data<T>> lst
+    ) {
+        Objects.requireNonNull(id, "id");
+        Objects.requireNonNull(ctor, "ctor");
+
+        algorithms.put(id, new AlgorithmEntry(ctor.get(), new SortingCollection<>(lst)));
+
     }
 
     public void defineWorkArea(String algorithmType, Pos pos) {
@@ -106,7 +109,7 @@ public class AlgoCraft {
                 var algo_id = clickedItem.getTag(ALGO_ID_TAG);
                 if (algo_id == null) continue;
                 if (algo_id.equals(algorithm)) {
-                    visualizationManager.assignVisualization(player, algo_id, instanceContainer);
+                    visualizationManager.assignVisualization(player, algo_id, instanceContainer, algorithms.get(algorithm).collection, algorithms.get(algorithm).algorithm);
                     ui.applyRunningLayout(player);
                     player.closeInventory();
                     return;
@@ -115,4 +118,5 @@ public class AlgoCraft {
         });
         player.openInventory(inventory);
     }
-} 
+
+}

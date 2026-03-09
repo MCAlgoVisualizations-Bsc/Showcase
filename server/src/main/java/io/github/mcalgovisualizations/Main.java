@@ -1,11 +1,14 @@
 package io.github.mcalgovisualizations;
 
+import io.github.mcalgovisualizations.algorithms.PlayerInsertion;
 import io.github.mcalgovisualizations.commands.*;
+import io.github.mcalgovisualizations.gui.AlgorithmUIGUI;
 import io.github.mcalgovisualizations.items.VisualizationItems;
 import io.github.mcalgovisualizations.visualization.AlgoCraft;
 import io.github.mcalgovisualizations.visualization.VisualizationManager;
-import io.github.mcalgovisualizations.visualization.algorithms.sorting.AlgorithmStepper;
-import io.github.mcalgovisualizations.visualization.models.IntList;
+import io.github.mcalgovisualizations.visualization.engine.VisualizationController;
+import io.github.mcalgovisualizations.visualization.models.Data;
+import io.github.mcalgovisualizations.visualization.models.SortingCollection;
 import io.github.mcalgovisualizations.visualization.renderer.handlers.SystemMessages;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.command.CommandManager;
@@ -14,14 +17,22 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
 import net.minestom.server.event.player.PlayerDisconnectEvent;
 import net.minestom.server.event.player.PlayerSpawnEvent;
+import net.minestom.server.event.player.PlayerUseItemEvent;
 import net.minestom.server.instance.InstanceContainer;
+import net.minestom.server.item.Material;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import static io.github.mcalgovisualizations.config.WorldConfig.createMainInstance;
 
 
 public final class Main {
     private static AlgoCraft algo = null;
 
-    public static void main(String[] args) {
+    static void main(String[] args) {
         MinecraftServer server = MinecraftServer.init();
 
         InstanceContainer instance = createMainInstance();
@@ -30,24 +41,55 @@ public final class Main {
         instance.setTimeRate(0);  // Stops time
         instance.setTime(6000);   // Sets time to noon
 
+
+
         algo = new AlgoCraft(instance);
 
-        algo.registerAlgorithm("Insertion Sort", IntList.class, AlgorithmStepper.class);
+        var integerCollection1 = new ArrayList<>(Arrays.asList(
+                new Data<>(3),
+                new Data<>(7),
+                new Data<>(8),
+                new Data<>(1),
+                new Data<>(6),
+                new Data<>(4),
+                new Data<>(9),
+                new Data<>(5),
+                new Data<>(2)
+        ));
+
+        var integerCollection2 = new ArrayList<>(Arrays.asList(
+                new Data<>(8),
+                new Data<>(3),
+                new Data<>(1)
+        ));
+
+        var stringCollection1 = new ArrayList<>(Arrays.asList(
+                new Data<>("a"),
+                new Data<>("b"),
+                new Data<>("k"),
+                new Data<>("x"),
+                new Data<>("d"),
+                new Data<>("h"),
+                new Data<>("a"),
+                new Data<>("b"),
+                new Data<>("e")
+        ));
+
+        algo.registerAlgorithm("insertion sort", PlayerInsertion::new, stringCollection1);
+        algo.registerAlgorithm("insertion sort123", PlayerInsertion::new, stringCollection1);
         algo.addListeners(MinecraftServer.getGlobalEventHandler());
+        // TODO : I cannot add multiple insertion sorts at in the instance, with different collections.
 
-        //VisualizationManager.addVisualization("insertionsort", InsertionSortVisualization.class);
-        //VisualizationManager.addVisualization("bfs", BFSVisualization.class);
-
-        registerListeners(instance);
-        registerCommands(MinecraftServer.getCommandManager());
 
         // Register visualization control listeners (item interactions)
-        // io.github.mcalgovisualizations.listeners.VisualizationControls.register(MinecraftServer.getGlobalEventHandler(), instance);
+        registerListeners(instance);
+        // registerControls(instance, algo.visualizationManager);
+        registerCommands(MinecraftServer.getCommandManager());
 
         server.start("0.0.0.0", 25565);
     }
 
-    private static void registerListeners(InstanceContainer instance) {
+    static void registerListeners(InstanceContainer instance) {
         final var globalEventHandler = MinecraftServer.getGlobalEventHandler();
 
         // Player configuration - set spawn instance and respawn point
@@ -84,7 +126,7 @@ public final class Main {
 
 
 
-    private static void registerCommands(CommandManager cm) {
+    static void registerCommands(CommandManager cm) {
         cm.register(new Greet());
         cm.register(new Teleport());
         cm.register(new Gamemode());
