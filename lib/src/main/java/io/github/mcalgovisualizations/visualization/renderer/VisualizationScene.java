@@ -1,7 +1,8 @@
 package io.github.mcalgovisualizations.visualization.renderer;
 
-import io.github.mcalgovisualizations.visualization.models.Data;
+import io.github.mcalgovisualizations.visualization.renderer.Displays.MobDisplay;
 import io.github.mcalgovisualizations.visualization.renderer.handlers.SystemMessages;
+
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
@@ -38,7 +39,7 @@ public final class VisualizationScene implements ISceneOps {
     }
 
     // Stable identity mapping (slot -> display wrapper/entity)
-    private final Map<Integer, BlockDisplay> displaysBySlot =
+    private final Map<Integer, MobDisplay> displaysBySlot =
             new HashMap<>();
 
     private final Set<Integer> getHighlightedSlots = new HashSet<>();
@@ -60,22 +61,34 @@ public final class VisualizationScene implements ISceneOps {
     public <T extends Comparable<T>> void onStart(LayoutResult<T>[] layoutResults) {
         this.started = true;
 
+        // Rank values 1–10 across the mob ladder regardless of the actual type (Integer, String, etc.)
+        List<T> sorted = Arrays.stream(layoutResults)
+                .map(r -> r.value().value())
+                .distinct()
+                .sorted()
+                .toList();
+        int uniqueCount = sorted.size();
+
         for(int i = 0; i < layoutResults.length; i++) {
             var pos = layoutResults[i].pos();
-            var block = net.minestom.server.instance.block.Block.GRANITE;
             var value = layoutResults[i].value();
 
+            int rank0 = sorted.indexOf(value.value());
+            int mobValue = Math.clamp(
+                    (int) Math.round((rank0 / (double) Math.max(uniqueCount - 1, 1)) * 9) + 1,
+                    1, 10
+            );
+
             // TODO : Move the creation of IDisplayValue somewhere else
-            var dv = new BlockDisplay(instance, pos, block, value.value().toString());
+            var dv = new MobDisplay(instance, pos, mobValue, value.value().toString());
 
             displaysBySlot.put(i, dv);
 
             dv.setInstance();
-            dv.teleport(pos);
         }
 
         // Create hologram floating 6 blocks above the origin
-        hologram = new HologramDisplay(instance, origin.add(10, 5, 0));
+        hologram = new HologramDisplay(instance, origin.add(8, 5, 0));
 
         // Add viewers after all displays have been created
         displaysBySlot.values().forEach(display -> viewers.forEach(display::addViewer));
@@ -199,7 +212,7 @@ public final class VisualizationScene implements ISceneOps {
     // Internals
     // -------------------------
 
-    private BlockDisplay requireDisplay(int slot) {
+    private MobDisplay requireDisplay(int slot) {
         var display = displaysBySlot.get(slot);
         if (display == null) {
             throw new IllegalStateException("No display for slot " + slot + ".");
@@ -207,7 +220,7 @@ public final class VisualizationScene implements ISceneOps {
         return display;
     }
 
-    private void safeRemove(BlockDisplay display) {
+    private void safeRemove(MobDisplay display) {
         if (display == null) return;
         try {
             display.remove();
