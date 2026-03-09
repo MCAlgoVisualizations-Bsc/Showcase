@@ -18,5 +18,6 @@ public record Message(String message, MessageType type) implements IAlgorithmEve
         public NamedTextColor color() {
             return color;
         }
+
     }
 }

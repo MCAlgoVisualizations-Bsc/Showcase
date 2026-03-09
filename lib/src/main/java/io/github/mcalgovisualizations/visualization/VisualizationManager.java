@@ -41,11 +41,11 @@ public class VisualizationManager {
      * @param type     The type of visualization (e.g., "sorting", "insertionsort")
      * @param instance The game instance
      */
-    public <T extends Comparable<T>> void assignVisualization(
+    public void assignVisualization(
             Player player,
             String type, // Todo - fix this so that it's not a string and either determined by the lib or the user.
             InstanceContainer instance,
-            SortingCollection<T> collection,
+            SortingCollection<?> collection,
             IPlayerSort playerAlgorithm
     ) {
         // Clean up existing visualization
