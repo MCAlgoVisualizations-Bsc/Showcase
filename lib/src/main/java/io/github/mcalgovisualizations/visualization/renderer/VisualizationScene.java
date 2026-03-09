@@ -80,7 +80,7 @@ public final class VisualizationScene implements ISceneOps {
             );
 
             // TODO : Move the creation of IDisplayValue somewhere else
-            var dv = new MobDisplay(instance, pos, mobValue, value.value().toString());
+            var dv = new MobDisplay(instance, pos, mobValue, value.toString());
 
             displaysBySlot.put(i, dv);
 
