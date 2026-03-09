@@ -2,99 +2,64 @@ package io.github.mcalgovisualizations.visualization.algorithms.sorting;
 
 import io.github.mcalgovisualizations.visualization.algorithms.*;
 import io.github.mcalgovisualizations.visualization.algorithms.events.Complete;
+import io.github.mcalgovisualizations.visualization.algorithms.events.IAlgorithmEvent;
+import io.github.mcalgovisualizations.visualization.algorithms.events.NoOp;
 import io.github.mcalgovisualizations.visualization.models.Data;
 import io.github.mcalgovisualizations.visualization.models.SortingCollection;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 // TODO: remove insertion sort from AlgorithmStepper
-public class AlgorithmStepper<T extends Comparable<T>> implements IAlgorithmStepper {
-    private final ArrayList<HistorySnapshot> history = new ArrayList<>();
-    private int historyPointer = 0;
-    private final SortingState state = new SortingState();
-    private HistorySnapshot firstSnapshot;
-    //private boolean ALGORITHM_COMPLETE = false;
+public class AlgorithmStepper<T extends Comparable<T>> {
 
+    private final ArrayList<IAlgorithmEvent> history = new ArrayList<>();
     private final SortingCollection<T> collection;
     private final IPlayerSort algorithm;
+
+    private int historyPointer = 0;
 
     public AlgorithmStepper(IPlayerSort algorithm, SortingCollection<T> collection) {
         this.algorithm = algorithm;
         this.collection = collection;
     }
 
-    @SuppressWarnings("unchecked")
-    public ISnapshot<T> onStart() {
-        final var values = collection.data().toArray(Data[]::new);
-        final var events = new ArrayList<>(collection.events());
-
-
+    /**
+     * Used to start the algorithm, sort the collection and return a copy of the backing collection.
+     * @return a copy of the backing collection.
+     */
+    public List<Data<T>> onStart() {
         algorithm.sort(collection);
-        // make sure to send a message that the algorithm is complete
-        events.add(new Complete(values.length));
+        var parsedEvents = new ArrayList<>(collection.events());
+        parsedEvents.add(new Complete(collection.size()));
 
-        var firstSnapshot = new HistorySnapshot<T>(
-                values,
-                null,
-                state.highlights(),
-                state.currentIndex(),
-                state.compareIndex()
+        this.history.addAll(parsedEvents);
+        this.historyPointer = 0;
 
-        );
-
-        this.firstSnapshot = firstSnapshot;
-        history.add(firstSnapshot);
-        return firstSnapshot;
+        return collection.data();
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public ISnapshot<T> step() {
-
-        // Check if step is old
-        if ((historyPointer + 1) < history.size()) {
-            historyPointer++;
-            return history.get(historyPointer);
-        }
-
-
-//        // Check if done
-//        if (ALGORITHM_COMPLETE) {
-//            state.addEvent(new Complete());
-//            return history.get(historyPointer);
-//        }
-
-        if (state.compareIndex() == -1) {
-            state.setCompareIndex(state.currentIndex());
-        }
-
-        history.add(getHistorySnapshot());
+    public IAlgorithmEvent step() {
+        // check for empty history?
+        if(history.isEmpty()) return new NoOp();
+        // check if we are already at the end of the history
+        if(historyPointer + 1 >= history.size()) return history.getLast();
         historyPointer++;
         return history.get(historyPointer);
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public HistorySnapshot<T> back() {
-        if ((historyPointer - 1) < 0) return null;
-        historyPointer--;
+    public IAlgorithmEvent back() {
+        // check for empty history?
+        if(history.isEmpty()) return new NoOp();
+        // check if we are already at the beginning of the history
+        if ((historyPointer - 1) < 0) return new NoOp();
+        this.historyPointer--;
         return history.get(historyPointer);
     }
 
-    private HistorySnapshot<T> getHistorySnapshot() {
-        final var events = new ArrayList<>(collection.events());
-        events.add(new Complete(collection.data().size()));
-
-        return new HistorySnapshot<>(
-                null, // only used for onStart()
-                events,
-                state.highlights(),
-                state.currentIndex(),
-                state.compareIndex()
-        );
+    public void cleanUp() {
+        history.clear();
+        historyPointer = 0;
     }
-
-
-
 }

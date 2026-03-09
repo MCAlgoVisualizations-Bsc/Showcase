@@ -4,6 +4,8 @@ import io.github.mcalgovisualizations.visualization.models.Data;
 import io.github.mcalgovisualizations.visualization.renderer.LayoutResult;
 import net.minestom.server.coordinate.Pos;
 
+import java.util.List;
+
 /**
  * A {@link ILayout} implementation that arranges elements in a straight
  * horizontal line along the positive X-axis.
@@ -53,12 +55,12 @@ public record FloatingLinearLayout(
      */
     @SuppressWarnings("unchecked")
     @Override
-    public <T extends Comparable<T>> LayoutResult<T>[] compute(Data<T>[] model, Pos origin) {
-        if(model == null || model.length == 0) {
+    public <T extends Comparable<T>> LayoutResult<T>[] compute(List<Data<T>> model, Pos origin) {
+        if(model == null || model.isEmpty()) {
             return new LayoutResult[0];
         }
 
-        final var size = model.length;
+        final var size = model.size();
         final var out = new LayoutResult[size];
 
         final double y = origin.y() + yOffset;
@@ -68,7 +70,7 @@ public record FloatingLinearLayout(
             final double x = origin.x() + (i * spacing);
             final var pos = new Pos(x, y, z);
 
-            out[i] = new LayoutResult<>(model[i], pos);
+            out[i] = new LayoutResult<>(model.get(i), pos);
         }
 
         return out;

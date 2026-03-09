@@ -1,7 +1,7 @@
 package io.github.mcalgovisualizations.visualization.renderer.dispatch;
 
 import io.github.mcalgovisualizations.visualization.algorithms.events.IAlgorithmEvent;
-import io.github.mcalgovisualizations.visualization.renderer.RenderContext;
+import io.github.mcalgovisualizations.visualization.renderer.ISceneOps;
 import io.github.mcalgovisualizations.visualization.renderer.handlers.IAnimationHandler;
 
 import java.util.HashMap;
@@ -18,22 +18,21 @@ public final class Dispatcher {
         handlers.put(eventType, handler);
     }
 
-    public AnimationPlan dispatch(IAlgorithmEvent event, RenderContext ctx) {
+    public AnimationPlan dispatch(IAlgorithmEvent event, ISceneOps sceneOps) {
         Objects.requireNonNull(event, "event");
-        Objects.requireNonNull(ctx, "ctx");
 
         var handler = handlers.get(event.getClass());
 
-        return invokeUnchecked(handler, event, ctx);
+        return invokeUnchecked(handler, event, sceneOps);
     }
 
     @SuppressWarnings("unchecked")
     private static <E extends IAlgorithmEvent> AnimationPlan invokeUnchecked(
             IAnimationHandler<?> raw,
             IAlgorithmEvent event,
-            RenderContext ctx
+            ISceneOps sceneOps
     ) {
-        return ((IAnimationHandler<E>) raw).handle((E) event, ctx);
+        return ((IAnimationHandler<E>) raw).handle((E) event, sceneOps);
     }
 }
 

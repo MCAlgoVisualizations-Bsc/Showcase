@@ -37,15 +37,15 @@ public record MatrixLayout (
      * Throws if size exceeds capacity.
      */
     @Override
-    public <T extends Comparable<T>> LayoutResult[] compute(Data<T>[] model, Pos origin) {
+    public <T extends Comparable<T>> LayoutResult<T>[] compute(List<Data<T>> model, Pos origin) {
         return random(model, origin);
     }
 
     /**
      * Randomized (but deterministic per seed) grid positions.
      */
-    public <T extends Comparable<T>> LayoutResult[] random(Data<T>[] model, Pos origin) {
-        final var size = model.length;
+    public <T extends Comparable<T>> LayoutResult<T>[] random(List<Data<T>> model, Pos origin) {
+        final var size = model.size();
         final var random = new Random(seed);
         int capacity = cols * rows;
         if (size > capacity) {

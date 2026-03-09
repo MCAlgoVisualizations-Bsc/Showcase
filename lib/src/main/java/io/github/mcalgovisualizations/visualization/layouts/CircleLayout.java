@@ -4,6 +4,8 @@ import io.github.mcalgovisualizations.visualization.models.Data;
 import io.github.mcalgovisualizations.visualization.renderer.LayoutResult;
 import net.minestom.server.coordinate.Pos;
 
+import java.util.List;
+
 public record CircleLayout(double radius, double yOffset) implements ILayout {
 
     public CircleLayout() {
@@ -14,8 +16,8 @@ public record CircleLayout(double radius, double yOffset) implements ILayout {
     }
 
     @Override
-    public <T extends Comparable<T>> LayoutResult[] compute(Data<T>[] model, Pos origin) {
-        var size = model.length;
+    public <T extends Comparable<T>> LayoutResult[] compute(List<Data<T>> model, Pos origin) {
+        var size = model.size();
         var out = new LayoutResult[size];
 
         double y = origin.y() + yOffset;
@@ -23,7 +25,7 @@ public record CircleLayout(double radius, double yOffset) implements ILayout {
         if (size == 0) return new LayoutResult[0];
 
         if (size == 1) {
-            out[0] = new LayoutResult<>(model[0], origin);
+            out[0] = new LayoutResult<>(model.getFirst(), origin);
             return out;
         }
 
@@ -32,7 +34,7 @@ public record CircleLayout(double radius, double yOffset) implements ILayout {
             double x = origin.x() + (Math.cos(angle) * radius);
             double z = origin.z() + (Math.sin(angle) * radius);
             final var pos = new Pos(x, y, z);
-            out[i] = new LayoutResult<>(model[i], pos);
+            out[i] = new LayoutResult<>(model.get(i), pos);
         }
 
         return out;

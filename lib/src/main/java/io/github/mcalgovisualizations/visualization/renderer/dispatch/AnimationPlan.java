@@ -10,19 +10,16 @@ import java.util.function.Consumer;
 
 public final class AnimationPlan {
 
-    public static final class Step {
-        private final int ticks; // how long to wait AFTER running the op (can be 0)
-        private final Consumer<ISceneOps> op;
-
-        Step(int ticks, Consumer<ISceneOps> op) {
-            if (ticks < 0) throw new IllegalArgumentException("ticks must be >= 0");
-            this.ticks = ticks;
-            this.op = Objects.requireNonNull(op, "op");
+    /**
+     * @param ticks how long to wait AFTER running the op (can be 0)
+     */
+    public record Step(int ticks, Consumer<ISceneOps> op) {
+            public Step(int ticks, Consumer<ISceneOps> op) {
+                if (ticks < 0) throw new IllegalArgumentException("ticks must be >= 0");
+                this.ticks = ticks;
+                this.op = Objects.requireNonNull(op, "op");
+            }
         }
-
-        public int ticks() { return ticks; }
-        public Consumer<ISceneOps> op() { return op; }
-    }
 
     private final List<Step> steps;
 
@@ -31,7 +28,7 @@ public final class AnimationPlan {
     }
 
     public List<Step> steps() {
-        return Collections.unmodifiableList(steps);
+        return steps;
     }
 
     public boolean isEmpty() {

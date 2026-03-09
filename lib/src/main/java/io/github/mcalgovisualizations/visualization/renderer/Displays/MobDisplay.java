@@ -58,7 +58,6 @@ public class MobDisplay implements IDisplayValue {
 
         this.mobEntity = new EntityCreature(mobTypeForValue(value));
         this.mobEntity.setNoGravity(true);
-
         this.textEntity = new Entity(EntityType.TEXT_DISPLAY);
         setupText(text);
     }
@@ -92,6 +91,7 @@ public class MobDisplay implements IDisplayValue {
     public void addViewer(Player player) {
         mobEntity.addViewer(player);
         textEntity.addViewer(player);
+        mobEntity.lookAt(player);
     }
 
     @Override

@@ -22,22 +22,19 @@ import java.util.List;
  */
 public class VisualizationController {
 
+    private final AlgorithmStepper stepper;
     private final VisualizationRenderer renderer;
-
-    IPlayerSort algorithm;
-    SortingCollection<?> collection;
 
     private int ticksPerStep = 20;
     private boolean IS_RUNNING = false;
     private Task runningTask = null;
 
-    public <T extends Comparable<T>> VisualizationController(
+    public VisualizationController(
             IPlayerSort algorithm,
             VisualizationRenderer renderer,
-            SortingCollection<T> collection
+            SortingCollection<?> collection
     ) {
-        this.algorithm = algorithm;
-        this.collection = collection;
+        this.stepper = new AlgorithmStepper(algorithm, collection);
         this.renderer = renderer;
     }
 
@@ -46,17 +43,17 @@ public class VisualizationController {
     }
 
     public void onStart() {
-        //var snapshot = stepper.onStart();
-        //renderer.onStart(snapshot);
-        var values = collection.data().toArray(Data[]::new);
+        var event = stepper.onStart();
+        renderer.onStart(event);
+        //var values = collection.data().toArray(Data[]::new);
 
         // we just need to display the initial values
-        var snapshot = new HistorySnapshot<>(
-                values,
-                null
-        );
+//        var snapshot = new HistorySnapshot<>(
+//                values,
+//                null
+//        );
 
-        renderer.onStart(snapshot);
+        // renderer.onStart(snapshot);
     }
 
     public void start() {
@@ -79,15 +76,13 @@ public class VisualizationController {
     }
 
     public void step() {
-
-        renderer.render(snapshot);
+        final var event = stepper.step();
+        renderer.render(event);
     }
 
     public void back() {
-        final var snapshot = (HistorySnapshot<?>) stepper.back();
-
-        renderer.render(snapshot);
-
+        final var event = stepper.back();
+        renderer.render(event);
     }
 
     public void setSpeed(int ticksPerStep) {

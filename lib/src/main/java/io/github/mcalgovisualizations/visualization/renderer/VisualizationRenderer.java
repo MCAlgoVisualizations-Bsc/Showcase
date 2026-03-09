@@ -3,6 +3,7 @@ package io.github.mcalgovisualizations.visualization.renderer;
 import io.github.mcalgovisualizations.visualization.algorithms.ISnapshot;
 import io.github.mcalgovisualizations.visualization.algorithms.events.*;
 import io.github.mcalgovisualizations.visualization.layouts.ILayout;
+import io.github.mcalgovisualizations.visualization.models.Data;
 import io.github.mcalgovisualizations.visualization.renderer.dispatch.Dispatcher;
 import io.github.mcalgovisualizations.visualization.renderer.handlers.*;
 import net.kyori.adventure.audience.Audience;
@@ -10,8 +11,7 @@ import net.minestom.server.coordinate.Pos;
 import net.minestom.server.instance.Instance;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.List;
 
 public final class VisualizationRenderer {
 
@@ -34,8 +34,7 @@ public final class VisualizationRenderer {
         this.executor = new Executor(scene);
     }
 
-    @SuppressWarnings("unchecked")
-    public void onStart(ISnapshot<?> snapshot) {
+    public <T extends Comparable<T>> void onStart(List<Data<T>> initialData) {
         if (started) return;
         started = true;
         dispatcher.register(Compare.class, new CompareHandler());
@@ -44,7 +43,7 @@ public final class VisualizationRenderer {
         dispatcher.register(Message.class, new MessageHandler());
         dispatcher.register(Validate.class, new ValidateHandler());
 
-        final var layoutResult = this.layout.compute(snapshot.values(), origin);
+        final var layoutResult = this.layout.compute(initialData, origin);
         scene.onStart(layoutResult);
     }
 
@@ -58,31 +57,16 @@ public final class VisualizationRenderer {
 
     }
 
-    public void render(ISnapshot<?> snapshot) {
-        Objects.requireNonNull(snapshot, "snapshot");
-        if (snapshot.events().isEmpty()) return;
+    public void render(IAlgorithmEvent event) {
 
-        final var events = snapshot.events();
+        final var plan = dispatcher.dispatch(event, scene);
 
-        final var ctx = new RenderContext(scene, events);
-
-        for (final var e : events) {
-            final var plan = dispatcher.dispatch(e, ctx);
-            executor.add(plan);
-        }
+        executor.add(plan);
         executor.startIfIdle();
     }
 
     public boolean isIdle() {
         return true;
-    }
-
-    @SuppressWarnings("unchecked")
-    public void hardReset(ISnapshot<?> snapshot) {
-        executor.onCleanup();
-        scene.cleanUp();
-        final var layoutResult = this.layout.compute(snapshot.values(), origin);
-        scene.onStart(layoutResult);
     }
 
     /**
