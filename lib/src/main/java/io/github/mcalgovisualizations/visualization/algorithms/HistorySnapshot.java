@@ -9,10 +9,7 @@ import java.util.List;
 
 public record HistorySnapshot<T extends Comparable<T>>(
         @Nullable Data<T>[] values,
-        @Nullable List<IAlgorithmEvent> events,
-        int[] highlights,
-        int currentIndex,
-        int compareIndex
+        @Nullable List<IAlgorithmEvent> events
 ) implements ISnapshot<T> {
     @SuppressWarnings("unchecked")
     public Data<T>[] values() { return values == null ? new Data[0] : values; }

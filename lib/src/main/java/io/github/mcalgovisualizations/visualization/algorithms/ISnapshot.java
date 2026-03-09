@@ -8,6 +8,5 @@ import java.util.List;
 
 public interface ISnapshot<T extends Comparable<T>> {
     Data<T>[] values();
-    int[] highlights();
     List<IAlgorithmEvent> events();
 }

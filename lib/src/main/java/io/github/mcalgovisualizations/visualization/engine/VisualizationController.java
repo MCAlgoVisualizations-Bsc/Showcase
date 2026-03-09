@@ -3,7 +3,10 @@ package io.github.mcalgovisualizations.visualization.engine;
 import io.github.mcalgovisualizations.visualization.algorithms.HistorySnapshot;
 import io.github.mcalgovisualizations.visualization.algorithms.IAlgorithmStepper;
 import io.github.mcalgovisualizations.visualization.algorithms.IPlayerSort;
+import io.github.mcalgovisualizations.visualization.algorithms.events.Complete;
 import io.github.mcalgovisualizations.visualization.algorithms.sorting.AlgorithmStepper;
+import io.github.mcalgovisualizations.visualization.models.Data;
+import io.github.mcalgovisualizations.visualization.models.ISort;
 import io.github.mcalgovisualizations.visualization.models.SortingCollection;
 import io.github.mcalgovisualizations.visualization.renderer.VisualizationRenderer;
 import net.kyori.adventure.audience.Audience;
@@ -11,14 +14,18 @@ import net.minestom.server.MinecraftServer;
 import net.minestom.server.timer.Task;
 
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * A controller of time so forwards, back, adjusting speed belongs here.
  */
 public class VisualizationController {
 
-    private final IAlgorithmStepper stepper;
     private final VisualizationRenderer renderer;
+
+    IPlayerSort algorithm;
+    SortingCollection<?> collection;
 
     private int ticksPerStep = 20;
     private boolean IS_RUNNING = false;
@@ -29,7 +36,8 @@ public class VisualizationController {
             VisualizationRenderer renderer,
             SortingCollection<T> collection
     ) {
-        this.stepper = new AlgorithmStepper<>(algorithm, collection);
+        this.algorithm = algorithm;
+        this.collection = collection;
         this.renderer = renderer;
     }
 
@@ -38,18 +46,22 @@ public class VisualizationController {
     }
 
     public void onStart() {
-        var snapshot = stepper.onStart();
+        //var snapshot = stepper.onStart();
+        //renderer.onStart(snapshot);
+        var values = collection.data().toArray(Data[]::new);
+
+        // we just need to display the initial values
+        var snapshot = new HistorySnapshot<>(
+                values,
+                null
+        );
+
         renderer.onStart(snapshot);
     }
 
     public void start() {
         if(IS_RUNNING) return;
         IS_RUNNING = true;
-
-//        if (stepper.isDone()) {
-//            SystemMessages.sendTo(audience, SystemMessages.ALGORITHM_COMPLETE);
-//            return;
-//        }
 
         runningTask = MinecraftServer.getSchedulerManager()
                 .buildTask(this::step)
@@ -67,7 +79,7 @@ public class VisualizationController {
     }
 
     public void step() {
-        final var snapshot = (HistorySnapshot<?>) stepper.step();
+
         renderer.render(snapshot);
     }
 

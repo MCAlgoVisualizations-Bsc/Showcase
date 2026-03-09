@@ -43,8 +43,6 @@ public class AlgorithmStepper<T extends Comparable<T>> implements IAlgorithmStep
 
         );
 
-
-
         this.firstSnapshot = firstSnapshot;
         history.add(firstSnapshot);
         return firstSnapshot;
