@@ -6,4 +6,5 @@ public enum InteractionType {
     STOP,
     FORWARD,
     BACKWARD,
+    CLEAR,
 }

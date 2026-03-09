@@ -2,8 +2,10 @@ package io.github.mcalgovisualizations.visualization;
 
 import io.github.mcalgovisualizations.visualization.algorithms.IPlayerSort;
 import io.github.mcalgovisualizations.visualization.engine.VisualizationController;
+import io.github.mcalgovisualizations.visualization.layouts.CircleLayout;
 import io.github.mcalgovisualizations.visualization.layouts.FloatingLinearLayout;
 import io.github.mcalgovisualizations.visualization.layouts.ILayout;
+import io.github.mcalgovisualizations.visualization.layouts.MatrixLayout;
 import io.github.mcalgovisualizations.visualization.models.Data;
 import io.github.mcalgovisualizations.visualization.models.SortingCollection;
 import io.github.mcalgovisualizations.visualization.renderer.VisualizationRenderer;

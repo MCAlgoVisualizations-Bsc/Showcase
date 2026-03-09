@@ -2,13 +2,9 @@ package io.github.mcalgovisualizations;
 
 import io.github.mcalgovisualizations.algorithms.PlayerInsertion;
 import io.github.mcalgovisualizations.commands.*;
-import io.github.mcalgovisualizations.gui.AlgorithmUIGUI;
 import io.github.mcalgovisualizations.items.VisualizationItems;
 import io.github.mcalgovisualizations.visualization.AlgoCraft;
-import io.github.mcalgovisualizations.visualization.VisualizationManager;
-import io.github.mcalgovisualizations.visualization.engine.VisualizationController;
 import io.github.mcalgovisualizations.visualization.models.Data;
-import io.github.mcalgovisualizations.visualization.models.SortingCollection;
 import io.github.mcalgovisualizations.visualization.renderer.handlers.SystemMessages;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.command.CommandManager;
@@ -17,14 +13,10 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
 import net.minestom.server.event.player.PlayerDisconnectEvent;
 import net.minestom.server.event.player.PlayerSpawnEvent;
-import net.minestom.server.event.player.PlayerUseItemEvent;
 import net.minestom.server.instance.InstanceContainer;
-import net.minestom.server.item.Material;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import static io.github.mcalgovisualizations.config.WorldConfig.createMainInstance;
 
@@ -34,17 +26,13 @@ public final class Main {
 
     static void main(String[] args) {
         MinecraftServer server = MinecraftServer.init();
-
         InstanceContainer instance = createMainInstance();
 
         // Sets the game time
         instance.setTimeRate(0);  // Stops time
         instance.setTime(6000);   // Sets time to noon
 
-
-
         algo = new AlgoCraft(instance);
-
         var integerCollection1 = new ArrayList<>(Arrays.asList(
                 new Data<>(3),
                 new Data<>(7),
@@ -75,8 +63,9 @@ public final class Main {
                 new Data<>("e")
         ));
 
-        algo.registerAlgorithm("insertion sort", PlayerInsertion::new, stringCollection1);
-        algo.registerAlgorithm("insertion sort123", PlayerInsertion::new, stringCollection1);
+        algo.registerAlgorithm("insertion sort (ints)", PlayerInsertion::new, integerCollection1);
+        algo.registerAlgorithm("small insertion sort (ints)", PlayerInsertion::new, integerCollection2);
+        algo.registerAlgorithm("insertion sort (string)", PlayerInsertion::new, stringCollection1);
         algo.addListeners(MinecraftServer.getGlobalEventHandler());
         // TODO : I cannot add multiple insertion sorts at in the instance, with different collections.
 
@@ -110,7 +99,7 @@ public final class Main {
 
             // Give only the algorithm selector and spawn item by default
             player.getInventory().setItemStack(0, VisualizationItems.algorithmSelectorItem());
-            player.getInventory().setItemStack(8, VisualizationItems.spawnItem());
+            // player.getInventory().setItemStack(8, VisualizationItems.spawnItem());
 
             // Send welcome message
             SystemMessages.sendTo(player, SystemMessages.WELCOME);

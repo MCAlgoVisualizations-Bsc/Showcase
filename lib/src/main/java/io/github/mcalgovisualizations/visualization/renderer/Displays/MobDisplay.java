@@ -38,8 +38,8 @@ public class MobDisplay implements IDisplayValue {
             EntityType.COW,        // 6
             EntityType.HORSE,      // 7
             EntityType.CAMEL,      // 8
-            EntityType.IRON_GOLEM, // 9
-            EntityType.WARDEN,     // 10
+            EntityType.POLAR_BEAR, // 9
+            EntityType.IRON_GOLEM, // 10
     };
 
     private static final double TEXT_Y_OFFSET = 3.5;

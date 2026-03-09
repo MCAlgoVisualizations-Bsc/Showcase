@@ -34,20 +34,6 @@ public class AlgorithmUI implements IAlgorithmUI {
             i++;
         }
 
-        /*
-        ItemStack clearItem = ItemStack.builder(Material.BARRIER)
-                .customName(Component.text("Clear Visualization", NamedTextColor.RED)
-                        .decoration(TextDecoration.ITALIC, false))
-                .lore(
-                        Component.text("Remove current visualization", NamedTextColor.GRAY)
-                                .decoration(TextDecoration.ITALIC, false),
-                        Component.text("and clear your hotbar.", NamedTextColor.GRAY)
-                                .decoration(TextDecoration.ITALIC, false)
-                ).set(ALGO_INTERACTION_TAG, "clear")
-                .build();
-        inventory.setItemStack(26, clearItem);
-        */
-
         return inventory;
     }
 
@@ -85,6 +71,31 @@ public class AlgorithmUI implements IAlgorithmUI {
                         .customName(Component.text("Step Back"))
                         .set(ALGO_INTERACTION_TAG, InteractionType.BACKWARD)
                         .build()
+        );
+        inv.setItemStack(8,
+                ItemStack.builder(Material.BARRIER)
+                        .customName(Component.text("Clear Algorithm"))
+                        .set(ALGO_INTERACTION_TAG, InteractionType.CLEAR)
+                        .build()
+        );
+    }
+
+    @Override
+    public void applyDefaultLayout(Player player) {
+        PlayerInventory inv = player.getInventory();
+        inv.clear();
+
+        inv.setItemStack(0, ItemStack.builder(Material.NETHER_STAR)
+                .customName(Component.text("Algorithm Selector", NamedTextColor.LIGHT_PURPLE)
+                        .decoration(TextDecoration.ITALIC, false)
+                        .decoration(TextDecoration.BOLD, true))
+                .lore(
+                        Component.text("Right-click to open the", NamedTextColor.GRAY)
+                                .decoration(TextDecoration.ITALIC, false),
+                        Component.text("algorithm selection menu", NamedTextColor.GRAY)
+                                .decoration(TextDecoration.ITALIC, false)
+                ).set(ALGO_SELECTOR_TAG, true)
+                .build()
         );
     }
 }

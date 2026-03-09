@@ -58,6 +58,10 @@ public class AlgoCraft {
                     case STOP -> vis.stop();
                     case FORWARD -> vis.step();
                     case BACKWARD -> vis.back();
+                    case CLEAR -> {
+                        ui.applyDefaultLayout(player);
+                        vis.cleanup();
+                    }
                 }
         });
     }
@@ -94,15 +98,6 @@ public class AlgoCraft {
 
             ItemStack clickedItem = event.getClickedItem();
             if (clickedItem.isAir()) return;
-
-            // Handle clear option
-            /*
-            if (clickedItem.getTag(ALGO_INTERACTION_TAG)) {
-                player.closeInventory();
-                player.sendMessage(Component.text("Visualization cleared!", NamedTextColor.YELLOW));
-                return;
-            }
-            */
 
             // Find which algorithm was clicked
             for (String algorithm : algorithms.keySet()) {
