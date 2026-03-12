@@ -16,7 +16,8 @@ public record CircleLayout(double radius, double yOffset) implements ILayout {
     }
 
     @Override
-    public <T extends Comparable<T>> LayoutResult[] compute(List<Data<T>> model, Pos origin) {
+    @SuppressWarnings("unchecked")
+    public <T extends Comparable<T>> LayoutResult<T>[] compute(List<Data<T>> model, Pos origin) {
         var size = model.size();
         var out = new LayoutResult[size];
 
@@ -28,7 +29,7 @@ public record CircleLayout(double radius, double yOffset) implements ILayout {
             out[0] = new LayoutResult<>(model.getFirst(), origin);
             return out;
         }
-
+ 
         for (int i = 0; i < size; i++) {
             double angle = (2.0 * Math.PI * i) / size;
             double x = origin.x() + (Math.cos(angle) * radius);

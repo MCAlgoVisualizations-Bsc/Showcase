@@ -27,7 +27,6 @@ public final class VisualizationRenderer {
             @NotNull Pos origin,
             @NotNull ILayout layout
     ) {
-
         this.scene = new VisualizationScene(instance, origin);
         this.layout = layout;
         this.origin = origin;
@@ -54,13 +53,15 @@ public final class VisualizationRenderer {
     public void onStop() {
         if (!started) return;
         executor.pause();
+    }
 
+    public void onResume() {
+        if (!started) return;
+        executor.resume();
     }
 
     public void render(IAlgorithmEvent event) {
-
         final var plan = dispatcher.dispatch(event, scene);
-
         executor.add(plan);
         executor.startIfIdle();
     }

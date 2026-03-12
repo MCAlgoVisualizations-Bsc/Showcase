@@ -57,9 +57,4 @@ public class AlgorithmStepper<T extends Comparable<T>> {
         this.historyPointer--;
         return history.get(historyPointer);
     }
-
-    public void cleanUp() {
-        history.clear();
-        historyPointer = 0;
-    }
 }
