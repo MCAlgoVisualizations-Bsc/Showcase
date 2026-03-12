@@ -1,128 +1,60 @@
 package io.github.mcalgovisualizations.visualization.algorithms.sorting;
 
-import io.github.mcalgovisualizations.visualization.HistorySnapshot;
-import io.github.mcalgovisualizations.visualization.Snapshot;
-import io.github.mcalgovisualizations.visualization.algorithms.IAlgorithmStepper;
-import io.github.mcalgovisualizations.visualization.algorithms.events.*;
-import io.github.mcalgovisualizations.visualization.models.IntList;
-import org.jspecify.annotations.Nullable;
+import io.github.mcalgovisualizations.visualization.algorithms.*;
+import io.github.mcalgovisualizations.visualization.algorithms.events.Complete;
+import io.github.mcalgovisualizations.visualization.algorithms.events.IAlgorithmEvent;
+import io.github.mcalgovisualizations.visualization.algorithms.events.NoOp;
+import io.github.mcalgovisualizations.visualization.models.Data;
+import io.github.mcalgovisualizations.visualization.models.SortingCollection;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 // TODO: remove insertion sort from AlgorithmStepper
-public class AlgorithmStepper implements IAlgorithmStepper {
-    private final ArrayList<HistorySnapshot> history = new ArrayList<>();
+public class AlgorithmStepper<T extends Comparable<T>> {
+
+    private final ArrayList<IAlgorithmEvent> history = new ArrayList<>();
+    private final SortingCollection<T> collection;
+    private final IPlayerSort algorithm;
+
     private int historyPointer = 0;
-    private final IntList model;
-    private final SortingState state = new SortingState();
-    private boolean ALGORITHM_COMPLETE = false;
 
-    public AlgorithmStepper(IntList model) {
-        this.model = model;
+    public AlgorithmStepper(IPlayerSort algorithm, SortingCollection<T> collection) {
+        this.algorithm = algorithm;
+        this.collection = collection;
     }
 
-    public Snapshot onStart() {
-        state.addEvent(new Message("Starting Insertion Sort", Message.MessageType.INFO));
-        history.add(getHistorySnapshot());
-        return history.get(historyPointer);
+    /**
+     * Used to start the algorithm, sort the collection and return a copy of the backing collection.
+     * @return a copy of the backing collection.
+     */
+    public List<Data<T>> onStart() {
+        algorithm.sort(collection);
+        var parsedEvents = new ArrayList<>(collection.events());
+        parsedEvents.add(new Complete(collection.size()));
+
+        this.history.addAll(parsedEvents);
+        this.historyPointer = 0;
+
+        return collection.data();
     }
 
-    @Override
-    public Snapshot step() {
-        // Check if step is old
-        if ((historyPointer + 1) < history.size()) {
-            historyPointer++;
-            return history.get(historyPointer);
-        }
-
-        // Check if done
-        if (ALGORITHM_COMPLETE) {
-            state.addEvent(new Complete());
-            System.out.println("Done");
-            return history.get(historyPointer);
-        }
-
-        // calc next step
-        state.beginStep();
-        if (state.currentIndex() >= model.size()) {
-            ALGORITHM_COMPLETE = true;
-            state.addEvent(new Message("Sorting complete!", Message.MessageType.SUCCESS));
-            state.addEvent(new Complete());
-            history.add(getHistorySnapshot());
-            historyPointer++;
-            return history.get(historyPointer);
-        }
-
-        if (state.compareIndex() == -1) {
-            state.setCompareIndex(state.currentIndex());
-        }
-
-        int j = state.compareIndex();
-        if (j > 0) {
-            state.addEvent(new Compare(j, j - 1));
-            state.addEvent(new Message("Comparing indices " + j + " and " + (j - 1), Message.MessageType.INFO));
-
-            if (model.data()[j - 1] > model.data()[j]) {
-                model.swap(j, j - 1);
-                state.addEvent(new Swap(j - 1, j));
-                state.addEvent(new Message("Swapped " + j + " and " + (j - 1), Message.MessageType.INFO));
-                state.setCompareIndex(j - 1);
-            } else {
-                state.addEvent(new Message("Element in correct position", Message.MessageType.SUCCESS));
-                state.incrementCurrentIndex();
-                state.setCompareIndex(-1);
-            }
-        } else {
-            state.incrementCurrentIndex();
-            state.setCompareIndex(-1);
-        }
-
-        history.add(getHistorySnapshot());
+    public IAlgorithmEvent step() {
+        // check for empty history?
+        if(history.isEmpty()) return new NoOp();
+        // check if we are already at the end of the history
+        if(historyPointer + 1 >= history.size()) return history.getLast();
         historyPointer++;
         return history.get(historyPointer);
     }
 
-    @Override
-    public @Nullable Snapshot back() {
-        if ((historyPointer - 1) < 0) return null;
-        historyPointer--;
+    public IAlgorithmEvent back() {
+        // check for empty history?
+        if(history.isEmpty()) return new NoOp();
+        // check if we are already at the beginning of the history
+        if ((historyPointer - 1) < 0) return new NoOp();
+        this.historyPointer--;
         return history.get(historyPointer);
     }
-
-    private HistorySnapshot getHistorySnapshot() {
-        return new HistorySnapshot(
-                model.toArray(),
-                state.highlights(),
-                state.events(),
-                state.currentIndex(),
-                state.compareIndex(),
-                ALGORITHM_COMPLETE
-        );
-    }
-
-    @Override
-    public Snapshot randomize() {
-        // Fisher–Yates shuffle
-        int[] data = model.data();
-
-        for (int i = data.length - 1; i > 0; i--) {
-            int j = (int) (Math.random() * (i + 1));
-
-            int temp = data[i];
-            data[i] = data[j];
-            data[j] = temp;
-        }
-
-        state.reset();
-        ALGORITHM_COMPLETE = false;
-
-        history.clear();
-        history.add(getHistorySnapshot());
-        historyPointer = 0;
-        return history.get(historyPointer);
-    }
-
-
-    public boolean isDone() { return ALGORITHM_COMPLETE; }
 }

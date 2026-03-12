@@ -1,13 +1,38 @@
 package io.github.mcalgovisualizations.visualization.renderer.handlers;
 
 import io.github.mcalgovisualizations.visualization.algorithms.events.Compare;
-import io.github.mcalgovisualizations.visualization.renderer.RenderContext;
+import io.github.mcalgovisualizations.visualization.renderer.ISceneOps;
 import io.github.mcalgovisualizations.visualization.renderer.dispatch.AnimationPlan;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 
-public final class CompareHandler implements AnimationHandler<Compare> {
+public final class CompareHandler implements IAnimationHandler<Compare> {
 
     @Override
-    public AnimationPlan handle(Compare event, RenderContext ctx) {
-        return null;
+    public AnimationPlan handle(Compare event, ISceneOps sceneOps) {
+        return AnimationPlan.builder()
+                .step(1, x -> {
+                    sceneOps.showHologram(Component.text(
+                            "⚖ Comparing [" + event.xValue() + "] vs [" + event.yValue() + "]",
+                            NamedTextColor.AQUA));
+                    sceneOps.setHighlighted(event.x(), true);
+                    sceneOps.setHighlighted(event.y(), true);
+                })
+                .step(1, x -> {
+                    sceneOps.hoverDisplay(event.x(), true);
+                    sceneOps.hoverDisplay(event.y(), true);
+                })
+                .step(1, x -> {
+                    sceneOps.hoverDisplay(event.x(), false);
+                    sceneOps.hoverDisplay(event.y(), false);
+                })
+                .step(1, x -> {
+                    sceneOps.setHighlighted(event.x(), false);
+                    sceneOps.setHighlighted(event.y(), false);
+                    sceneOps.clearHologram();
+                })
+                .build();
     }
 }
+
+

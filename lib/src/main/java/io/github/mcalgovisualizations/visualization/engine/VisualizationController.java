@@ -1,46 +1,62 @@
 package io.github.mcalgovisualizations.visualization.engine;
 
-import io.github.mcalgovisualizations.visualization.HistorySnapshot;
+import io.github.mcalgovisualizations.visualization.algorithms.HistorySnapshot;
 import io.github.mcalgovisualizations.visualization.algorithms.IAlgorithmStepper;
+import io.github.mcalgovisualizations.visualization.algorithms.IPlayerSort;
+import io.github.mcalgovisualizations.visualization.algorithms.events.Complete;
 import io.github.mcalgovisualizations.visualization.algorithms.sorting.AlgorithmStepper;
+import io.github.mcalgovisualizations.visualization.models.Data;
+import io.github.mcalgovisualizations.visualization.models.ISort;
+import io.github.mcalgovisualizations.visualization.models.SortingCollection;
 import io.github.mcalgovisualizations.visualization.renderer.VisualizationRenderer;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.audience.Audience;
 import net.minestom.server.MinecraftServer;
-import net.minestom.server.entity.Player;
 import net.minestom.server.timer.Task;
 
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * A controller of time so forwards, back, adjusting speed belongs here.
  */
 public class VisualizationController {
 
-    private final IAlgorithmStepper stepper;
+    private final AlgorithmStepper stepper;
     private final VisualizationRenderer renderer;
 
     private int ticksPerStep = 20;
     private boolean IS_RUNNING = false;
     private Task runningTask = null;
 
-    public VisualizationController(IAlgorithmStepper stepper, VisualizationRenderer renderer) {
-        this.stepper = stepper;
+    public VisualizationController(
+            IPlayerSort algorithm,
+            VisualizationRenderer renderer,
+            SortingCollection<?> collection
+    ) {
+        this.stepper = new AlgorithmStepper(algorithm, collection);
         this.renderer = renderer;
     }
 
-    public void onStart() {
-        renderer.onStart();
-        var snapshot = stepper.randomize();
-        renderer.render(snapshot);
+    public void setAudience(Audience audience) {
+        renderer.setAudience(audience);
     }
 
-    public void start(Player player) {
-        if (stepper.isDone()) {
-            player.sendMessage(Component.text("Algorithm complete! Use randomize to restart.", NamedTextColor.YELLOW));
-            return;
-        }
+    public void onStart() {
+        var event = stepper.onStart();
+        renderer.onStart(event);
+        //var values = collection.data().toArray(Data[]::new);
 
+        // we just need to display the initial values
+//        var snapshot = new HistorySnapshot<>(
+//                values,
+//                null
+//        );
+
+        // renderer.onStart(snapshot);
+    }
+
+    public void start() {
         if(IS_RUNNING) return;
         IS_RUNNING = true;
 
@@ -56,23 +72,17 @@ public class VisualizationController {
             runningTask.cancel();
             runningTask = null;
         }
+        renderer.onStop();
     }
 
     public void step() {
-        final var snapshot = (HistorySnapshot) stepper.step();
-
-        renderer.render(snapshot);
-        // TODO : handle history with snapshots
+        final var event = stepper.step();
+        renderer.render(event);
     }
 
     public void back() {
-        step();
-//        final var snapshot = (HistorySnapshot) stepper.back();
-//
-//        if(renderer.isIdle())
-//            renderer.render(snapshot);
-
-        // TODO : handle history with snapshots
+        final var event = stepper.back();
+        renderer.render(event);
     }
 
     public void setSpeed(int ticksPerStep) {
@@ -95,12 +105,9 @@ public class VisualizationController {
     }
 
     public void randomize() {
-        stop();
-        final var snapshot = stepper.randomize();
-        renderer.hardReset(snapshot);
-
-        // TODO : handle history with snapshots
+//        stop();
+//        final var snapshot = stepper.randomize();
+//        renderer.hardReset(snapshot);
     }
 
 }
-

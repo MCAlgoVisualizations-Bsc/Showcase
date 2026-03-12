@@ -6,6 +6,8 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 
+import static io.github.mcalgovisualizations.visualization.Tags.ALGO_SELECTOR_TAG;
+
 // could this be serialized?
 /**
  * Factory class for creating control items used to interact with visualizations.
@@ -109,7 +111,7 @@ public final class VisualizationItems {
                                 .decoration(TextDecoration.ITALIC, false),
                         Component.text("algorithm selection menu", NamedTextColor.GRAY)
                                 .decoration(TextDecoration.ITALIC, false)
-                )
+                ).set(ALGO_SELECTOR_TAG, true)
                 .build();
     }
 }

@@ -6,7 +6,7 @@ package io.github.mcalgovisualizations.visualization.models;
  * Implementations define how many elements (e.g., nodes, values, vertices)
  * should be rendered by a layout.
  */
-public interface DataModel {
+public interface IDataModel {
 
     /**
      * Returns the number of elements contained in this model.
@@ -16,5 +16,7 @@ public interface DataModel {
      *
      * @return the total number of elements in the model
      */
-    int size();
+    int length();
+    int[] toArray();
+
 }

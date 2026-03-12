@@ -1,15 +1,18 @@
 package io.github.mcalgovisualizations.visualization.renderer;
 
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.minestom.server.coordinate.Pos;
-import net.minestom.server.instance.Instance;
-import net.minestom.server.instance.block.Block;
+import io.github.mcalgovisualizations.visualization.renderer.Displays.MobDisplay;
+import io.github.mcalgovisualizations.visualization.renderer.handlers.SystemMessages;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.text.Component;
+import net.minestom.server.coordinate.Pos;
+import net.minestom.server.entity.Player;
+import net.minestom.server.instance.Instance;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.*;
 
 /**
  * Scene = Minestom world state.
@@ -24,39 +27,72 @@ import java.util.Set;
  *  - algorithm events
  *  - scheduling/tick loop
  */
-public final class VisualizationScene implements SceneOps {
+public final class VisualizationScene implements ISceneOps {
 
     private final Instance instance;
     private final Pos origin;
+    public final List<Player> viewers = new ArrayList<>();
+    private Audience audience = Audience.empty();
+
+    public void setAudience(Audience audience) {
+        this.audience = Objects.requireNonNullElse(audience, Audience.empty());
+    }
 
     // Stable identity mapping (slot -> display wrapper/entity)
-    private final Map<Integer, BlockDisplay> displaysBySlot =
+    private final Map<Integer, MobDisplay> displaysBySlot =
             new HashMap<>();
+
+    private final Set<Integer> getHighlightedSlots = new HashSet<>();
+
+    // Floating hologram above the visualization
+    private HologramDisplay hologram;
 
     // Visual state
     private final Set<Integer> highlightedSlots = new HashSet<>();
 
     private boolean started = false;
 
-    public VisualizationScene(Instance instance, Pos origin) {
+    public VisualizationScene(@NotNull Instance instance, @NotNull Pos origin) {
         this.instance = instance;
         this.origin = origin;
     }
 
     @Override
-    public void onStart(LayoutResult[] layoutResults) {
+    public <T extends Comparable<T>> void onStart(LayoutResult<T>[] layoutResults) {
         this.started = true;
 
-        for(var layout : layoutResults) {
-            var pos = layout.pos();
-            var block = Block.GRANITE;
-            var value = Integer.toString(layout.value());
+        // Rank values 1–10 across the mob ladder regardless of the actual type (Integer, String, etc.)
+        List<T> sorted = Arrays.stream(layoutResults)
+                .map(r -> r.value().value())
+                .distinct()
+                .sorted()
+                .toList();
+        int uniqueCount = sorted.size();
 
-            var dv = new BlockDisplay(instance, pos, block, value);
-            displaysBySlot.put(layout.value(), dv);
+        for(int i = 0; i < layoutResults.length; i++) {
+            var pos = layoutResults[i].pos();
+            var value = layoutResults[i].value();
+
+            int rank0 = sorted.indexOf(value.value());
+            int mobValue = Math.clamp(
+                    (int) Math.round((rank0 / (double) Math.max(uniqueCount - 1, 1)) * 9) + 1,
+                    1, 10
+            );
+
+            // TODO : Move the creation of IDisplayValue somewhere else
+            var dv = new MobDisplay(instance, pos, mobValue, value.toString());
+
+            displaysBySlot.put(i, dv);
+
             dv.setInstance();
-            dv.teleport(pos);
         }
+
+        // Create hologram floating 6 blocks above the origin
+        hologram = new HologramDisplay(instance, origin.add(8, 5, 0));
+
+        // Add viewers after all displays have been created
+        displaysBySlot.values().forEach(display -> viewers.forEach(display::addViewer));
+        viewers.forEach(hologram::addViewer);
     }
 
     @Override
@@ -65,8 +101,12 @@ public final class VisualizationScene implements SceneOps {
         for (var display : displaysBySlot.values()) {
             safeRemove(display);
         }
+        if (hologram != null) {
+            hologram.remove();
+            hologram = null;
+        }
+        clearGlowing();
         displaysBySlot.clear();
-        highlightedSlots.clear();
         started = false;
     }
 
@@ -82,18 +122,19 @@ public final class VisualizationScene implements SceneOps {
         assertStarted();
         var display = requireDisplay(slot);
 
-        display.setHighlighted(highlighted);
+        highlightedSlots.add(slot);
+        display.setGlowing(highlighted);
     }
 
     @Override
-    public void clearHighlights() {
+    public void clearGlowing() {
         assertStarted();
 
         // Turn off highlight visuals for all currently highlighted slots
         for (int slot : new HashSet<>(highlightedSlots)) {
             var display = displaysBySlot.get(slot);
             if (display != null) {
-                display.setHighlighted(false);
+                display.setGlowing(false);
             }
         }
         highlightedSlots.clear();
@@ -103,68 +144,83 @@ public final class VisualizationScene implements SceneOps {
     public void moveSlotTo(int slot, Pos pos) {
         assertStarted();
         var display = requireDisplay(slot);
-
-        // Assumption: teleport / setPosition exists
         display.teleport(pos);
     }
 
     @Override
     public void swapSlots(int a, int b) {
         assertStarted();
+
         var da = requireDisplay(a);
         var db = requireDisplay(b);
+
+        displaysBySlot.put(a, db);
+        displaysBySlot.put(b, da);
+
 
         var posA = da.getPos();
         var posB = db.getPos();
 
-        setHighlighted(a, true);
-        setHighlighted(b, true);
+
 
         da.teleport(posB);
         db.teleport(posA);
-
-        setHighlighted(a, false);
-        setHighlighted(b, false);
     }
 
     @Override
     public void playEffect(int slot, String effectId) {
         assertStarted();
-        // Keep this intentionally thin.
-        // Effects should be implemented as Scene capabilities (particles, sounds, etc.)
-        // and triggered by handlers via SceneOps.
-        //
-        // Example directions:
-        // - instance.playSound(...)
-        // - spawn particle at current display pos
-        //
-        // For now: no-op stub so handlers can call it safely.
+
+        viewers.forEach(viewer -> viewer.playSound(Sound.sound(
+                Key.key("minecraft:block.note_block.pling"), Sound.Source.MASTER, 1.0f, 1.0f
+        )));
     }
 
-    public void sendMessage(String message, NamedTextColor color) {
-        // player.sendMessage(Component.text(msg.message(), color));
+
+    @Override
+    public void sendMessage(Component message) {
+        audience.sendMessage(message);
     }
 
-    private BlockDisplay createDisplay(Pos spawnPos) {
-        // Assumption: BlockDisplay is your wrapper and can be constructed this way.
-        // If not, adapt this factory.
-        return new BlockDisplay(instance, spawnPos, Block.GLASS, "Hello");
+    @Override
+    public void showHologram(Component text) {
+        assertStarted();
+        if (hologram != null) {
+            hologram.setText(text);
+        }
+    }
+
+    public void hoverDisplay(int slot, boolean hover) {
+        assertStarted();
+
+        var dv = requireDisplay(slot);
+        if (hover) {
+            dv.teleport(dv.getPos().add(0, 1, 0));
+        } else {
+            dv.teleport(dv.getPos().add(0, -1, 0));
+        }
+    }
+
+    @Override
+    public void stopAnimations() {
+        clearGlowing();
+        clearHologram();
+        SystemMessages.sendTo(audience, SystemMessages.ALGORITHM_COMPLETE);
     }
 
     // -------------------------
     // Internals
     // -------------------------
 
-    private BlockDisplay requireDisplay(int slot) {
+    private MobDisplay requireDisplay(int slot) {
         var display = displaysBySlot.get(slot);
         if (display == null) {
-            // This is a usage bug: renderer should have called ensureSize first
-            throw new IllegalStateException("No display for slot " + slot + ". Did you forget ensureSize(n)?");
+            throw new IllegalStateException("No display for slot " + slot + ".");
         }
         return display;
     }
 
-    private void safeRemove(BlockDisplay display) {
+    private void safeRemove(MobDisplay display) {
         if (display == null) return;
         try {
             display.remove();

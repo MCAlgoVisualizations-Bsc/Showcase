@@ -1,5 +1,6 @@
 package io.github.mcalgovisualizations.visualization.layouts;
 
+import io.github.mcalgovisualizations.visualization.models.Data;
 import io.github.mcalgovisualizations.visualization.renderer.LayoutResult;
 import net.minestom.server.coordinate.Pos;
 
@@ -18,11 +19,11 @@ public record MatrixLayout (
     int     rows,
     double  spacing,
     long    seed
-) implements Layout {
+) implements ILayout {
 
     // setting the default configs here
     public MatrixLayout() {
-        this(2.0,2,2, 24);
+        this(2.0,10, 10, 24);
     }
     public MatrixLayout(double yOffset, int cols, int rows) {
         this(yOffset, cols, rows, 24);
@@ -36,16 +37,15 @@ public record MatrixLayout (
      * Throws if size exceeds capacity.
      */
     @Override
-    public LayoutResult[] compute(int[] model, Pos origin) {
+    public <T extends Comparable<T>> LayoutResult<T>[] compute(List<Data<T>> model, Pos origin) {
         return random(model, origin);
     }
 
     /**
      * Randomized (but deterministic per seed) grid positions.
      */
-    @Override
-    public LayoutResult[] random(int[] model, Pos origin) {
-        final var size = model.length;
+    public <T extends Comparable<T>> LayoutResult<T>[] random(List<Data<T>> model, Pos origin) {
+        final var size = model.size();
         final var random = new Random(seed);
         int capacity = cols * rows;
         if (size > capacity) {
@@ -55,7 +55,7 @@ public record MatrixLayout (
             );
         }
 
-        Pos[] positions = new Pos[size];
+        var out = new LayoutResult[size];
 
         double y = origin.y() + yOffset;
 
@@ -67,8 +67,8 @@ public record MatrixLayout (
 
         // All cells
         List<Cell> cells = new ArrayList<>(capacity);
-        for (int r = 0; r < rows; r++) {
-            for (int c = 0; c < cols; c++) {
+        for (int c = 0; c < cols; c++) {
+            for (int r = 0; r < rows; r++) {
                 cells.add(new Cell(c, r));
             }
         }
@@ -79,12 +79,12 @@ public record MatrixLayout (
         // First 'size' cells become node positions (node id == index)
         for (int id = 0; id < size; id++) {
             Cell cell = cells.get(id);
-            double x = startX + cell.col * spacing;
-            double z = startZ + cell.row * spacing;
-            positions[id] = new Pos(x, y, z);
+            final double x = startX + cell.col * spacing;
+            final double z = startZ + cell.row * spacing;
+            out[id] = new LayoutResult<>(new Data<>(id), new Pos(x, y, z));
         }
 
-        return new LayoutResult[0];
+        return out;
     }
 
     private record Cell(int col, int row) { }

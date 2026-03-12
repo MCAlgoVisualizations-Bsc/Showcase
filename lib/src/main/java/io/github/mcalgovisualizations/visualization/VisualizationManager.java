@@ -1,45 +1,38 @@
 package io.github.mcalgovisualizations.visualization;
 
-import io.github.mcalgovisualizations.visualization.algorithms.IAlgorithmStepper;
-import io.github.mcalgovisualizations.visualization.algorithms.StepperFactory;
-import io.github.mcalgovisualizations.visualization.algorithms.events.Message;
+import io.github.mcalgovisualizations.visualization.algorithms.IPlayerSort;
 import io.github.mcalgovisualizations.visualization.engine.VisualizationController;
 import io.github.mcalgovisualizations.visualization.layouts.CircleLayout;
 import io.github.mcalgovisualizations.visualization.layouts.FloatingLinearLayout;
-import io.github.mcalgovisualizations.visualization.layouts.Layout;
-import io.github.mcalgovisualizations.visualization.models.DataModel;
-import io.github.mcalgovisualizations.visualization.models.IntList;
-import io.github.mcalgovisualizations.visualization.refactor.Visualization;
+import io.github.mcalgovisualizations.visualization.layouts.ILayout;
+import io.github.mcalgovisualizations.visualization.layouts.MatrixLayout;
+import io.github.mcalgovisualizations.visualization.models.Data;
+import io.github.mcalgovisualizations.visualization.models.SortingCollection;
 import io.github.mcalgovisualizations.visualization.renderer.VisualizationRenderer;
-import io.github.mcalgovisualizations.visualization.renderer.dispatch.Dispatcher;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.InstanceContainer;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Manages visualizations for all players.
  * Each player can have their own active visualization instance.
  */
 public class VisualizationManager {
-    private static final Map<String, Pos> areaLocations = new HashMap<>();
-    private static final Map<String, Class<? extends Visualization>> visualizations = new HashMap<>();
-    private static final Map<UUID, Visualization> playerVisualizations = new HashMap<>();
+    private final Map<String, Pos> areaLocations = new HashMap<>();
+    private final Map<UUID, VisualizationController> playerSteppers = new HashMap<>();
 
-    private static final Map<String, Class<? extends IAlgorithmStepper>> steppers = new HashMap<>();
-    private static final Map<UUID, VisualizationController> playerSteppers = new HashMap<>();
-
-    static {
-        // Define area locations for different visualization types
+    public VisualizationManager(){
+        // Define default area locations for different visualization types
         areaLocations.put("sorting", new Pos(5, 42, 5));
         areaLocations.put("pathfinding", new Pos(-100, 42, 0));
         areaLocations.put("trees", new Pos(0, 42, 100));
         areaLocations.put("bfs", new Pos(50, 42, 50));
+    }
+
+    public void defineWorkArea(String algorithmType, Pos pos) {
+        areaLocations.put(algorithmType, pos);
     }
 
     /**
@@ -50,21 +43,22 @@ public class VisualizationManager {
      * @param type     The type of visualization (e.g., "sorting", "insertionsort")
      * @param instance The game instance
      */
-    public static void assignVisualization(Player player, String type, InstanceContainer instance) {
+    public void assignVisualization(
+            Player player,
+            String type, // Todo - fix this so that it's not a string and either determined by the lib or the user.
+            InstanceContainer instance,
+            SortingCollection<?> collection,
+            IPlayerSort playerAlgorithm
+    ) {
         // Clean up existing visualization
         removeVisualization(player);
 
-        // TODO : Let players control Layout and model's size n!
-        final DataModel model = createModelFor(type, player, 10);
-        final IAlgorithmStepper stepper = StepperFactory.create(type, model);
+        final ILayout layout = new FloatingLinearLayout();
+        final var origin = getAreaLocation("sorting");
 
-        Layout layout = new FloatingLinearLayout();
-        var origin = new Pos(0, 43, 0);
-
-        var dispatcher = new Dispatcher();
-
-        var renderer = new VisualizationRenderer(instance, origin, layout,  dispatcher);
-        var controller = new VisualizationController(stepper, renderer);
+        final var renderer = new VisualizationRenderer(instance, origin, layout);
+        final var controller = new VisualizationController(playerAlgorithm, renderer, collection);
+        controller.setAudience(player);
 
         controller.onStart();
 
@@ -77,7 +71,7 @@ public class VisualizationManager {
      * @param player The player
      * @return The visualization, or null if none assigned
      */
-    public static VisualizationController getVisualization(Player player) {
+    public VisualizationController getVisualization(Player player) {
         return playerSteppers.get(player.getUuid());
     }
 
@@ -86,7 +80,7 @@ public class VisualizationManager {
      *
      * @param player The player
      */
-    public static void removeVisualization(Player player) {
+    public void removeVisualization(Player player) {
         VisualizationController vis = playerSteppers.remove(player.getUuid());
         if (vis != null) {
             vis.cleanup();
@@ -99,26 +93,7 @@ public class VisualizationManager {
      * @param area The area name
      * @return The position, or null if not found
      */
-    public static Pos getAreaLocation(String area) {
+    public Pos getAreaLocation(String area) {
         return areaLocations.get(area.toLowerCase());
     }
-
-    // TODO : this can potentially take a parameter for the size of a list -> player can choose the size in hotbar?
-    private static DataModel createModelFor(String type, Player player, int n) {
-        return switch (type.toLowerCase()) {
-            case "sorting", "insertionsort", "insertion" -> {
-                var out = new IntList(new int[n]);
-
-                for (int i = 0; i < out.length(); i++) {
-                    out.set(i, i);
-                }
-
-                yield out;
-
-            }
-            // case "bfs" -> new Graph(...);  // if Graph implements DataModel
-            default -> new IntList(new int[10]); // or throw if unknown
-        };
-    }
-
 }

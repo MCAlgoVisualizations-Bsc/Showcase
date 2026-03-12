@@ -11,7 +11,7 @@ import java.util.Queue;
 
 public final class Executor {
 
-    private final SceneOps scene; // <- interface type, not concrete
+    private final ISceneOps scene;
     private Task runningTask = null;
 
     private final Queue<AnimationPlan> queue = new LinkedList<>();
@@ -25,7 +25,7 @@ public final class Executor {
 
     private int SPEED = 1;
 
-    public Executor(SceneOps scene) {
+    public Executor(ISceneOps scene) {
         this.scene = Objects.requireNonNull(scene, "scene");
     }
 
@@ -115,6 +115,7 @@ public final class Executor {
             // If ticksRemaining == 0, we could loop and apply multiple 0-tick steps
             // in one scheduler tick — optional. Keep simple for now.
         }
+
     }
 
     private void finishCurrentPlan() {

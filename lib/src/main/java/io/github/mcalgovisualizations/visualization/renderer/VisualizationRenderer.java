@@ -1,51 +1,49 @@
 package io.github.mcalgovisualizations.visualization.renderer;
 
-import io.github.mcalgovisualizations.visualization.Snapshot;
+import io.github.mcalgovisualizations.visualization.algorithms.ISnapshot;
 import io.github.mcalgovisualizations.visualization.algorithms.events.*;
-import io.github.mcalgovisualizations.visualization.layouts.Layout;
+import io.github.mcalgovisualizations.visualization.layouts.ILayout;
+import io.github.mcalgovisualizations.visualization.models.Data;
 import io.github.mcalgovisualizations.visualization.renderer.dispatch.Dispatcher;
 import io.github.mcalgovisualizations.visualization.renderer.handlers.*;
+import net.kyori.adventure.audience.Audience;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.instance.Instance;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
+import java.util.List;
 
 public final class VisualizationRenderer {
 
     private final VisualizationScene scene;
-    private final Layout layout;
-    private final Dispatcher dispatcher;
+    private final Dispatcher dispatcher = new Dispatcher();
     private final Executor executor;
     private final Pos origin;
-    //private final Object settings;
-
+    private final ILayout layout;
     private boolean started = false;
 
     public VisualizationRenderer(
-            Instance instance,
-            Pos origin, Layout layout,
-            Dispatcher dispatcher
-            //Executor executor // TODO : introduce executor
-            //Object settings // TODO : introduce settings for ease, speed, etc.
+            @NotNull Instance instance,
+            @NotNull Pos origin,
+            @NotNull ILayout layout
     ) {
         this.scene = new VisualizationScene(instance, origin);
+        this.layout = layout;
         this.origin = origin;
-        this.layout = Objects.requireNonNull(layout, "layout");
-        this.dispatcher = Objects.requireNonNull(dispatcher, "dispatcher");
         this.executor = new Executor(scene);
-        //this.settings = settings != null ? settings : RenderSettings.defaults();
     }
 
-    public void onStart() {
+    public <T extends Comparable<T>> void onStart(List<Data<T>> initialData) {
         if (started) return;
         started = true;
         dispatcher.register(Compare.class, new CompareHandler());
+        dispatcher.register(Swap.class, new SwapHandler());
         dispatcher.register(Complete.class, new CompleteHandler());
-        dispatcher.register(Highlight.class, new HighlightHandler());
         dispatcher.register(Message.class, new MessageHandler());
         dispatcher.register(Validate.class, new ValidateHandler());
-        dispatcher.register(Swap.class, new SwapHandler());
 
+        final var layoutResult = this.layout.compute(initialData, origin);
+        scene.onStart(layoutResult);
     }
 
     /**
@@ -54,44 +52,22 @@ public final class VisualizationRenderer {
      */
     public void onStop() {
         if (!started) return;
-
-        //executor.pause();        // or stopTickLoop()
-        //executor.clearQueue();   // optional; decide policy
+        executor.pause();
     }
-    private boolean test = false;
-    public void render(Snapshot snapshot) {
-        requireStarted();
-        Objects.requireNonNull(snapshot, "snapshot");
-        if (!test) {
-            // move to onstart()
-            final var layoutResult = this.layout.compute(snapshot.values(), origin);
-            scene.onStart(layoutResult);
 
-            test = true;
-        }
+    public void onResume() {
+        if (!started) return;
+        executor.resume();
+    }
 
-        final var events = snapshot.events();
-        var ctx = new RenderContext(scene, events);
-
-        for (var e : events) {
-            var plan = dispatcher.dispatch(e, ctx);
-            System.out.println(plan);
-            executor.add(plan);
-        }
-
+    public void render(IAlgorithmEvent event) {
+        final var plan = dispatcher.dispatch(event, scene);
+        executor.add(plan);
         executor.startIfIdle();
-        scene.clearHighlights();
     }
 
     public boolean isIdle() {
         return true;
-    }
-
-    public void hardReset(Snapshot snapshot) {
-        executor.onCleanup();
-        scene.cleanUp();
-        final var layoutResult = this.layout.compute(snapshot.values(), origin);
-        scene.onStart(layoutResult);
     }
 
     /**
@@ -100,22 +76,12 @@ public final class VisualizationRenderer {
      */
     public void onCleanup() {
         if (!started) return;
-
-        //executor.onCleanup();   // kill tick loop + clear queue
+        executor.onCleanup();   // kill tick loop + clear queue
         scene.cleanUp();   // despawn entities
         started = false;
     }
 
-
-    private boolean shouldHardSyncPositions(Snapshot snapshot) {
-        // Keep this stupid-simple initially:
-        // - hard sync if this is the first render
-        // - hard sync if snapshot indicates reset/layoutSwap/backJump
-        // You can add flags to Snapshot for these.
-        // return snapshot.isFirstFrame() || snapshot.isHardReset(); // adapt to your snapshot flags
-        return false;
+    public void setAudience(Audience audience) {
+        scene.setAudience(audience);
     }
-
-    private void requireStarted() { if (!started) throw new IllegalStateException("Renderer not started. Call onStart() first."); }
-
 }

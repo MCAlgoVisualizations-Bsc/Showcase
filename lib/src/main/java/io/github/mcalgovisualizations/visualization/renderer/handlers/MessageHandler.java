@@ -1,22 +1,21 @@
 package io.github.mcalgovisualizations.visualization.renderer.handlers;
 
 import io.github.mcalgovisualizations.visualization.algorithms.events.Message;
-import io.github.mcalgovisualizations.visualization.renderer.RenderContext;
+import io.github.mcalgovisualizations.visualization.renderer.ISceneOps;
 import io.github.mcalgovisualizations.visualization.renderer.dispatch.AnimationPlan;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
-public class MessageHandler implements AnimationHandler<Message>{
+public class MessageHandler implements IAnimationHandler<Message> {
     @Override
-    public AnimationPlan handle(Message event, RenderContext ctx) {
-        return AnimationPlan.instant(sceneOps -> sceneOps.sendMessage(event.message(), color(event)));
-    }
-
-    private NamedTextColor color(Message event) {
-        return switch (event.type()) {
-            case INFO -> NamedTextColor.GRAY;
+    public AnimationPlan handle(Message event, ISceneOps sceneOps) {
+        NamedTextColor color = switch (event.type()) {
+            case INFO    -> NamedTextColor.GRAY;
             case SUCCESS -> NamedTextColor.GREEN;
-            case ERROR -> NamedTextColor.RED;
-            case HINT -> NamedTextColor.AQUA;
+            case ERROR   -> NamedTextColor.RED;
+            case HINT    -> NamedTextColor.AQUA;
         };
+        Component component = Component.text(event.message(), color);
+        return AnimationPlan.instant(scene -> scene.sendMessage(component));
     }
 }

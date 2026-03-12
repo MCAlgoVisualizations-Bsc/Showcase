@@ -1,4 +1,6 @@
 package io.github.mcalgovisualizations.visualization.algorithms.events;
 
-public record Highlight(int x) implements AlgorithmEvent {
+public interface IAlgorithmEvent {
+    @Override
+    String toString();
 }

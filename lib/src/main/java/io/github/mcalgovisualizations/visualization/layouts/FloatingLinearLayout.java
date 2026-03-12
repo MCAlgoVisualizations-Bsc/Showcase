@@ -1,14 +1,13 @@
 package io.github.mcalgovisualizations.visualization.layouts;
 
+import io.github.mcalgovisualizations.visualization.models.Data;
 import io.github.mcalgovisualizations.visualization.renderer.LayoutResult;
 import net.minestom.server.coordinate.Pos;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.List;
 
 /**
- * A {@link Layout} implementation that arranges elements in a straight
+ * A {@link ILayout} implementation that arranges elements in a straight
  * horizontal line along the positive X-axis.
  * <p>
  * All elements share a constant Y-coordinate ("floating"), meaning their
@@ -24,7 +23,7 @@ public record FloatingLinearLayout(
         double spacing,
         double yOffset,
         double zOffset
-) implements Layout {
+) implements ILayout {
 
     /**
      * Creates a floating linear layout with default configuration:
@@ -54,13 +53,14 @@ public record FloatingLinearLayout(
      * @param origin starting position of the layout
      * @return array of {@link Pos} positions in a straight line
      */
+    @SuppressWarnings("unchecked")
     @Override
-    public LayoutResult[] compute(int[] model, Pos origin) {
-        if(model == null || model.length == 0) {
+    public <T extends Comparable<T>> LayoutResult<T>[] compute(List<Data<T>> model, Pos origin) {
+        if(model == null || model.isEmpty()) {
             return new LayoutResult[0];
         }
 
-        final var size = model.length;
+        final var size = model.size();
         final var out = new LayoutResult[size];
 
         final double y = origin.y() + yOffset;
@@ -70,18 +70,9 @@ public record FloatingLinearLayout(
             final double x = origin.x() + (i * spacing);
             final var pos = new Pos(x, y, z);
 
-            out[i] = new LayoutResult(model[i], pos);
+            out[i] = new LayoutResult<>(model.get(i), pos);
         }
 
         return out;
-    }
-
-    @Override
-    public LayoutResult[] random(int[] model, Pos origin) {
-        var layout = compute(model, origin);
-        var layoutList = new ArrayList<>(Arrays.asList(layout));
-        Collections.shuffle(layoutList);
-
-        return layoutList.toArray(new LayoutResult[0]);
     }
 }
